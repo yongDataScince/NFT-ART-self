@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.7+commit.e28d00a7"
+		"version": "0.8.1+commit.df193b15"
 	},
 	"language": "Solidity",
 	"output": {
@@ -268,6 +268,19 @@
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "FEE_ADDRESS",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -668,7 +681,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_amount",
+						"name": "_priceWei",
 						"type": "uint256"
 					},
 					{
@@ -699,7 +712,7 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_amountOf",
+						"name": "_amountOfTokens",
 						"type": "uint256"
 					}
 				],
@@ -712,7 +725,7 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_amountOf",
+						"name": "_amountOfTokens",
 						"type": "uint256"
 					}
 				],
@@ -839,7 +852,7 @@
 						"type": "uint256"
 					}
 				],
-				"name": "revertToken",
+				"name": "revokeToken",
 				"outputs": [],
 				"stateMutability": "payable",
 				"type": "function"
@@ -1237,7 +1250,7 @@
 		"compilationTarget": {
 			"contracts/NftArt.sol": "NFTArt"
 		},
-		"evmVersion": "london",
+		"evmVersion": "istanbul",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -1250,11 +1263,11 @@
 	},
 	"sources": {
 		"contracts/NftArt.sol": {
-			"keccak256": "0x324fa6f547ca1c43a495871251b2ca70759a89e9879932ebb4e75c0bc382a379",
+			"keccak256": "0xf27959b62dda3316403aa02766e25bc6ecbd4fd6cbdf2f09e6a959c8aa18521d",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a8242e23329f1790b5e6b7c90a11bab8d10b285f46c643bdd59c5c3a141bf4d0",
-				"dweb:/ipfs/QmYPsRsajovjEoUkPkrhHhcVVpqf4f7G6n2s7zizBLtcuj"
+				"bzz-raw://36da5a74de10b69f1e064b703c3d15c9b3a3480d6d6a1e157c426097c137bffe",
+				"dweb:/ipfs/QmdJi7Kf2ststmQB5ewTeNNVMvHdFwZxgpsH34Surd68dX"
 			]
 		},
 		"contracts/access/Ownable.sol": {
