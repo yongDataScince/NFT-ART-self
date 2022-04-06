@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.7;
-//не покупается Didn't send enough ETH".
-//продается невалидированный токен
 
 import "./access/Ownable.sol";
 import "./token/ERC721/extensions/ERC721Enumerable.sol";
@@ -16,15 +14,14 @@ contract NFTArt is ERC721Enumerable, Ownable{
     address constant public PREMINT_ADDRESS = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
 
     uint256 constant public AMOUNT_PREMINT = 10;
-
+    uint256 constant public PRESALE_PRICE = 1 ether;
     uint256 constant public PRESALE_MAX_SUPPLY = 20;
     uint256 constant public PRESALE_MAX_PER_MINT = 8;
     uint256 constant public PRESALE_MAX_MINT = 11;
 
+    uint256 constant public PRICE = 2 ether;
     uint256 constant public MAX_PER_MINT = 12;
     uint256 constant public MAX_MINT = 15;
-
-    uint256 constant public PRICE = 0.1 ether;
     uint256 constant private MAX_RATE = 100;
 
     bytes32 constant private VALIDATOR = keccak256("VALIDATOR");
@@ -38,7 +35,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     
     string public baseTokenURI;
 
-    bool private royaltyType = true; //true - уменьшается от количества транзакций, false - уменьшается от цены
+    bool private royaltyType = true; //true - royalty decrease with a transactions number, false - royalty decrease with a token price
     bool public startSale = false;
     bool public startPresale = false;
     
@@ -217,7 +214,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
                         PUBLIC FUNCTIONS 
     //////////////////////////////////////////////////////////////*/
 
-    // проверить ошибку по газу
     function mintPresale(uint256 _amountOf) external payable {
         require(startPresale, "Presale has not started");
         require(presaleEligible[_msgSender()], "You are not eligible for the presale");
@@ -225,8 +221,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(totalSupply() + _amountOf <= AMOUNT_PREMINT + PRESALE_MAX_SUPPLY, "Minting would exceed presale max supply");
         require(balanceOf(_msgSender()) + _amountOf <= PRESALE_MAX_MINT, "Purchase exceeds max allowed for presale");
         require(_amountOf <= PRESALE_MAX_PER_MINT, "Cannot purchase this many tokens during presale");
+        require(msg.value == PRESALE_PRICE * _amountOf, "ETH amount is incorrect");
        
-        for (uint256 i = totalSupply(); i < totalSupply() + _amountOf; i++) {
+        uint256 supply = totalSupply();
+        for (uint256 i = supply; i < supply + _amountOf; i++) {
             _safeMint(_msgSender(), i);
         }
 
@@ -236,13 +234,14 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function mint(uint256 _amountOf) external payable {
         require(startSale, "Sale has not started");
         require(totalSupply() + _amountOf <= maxSupply, "All tokens have been minted");
+        require(msg.value == PRICE * _amountOf, "ETH amount is incorrect");
 
-        for (uint256 i = totalSupply(); i < totalSupply() + _amountOf; i++) {
+        uint256 supply = totalSupply();
+        for (uint256 i = supply; i < supply + _amountOf; i++) {
             _safeMint(_msgSender(), i);
         }
     }
 
-    // проверить логику с _previousOwner
     function listToken(uint256 _tokenID, uint256 _amount, bool selfValidate) external ifTockenExist(_tokenID) {
         address _owner = ownerOf(_tokenID);
 
@@ -251,18 +250,30 @@ contract NFTArt is ERC721Enumerable, Ownable{
         
         _tokenPrice[_tokenID] = _amount;
         
-        if (selfValidate == true){
+        if (selfValidate == true) {
             _lotStates[_tokenID] = 3;
         }
         else {
-             _lotStates[_tokenID] = 1;
+            _lotStates[_tokenID] = 1;
         }
 
         _tokensPreviousOwner[_tokenID] = _owner;
         _transfer(_owner, address(this), _tokenID);
     }
 
+    function revertToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
+        address _previousOwner = _tokensPreviousOwner[_tokenID];
+
+        require(_lotStates[_tokenID] != 0, "Token is not listed");
+        require(_previousOwner == _msgSender(), "You can revert only your token");
+
+        _lotStates[_tokenID] = 0;
+        _transfer(address(this), _msgSender(), _tokenID);
+    }
+
     function buyToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
+        require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");
+
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
@@ -271,19 +282,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         
         payable(_previousOwner).transfer(getTokenPrice(_tokenID));
         _tokenTransactions[_tokenID]++;
+        _lotStates[_tokenID] = 0;
         _transfer(address(this), _msgSender(), _tokenID);
     }
 
-    function revertToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
-        address _previousOwner = _tokensPreviousOwner[_tokenID];
-
-        require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
-        require(_previousOwner == _msgSender(), "You can revert only your token");
-
-        _transfer(address(this), _msgSender(), _tokenID);
-    }
-
-    // затестить что эфиры переводятся с контракта
     function widthdraw(uint256 _amount) public {
         for (uint256 i = 0; i < beneficiaries.length; i++) {
             uint256 share = (_amount * rate[i]) / 100;
@@ -323,6 +325,18 @@ contract NFTArt is ERC721Enumerable, Ownable{
         }
 
         _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty) / 10_000;
+    }
+
+    function isAuthor(address _user) public view returns(bool) {
+        return _roles[_user] == AUTHOR;
+    }
+
+    function isAdmin(address _user) public view returns(bool) {
+        return _roles[_user] == ADMIN;
+    }
+
+    function isValidator(address _user) public view returns(bool) {
+        return _roles[_user] == VALIDATOR;
     }
 
 
