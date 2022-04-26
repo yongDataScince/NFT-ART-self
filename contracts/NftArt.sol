@@ -11,18 +11,16 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     GLOBAL STATE
     //////////////////////////////////////////////////////////////*/
 
-    address constant public PREMINT_ADDRESS = 0x5C036bEe95B37532D7bc364f756efa10667f1aA3;
-    address constant public FEE_ADDRESS = 0x5C036bEe95B37532D7bc364f756efa10667f1aA3;
+    address constant public PREMINT_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
+    address constant public FEE_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
 
     uint256 constant public AMOUNT_PREMINT = 10;
-    uint256 constant public PRESALE_PRICE = 0.1 ether;
+    uint256 constant public PRESALE_PRICE = 0.001 ether;
     uint256 constant public PRESALE_MAX_SUPPLY = 20;
     uint256 constant public PRESALE_MAX_PER_MINT = 8;
     uint256 constant public PRESALE_MAX_MINT = 11;
 
-    uint256 constant public PRICE = 0.2 ether;
-    uint256 constant public MAX_PER_MINT = 12;
-    uint256 constant public MAX_MINT = 15;
+    uint256 constant public PRICE = 0.002 ether;
     uint256 constant private MAX_RATE = 100;
 
     bytes32 constant private VALIDATOR = keccak256("VALIDATOR");
@@ -33,7 +31,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public maxSupply = 30;
     uint256 private royaltyPercentage = 0;  // in 0.01%
     uint256 private royaltyDecrease = 0;    // in 0.01%
-    uint256 private feePercentage = 100;    // in 0.01%
+    uint256 private feePercentage = 0;    // in 0.01%
     uint256 private fees = 0;    // accumulated fees
     
     string public baseTokenURI;
@@ -100,9 +98,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
         string memory baseURI,
         address[] memory _authors,
         string memory _name,
-        string memory _symbol)
+        string memory _symbol,
+        uint256 _feePercentage)
      ERC721(_name,_symbol) {
         baseTokenURI = baseURI;
+        feePercentage = _feePercentage;    // in 0.01%
+
         _addAuthor(_authors);
 
         _premint();
@@ -180,7 +181,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         external
         onlyAdmin
         {
-        royaltyType = _royaltyType; // //true - royalty decrease with a transactions number, false - royalty decrease with a token price
+        royaltyType = _royaltyType; //true - royalty decrease with a transactions number, false - royalty decrease with a token price
         royaltyPercentage = _royaltyPercentage;  // in 0.01% of a price
         royaltyDecrease = _decrease;             // in 0.01% of a price
     }
@@ -268,25 +269,25 @@ contract NFTArt is ERC721Enumerable, Ownable{
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] != 0, "Token is not listed");
-        require(_previousOwner == _msgSender(), "You can revert only your token");
+        require(_previousOwner == _msgSender(), "You can only revoke your own token");
 
         _lotStates[_tokenID] = 0;
+        _tokenPrice[_tokenID] = 0;
         _transfer(address(this), _msgSender(), _tokenID);
     }
 
     function buyToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
-        require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");
+        require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");       // исправить на проверку настоящей цены
 
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
-        require(_tokenPrice[_tokenID] == msg.value, "Not correct ETH value");
         require(_previousOwner != _msgSender(), "You cannot buy token from yourself");
         
         _tokenTransactions[_tokenID]++;
         _lotStates[_tokenID] = 0;
         fees += getTokenPrice(_tokenID) * feePercentage;
-        payable(_previousOwner).transfer(getTokenPrice(_tokenID));
+        payable(_previousOwner).transfer(getTokenEarnings(_tokenID));
         _transfer(address(this), _msgSender(), _tokenID);
     }
 
@@ -315,7 +316,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
                             VIEWERS
     //////////////////////////////////////////////////////////////*/
 
-    function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
+    function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _totalPrice) {
         uint256 currentRoyalty = 0;
 
         // Royalty decreases with each transaction
@@ -332,6 +333,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         }
 
         _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty - feePercentage) / 10_000;
+    }
+
+    function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
+        return _tokenPrice[_tokenID];
     }
 
     function isAuthor(address _user) public view returns(bool) {
