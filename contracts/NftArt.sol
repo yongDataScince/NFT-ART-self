@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.1;
 
-import "./access/Ownable.sol";
-import "./token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 contract NFTArt is ERC721Enumerable, Ownable{
 
@@ -40,8 +40,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
     bool public startSale = false;
     bool public startPresale = false;
     
-    address[] public beneficiaries;
-    uint256[] private rate;
+    address[] private beneficiaries;
+    uint256[] private rates;
 
     event AddingValidator(address _validatorAddress);
     event AddingAuthor(address _authorAddress);
@@ -188,17 +188,18 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function setRoyaltyDistribution(
         address[] calldata _addresses,
-        uint256[] calldata _rate) 
+        uint256[] calldata _rates) 
         external
         onlyAdmin
         {
+        require(_addresses.length == _rates.length, "different array sizes");
         uint256 totalRate = 0;
-        for (uint256 i = 0; i < _rate.length; i++) {
-            totalRate += _rate[i];
+        for (uint256 i = 0; i < _rates.length; i++) {
+            totalRate += _rates[i];
         }
         require(totalRate <= MAX_RATE, "totalRate cannot be more than 100");
 
-        rate = _rate;
+        rates = _rates;
         beneficiaries = _addresses;
     }
 
@@ -296,7 +297,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         fees = 0;
 
         for (uint256 i = 0; i < beneficiaries.length; i++) {
-            uint256 share = (_amount * rate[i]) / 100;
+            uint256 share = (_amount * rates[i]) / 100;
             (bool success, ) = beneficiaries[i].call{value: share}("");
             require(success, "Failed to transfer Ether");
         } 
@@ -349,6 +350,18 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function isValidator(address _user) public view returns(bool) {
         return _roles[_user] == VALIDATOR;
+    }
+
+    function getFeePercentage() public view returns(uint256) {
+        return feePercentage;
+    }
+
+    function getBeneficiaries() public view returns(address[] memory) {
+        return beneficiaries;
+    }
+
+    function getRates() public view returns(uint256[] memory) {
+        return rates;
     }
 
 
