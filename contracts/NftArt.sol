@@ -20,7 +20,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 constant public PRESALE_MAX_PER_MINT = 8;
     uint256 constant public PRESALE_MAX_MINT = 11;
 
-    uint256 constant public PRICE = 0.002 ether;
+    uint256 public PRICE = 0.002 ether;
     uint256 constant private MAX_RATE = 100;
 
     bytes32 constant private VALIDATOR = keccak256("VALIDATOR");
@@ -48,8 +48,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
     event AddingAdmin(address _adminAddress);
     event ChangeBaseURI(string baseURI); 
     event ChangeStateLot(uint256 lot, uint256 value);
-    event PresaleMint(address minter, uint256 amountOf);
-    event PublicSaleMint(address minter, uint256 amountOf);
+    event PresaleMint(address minter, uint256 tokensID);
+    event PublicSaleMint(address minter, uint256 tokensID);
     event RemoveValidator(address _validatorAddress);
     event RemoveAdmin(address _adminAddress);
 
@@ -59,10 +59,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
     
     mapping (address => bytes32) private _roles;
-    mapping (uint256 => uint256) public _lotStates;
+    mapping (uint256 => uint256) public lotStates;
+    mapping (uint256 => uint256) public mintPrices;
+    mapping (uint256 => uint256) public presalePrices;
 
     /*
-    _lotStates has the following states:
+    lotStates has the following states:
     0 - token at the owner
     1 - contract owns the token, the token listing isn't confirmed
     2 - contract owns the token, the token is listed and confirmed by the validator
@@ -209,9 +211,23 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function verify(uint256 _id) external onlyValidator {
-        require(_lotStates[_id] == 1, "invalid lot status");
-        _lotStates[_id] = 2;
+        require(lotStates[_id] == 1, "invalid lot status");
+        lotStates[_id] = 2;
         emit ChangeStateLot(_id, 2);
+    }
+
+
+    /*///////////////////////////////////////////////////////////////
+                    AUTHOR FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    function changeMintPrice(uint[] calldata _ids, uint[] calldata _prices) external onlyAuthor {
+        require(_ids.length == _prices.length, "Wrong arrays");
+/////////////////////// todo
+        // for (uint256 i = 0; i < _addresses.length; i++) {
+        //     require(_addresses[i] != address(0), "Cannot add null address");
+        //     presaleEligible[_addresses[i]] = true;
+        // }
     }
 
 
@@ -219,32 +235,28 @@ contract NFTArt is ERC721Enumerable, Ownable{
                         PUBLIC FUNCTIONS 
     //////////////////////////////////////////////////////////////*/
 
-    function mintPresale(uint256 _amountOfTokens) external payable {
+    function mintPresale(uint256 _tokenID) external payable {
         require(startPresale, "Presale has not started");
         require(presaleEligible[_msgSender()], "You are not eligible for the presale");
         require(totalSupply() < AMOUNT_PREMINT + PRESALE_MAX_SUPPLY, "All presale tokens have been minted");
-        require(totalSupply() + _amountOfTokens <= AMOUNT_PREMINT + PRESALE_MAX_SUPPLY, "Minting would exceed presale max supply");
-        require(balanceOf(_msgSender()) + _amountOfTokens <= PRESALE_MAX_MINT, "Purchase exceeds max allowed for presale");
-        require(_amountOfTokens <= PRESALE_MAX_PER_MINT, "Cannot purchase this many tokens during presale");
-        require(msg.value == PRESALE_PRICE * _amountOfTokens, "ETH amount is incorrect");
+        require(balanceOf(_msgSender()) < PRESALE_MAX_MINT, "Purchase exceeds max allowed for presale");
+        require(msg.value == presalePrices[_tokenID], "ETH amount is incorrect");
+        require(!_exists(_tokenID), "Token is alredy minted");
        
-        uint256 supply = totalSupply();
-        for (uint256 i = supply; i < supply + _amountOfTokens; i++) {
-            _safeMint(_msgSender(), i);
-        }
+        _safeMint(_msgSender(), _tokenID);
 
-        emit PresaleMint(_msgSender(), _amountOfTokens);
+        emit PresaleMint(_msgSender(), _tokenID);
     }
 
-    function mint(uint256 _amountOfTokens) external payable {
+    function mint(uint256 _tokenID) external payable {
         require(startSale, "Sale has not started");
-        require(totalSupply() + _amountOfTokens <= maxSupply, "All tokens have been minted");
-        require(msg.value == PRICE * _amountOfTokens, "ETH amount is incorrect");
+        require(totalSupply() < maxSupply, "All tokens have been minted");
+        require(msg.value == mintPrices[_tokenID], "ETH amount is incorrect");
+        require(!_exists(_tokenID), "Token is alredy minted");
 
-        uint256 supply = totalSupply();
-        for (uint256 i = supply; i < supply + _amountOfTokens; i++) {
-            _safeMint(_msgSender(), i);
-        }
+        _safeMint(_msgSender(), _tokenID);
+
+        emit PublicSaleMint(_msgSender(), _tokenID);
     }
 
     function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTockenExist(_tokenID) {
@@ -256,10 +268,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _tokenPrice[_tokenID] = _priceWei;
         
         if (selfValidate == true) {
-            _lotStates[_tokenID] = 3;
+            lotStates[_tokenID] = 3;
         }
         else {
-            _lotStates[_tokenID] = 1;
+            lotStates[_tokenID] = 1;
         }
 
         _tokensPreviousOwner[_tokenID] = _owner;
@@ -269,24 +281,24 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function revokeToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
-        require(_lotStates[_tokenID] != 0, "Token is not listed");
+        require(lotStates[_tokenID] != 0, "Token is not listed");
         require(_previousOwner == _msgSender(), "You can only revoke your own token");
 
-        _lotStates[_tokenID] = 0;
+        lotStates[_tokenID] = 0;
         _tokenPrice[_tokenID] = 0;
         _transfer(address(this), _msgSender(), _tokenID);
     }
 
     function buyToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
-        require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");       // исправить на проверку настоящей цены
+        require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");
 
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
-        require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
+        require(lotStates[_tokenID] == 2 || lotStates[_tokenID] == 3, "Token is not listed");
         require(_previousOwner != _msgSender(), "You cannot buy token from yourself");
         
         _tokenTransactions[_tokenID]++;
-        _lotStates[_tokenID] = 0;
+        lotStates[_tokenID] = 0;
         fees += getTokenPrice(_tokenID) * feePercentage;
         payable(_previousOwner).transfer(getTokenEarnings(_tokenID));
         _transfer(address(this), _msgSender(), _tokenID);
