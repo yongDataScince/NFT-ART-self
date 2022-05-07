@@ -15,10 +15,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
     address constant public FEE_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
 
     uint256 constant public AMOUNT_PREMINT = 10;
-    uint256 constant public PRESALE_PRICE = 0.001 ether;
+    uint256 public PRESALE_PRICE = 0.001 ether;
     uint256 constant public PRESALE_MAX_SUPPLY = 20;
-    uint256 constant public PRESALE_MAX_PER_MINT = 8;
-    uint256 constant public PRESALE_MAX_MINT = 11;
+    uint256 public PRESALE_MAX_PER_MINT = 8;
+    uint256 public PRESALE_MAX_MINT = 11;
 
     uint256 public PRICE = 0.002 ether;
     uint256 constant private MAX_RATE = 100;
@@ -59,7 +59,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
     
     mapping (address => bytes32) private _roles;
-    mapping (uint256 => uint256) public lotStates;
+    mapping (uint256 => uint256) private lotStates;
     mapping (uint256 => uint256) public mintPrices;
     mapping (uint256 => uint256) public presalePrices;
 
@@ -148,9 +148,9 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit RemoveAdmin(_address);
     }
 
-    function setMaxSupply(uint256 _max) external onlyOwner {
-        require(_max > maxSupply, "You can only increase max supply");
-        maxSupply = _max;
+    function setMaxSupply(uint256 _maxSupply) external onlyOwner {
+        require(_maxSupply > maxSupply, "You can only increase max supply");
+        maxSupply = _maxSupply;
     }
 
     function addToPresale(address[] calldata _addresses) external onlyOwner {
@@ -167,6 +167,22 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function setBaseURI(string calldata baseURI) public onlyOwner {
         baseTokenURI = baseURI;
         emit ChangeBaseURI(baseURI);
+    }
+
+    function setPresaleMaxMint(uint256 _presaleMaxMint) public onlyOwner {
+        PRESALE_MAX_MINT = _presaleMaxMint;
+    }
+
+    function setPresaleMaxPerMint(uint256 _presaleMaxPerMint) public onlyOwner {
+        PRESALE_MAX_PER_MINT = _presaleMaxPerMint;
+    }
+
+    function setPresalePriceInWei(uint256 _presalePrice) public onlyOwner {
+        PRESALE_PRICE = _presalePrice;
+    }
+
+    function setPriceInWei(uint256 _price) public onlyOwner {
+        PRICE = _price;
     }
 
 
@@ -374,6 +390,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function getRates() public view returns(uint256[] memory) {
         return rates;
+    }
+
+    function getLotStates(uint256 _id) public view returns (uint256) {
+        return lotStates[_id];
     }
 
 
