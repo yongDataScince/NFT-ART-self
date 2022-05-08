@@ -29,6 +29,13 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 private sellFeePercentage = 0;      // in 0.01%
     uint256 private sellFees = 0;               // accumulated fees
     address constant public FEE_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
+
+    uint256 private authorRoyaltyPercentage = 0;    // in 0.01%
+    uint256 private authorRoyaltyDecrease = 0;      // in 0.01%
+    
+    uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
+    uint256 private minterRoyaltyN = 0;      // in 0.01%
+
     bool private royaltyType = true;            //true - royalty decrease with a transactions number, false - royalty decrease with a token price    
     
     address[] private beneficiaries;
@@ -80,22 +87,22 @@ contract NFTArt is ERC721Enumerable, Ownable{
     mapping (uint256 => uint256) private _tokenTransactions;
     
     modifier onlyAdmin() {
-        require(_roles[_msgSender()] == ADMIN, "caller is not the admin!");
+        require(_roles[_msgSender()] == ADMIN, "caller is not an admin!");
         _;
     }
 
     modifier onlyValidator() {
-        require(_roles[_msgSender()] == VALIDATOR, "caller is not the validator!");
+        require(_roles[_msgSender()] == VALIDATOR, "caller is not a validator!");
         _;
     }
 
     modifier onlyAuthor() {
-        require(_roles[_msgSender()] == AUTHOR, "caller is not the author!");
+        require(_roles[_msgSender()] == AUTHOR, "caller is not an author!");
         _;
     }
 
     modifier onlyPlatform() {
-        require(_roles[_msgSender()] == PLATFORM, "caller is not the platform!");
+        require(_roles[_msgSender()] == PLATFORM, "caller is not a platform!");
         _;
     }
 
@@ -222,19 +229,27 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     ADMIN FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    function changeRoyalty(
+    function changeAuthorRoyalty(
         uint256 _royaltyPercentage,
-        bool _royaltyType,
         uint256 _decrease)
         external
         onlyAdmin
         {
-        royaltyType = _royaltyType; //true - royalty decrease with a transactions number, false - royalty decrease with a token price
-        royaltyPercentage = _royaltyPercentage;     // in 0.01% of a price
-        royaltyDecrease = _decrease;                // in 0.01% of a price
+        authorRoyaltyPercentage = _royaltyPercentage;     // in 0.01% of a price
+        authorRoyaltyDecrease = _decrease;                // in 0.01% of a price
     }
 
-    function setRoyaltyDistribution(
+    function changeMinterRoyalty(
+        uint256 _royaltyPercentage,
+        uint256 _numberOfTransactions)
+        external
+        onlyAdmin
+        {
+        minterRoyaltyPercentage = _royaltyPercentage;     // in 0.01% of a price
+        minterRoyaltyN = _numberOfTransactions;           // in 0.01% of a price
+    }
+
+    function setAuthorRoyaltyDistribution(
         address[] calldata _addresses,
         uint256[] calldata _rates) 
         external
@@ -392,18 +407,20 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function setSellFeePercentage(uint256 _feePercentage) external onlyPlatform {
+        require(_feePercentage <= 300, "Wrong value");
         sellFeePercentage = _feePercentage;     // in 0.01%
     }
 
     function setMintFeePercentage(uint256 _feePercentage) external onlyPlatform {
+        require(_feePercentage <= 4000, "Wrong value");
         mintFeePercentage = _feePercentage;     // in 0.01%
-    }  
+    }
 
     function changePlatformAddress(address _newAddress) external onlyPlatform {
         _roles[_msgSender()] = bytes32(0);
         _roles[_newAddress] = PLATFORM;
         emit AddingValidator(_newAddress);
-    }  
+    }
 
 
     /*///////////////////////////////////////////////////////////////
@@ -411,20 +428,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _totalPrice) {
-        uint256 currentRoyalty = 0;
+        uint256 currentRoyalty = 0;     // in 0.01% of a price
 
-        // Royalty decreases with each transaction
-        if (royaltyType == true) {
-            // uint256 decrease = royaltyDecrease * _tokenTransactions[_tokenID];
-            // if (decrease < royaltyPercentage)
-            //     currentRoyalty = royaltyPercentage - decrease;    // in 0.01% of a price
-        }
-        // Royalty decreases with a price
-        else {
-            // currentRoyalty = royaltyPercentage * PRICE / _tokenPrice[_tokenID];    // in 0.01% of a price
-            // if (currentRoyalty > royaltyPercentage) 
-            //     currentRoyalty = royaltyPercentage;
-        }
+        // A minter royalty decreases with each transaction
+        currentRoyalty += minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
+        // An author royalty decreases with a price
+        currentRoyalty += 10_000 / (getTokenPrice(_tokenID)) + 20;
 
         // _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty - feePercentage) / 10_000;
     }
