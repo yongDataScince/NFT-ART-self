@@ -435,7 +435,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         // An author royalty decreases with a price
         currentRoyalty += 10_000 / (getTokenPrice(_tokenID)) + 20;
 
-        // _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty - feePercentage) / 10_000;
+        _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty - sellFeePercentage) / 10_000;
     }
 
     function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
