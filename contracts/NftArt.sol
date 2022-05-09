@@ -29,9 +29,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 private sellFeePercentage = 0;      // in 0.01%
     uint256 private sellFees = 0;               // accumulated fees
     address constant public FEE_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
-
-    uint256 private authorRoyaltyPercentage = 0;    // in 0.01%
-    uint256 private authorRoyaltyDecrease = 0;      // in 0.01%
     
     uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
     uint256 private minterRoyaltyN = 0;      // in 0.01%
@@ -69,9 +66,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
     
     mapping (address => bytes32) private _roles;
-    mapping (uint256 => uint256) private _lotStates;
+    mapping (uint256 => address) private _minters;
+
     mapping (uint256 => uint256) public mintPrices;
     mapping (uint256 => uint256) public presalePrices;
+    mapping (address => bool) public presaleEligible;
 
     /*
     _lotStates has the following states:
@@ -80,8 +79,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     2 - contract owns the token, the token is listed and confirmed by the validator
     3 - contract owns the token, the token is listed and confirmed by the seller itself
     */
-
-    mapping (address => bool) public presaleEligible;
+    mapping (uint256 => uint256) private _lotStates;
     mapping (uint256 => uint256) private _tokenPrice;
     mapping (uint256 => address) private _tokensPreviousOwner;
     mapping (uint256 => uint256) private _tokenTransactions;
@@ -229,16 +227,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     ADMIN FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    function changeAuthorRoyalty(
-        uint256 _royaltyPercentage,
-        uint256 _decrease)
-        external
-        onlyAdmin
-        {
-        authorRoyaltyPercentage = _royaltyPercentage;     // in 0.01% of a price
-        authorRoyaltyDecrease = _decrease;                // in 0.01% of a price
-    }
-
     function changeMinterRoyalty(
         uint256 _royaltyPercentage,
         uint256 _numberOfTransactions)
@@ -249,7 +237,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         minterRoyaltyN = _numberOfTransactions;           // in 0.01% of a price
     }
 
-    function setAuthorRoyaltyDistribution(
+    function setAuthorsRoyaltyDistribution(
         address[] calldata _addresses,
         uint256[] calldata _rates) 
         external
@@ -291,9 +279,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function mintPresale(uint256[] calldata _tokenIDs) external payable {
         require(startPresale, "Presale has not started");
-        require(presaleEligible[_msgSender()], "You are not eligible for the presale");
+        address minter = _msgSender();
+        require(presaleEligible[minter], "You are not eligible for the presale");
         require(totalSupply() + _tokenIDs.length < AMOUNT_PREMINT + presaleMaxSupply, "All presale tokens have been minted");
-        require(balanceOf(_msgSender()) + _tokenIDs.length < presaleMaxMint, "Purchase exceeds max allowed for presale");
+        require(balanceOf(minter) + _tokenIDs.length < presaleMaxMint, "Purchase exceeds max allowed for presale");
         
         uint256 totalPrice = 0;
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
@@ -304,10 +293,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
         mintFees += totalPrice * mintFeePercentage / 10_000;
 
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            _safeMint(_msgSender(), _tokenIDs[i]);
+            _minters[_tokenIDs[i]] = minter;
+            _safeMint(minter, _tokenIDs[i]);
         }
 
-        emit PresaleMint(_msgSender(), _tokenIDs);
+        emit PresaleMint(minter, _tokenIDs);
     }
 
     function mint(uint256[] calldata _tokenIDs) external payable {
@@ -322,11 +312,13 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(msg.value == totalPrice, "ETH amount is incorrect");
         mintFees += totalPrice * mintFeePercentage / 10_000;
 
+        address minter = _msgSender();
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            _safeMint(_msgSender(), _tokenIDs[i]);
+            _minters[_tokenIDs[i]] = minter;
+            _safeMint(minter, _tokenIDs[i]);
         }
 
-        emit PublicSaleMint(_msgSender(), _tokenIDs);
+        emit PublicSaleMint(minter, _tokenIDs);
     }
 
     function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTockenExist(_tokenID) {
@@ -374,17 +366,25 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _tokenTransactions[_tokenID]++;
         _lotStates[_tokenID] = 0;
         sellFees += getTokenPrice(_tokenID) * sellFeePercentage / 10_000;
-        payable(_previousOwner).transfer(getTokenEarnings(_tokenID));
+
+        uint256 _earning;
+        address _tokenMinter = _minters[_tokenID];
+        uint256 _minterRoyalty;
+        (_earning, _minterRoyalty,) = getTokenEarnings(_tokenID);
+        payable(_previousOwner).transfer(_earning);
+        payable(_tokenMinter).transfer(_minterRoyalty);
+
         _transfer(address(this), _msgSender(), _tokenID);
 
         emit BuyToken(_tokenID);
     }
 
-    function widthdraw(uint256 _amount) public {
+    function widthdraw() public {
         payable(FEE_ADDRESS).transfer(sellFees + mintFees);
         sellFees = 0;
         mintFees = 0;
 
+        uint256 _amount = address(this).balance;
         for (uint256 i = 0; i < beneficiaries.length; i++) {
             uint256 share = (_amount * rates[i]) / 100;
             (bool success, ) = beneficiaries[i].call{value: share}("");
@@ -417,6 +417,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function changePlatformAddress(address _newAddress) external onlyPlatform {
+        require(_newAddress != address(0), "Wrong address");
         _roles[_msgSender()] = bytes32(0);
         _roles[_newAddress] = PLATFORM;
         emit AddingValidator(_newAddress);
@@ -427,15 +428,18 @@ contract NFTArt is ERC721Enumerable, Ownable{
                             VIEWERS
     //////////////////////////////////////////////////////////////*/
 
-    function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _totalPrice) {
-        uint256 currentRoyalty = 0;     // in 0.01% of a price
-
+    function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _earning, uint256 _minterRoyalty, uint256 _authorRoyalty) {
         // A minter royalty decreases with each transaction
-        currentRoyalty += minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
+        if(minterRoyaltyN - _tokenTransactions[_tokenID] > 0) {
+            _minterRoyalty = minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
+        }
+        else {
+            _minterRoyalty = 0;
+        }
         // An author royalty decreases with a price
-        currentRoyalty += 10_000 / (getTokenPrice(_tokenID)) + 20;
+        _authorRoyalty = 10_000 / thirdRoot(getTokenPrice(_tokenID), 0, 10) + 20;
 
-        _totalPrice = _tokenPrice[_tokenID] * (10_000 - currentRoyalty - sellFeePercentage) / 10_000;
+        _earning = _tokenPrice[_tokenID] * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
     }
 
     function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
@@ -493,5 +497,35 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function _baseURI() internal view override returns (string memory) {
         return baseTokenURI;
+    }
+
+    // calculates a^(1/3) to dp decimal places
+    // maxIts bounds the number of iterations performed
+    function thirdRoot(uint _a, uint _dp, uint _maxIts) pure public returns(uint) {
+        // The scale factor is a crude way to turn everything into integer calcs.
+        // Actually do (a * (10 ^ ((dp + 1) * 3))) ^ (1/3)
+        // We calculate to one extra dp and round at the end
+        uint one = 10 ** (1 + _dp);
+        uint a0 = one ** 3 * _a;
+
+        // Initial guess: 1.0
+        uint xNew = one;
+
+        uint iter = 0;
+        uint x = xNew;
+
+        while (xNew != x && iter < _maxIts) {
+            x = xNew;
+            uint t0 = x ** 2;
+            if (x * t0 > a0) {
+                xNew = x - (x - a0 / t0) / 3;
+            } else {
+                xNew = x + (a0 / t0 - x) / 3;
+            }
+            ++iter;
+        }
+
+        // Round to nearest in the last dp.
+        return (xNew + 5) / 10;
     }
 }
