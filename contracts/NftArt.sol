@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.7;
+pragma solidity 0.8.9;
 
 import "./access/Ownable.sol";
 import "./token/ERC721/extensions/ERC721Enumerable.sol";
@@ -22,18 +22,14 @@ contract NFTArt is ERC721Enumerable, Ownable{
     bool public startSale = false;
     uint256 public maxSupply = 30;
 
-    uint256 private royaltyPercentage = 0;      // in 0.01%
-    uint256 private royaltyDecrease = 0;        // in 0.01%
-    uint256 private mintFeePercentage = 0;      // in 0.01%
-    uint256 private mintFees = 0;               // accumulated fees
-    uint256 private sellFeePercentage = 0;      // in 0.01%
-    uint256 private sellFees = 0;               // accumulated fees
-    address constant public FEE_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
+    uint256 public mintFeePercentage = 0;      // in 0.01%
+    uint256 public mintFees = 0;               // accumulated fees
+    uint256 public sellFeePercentage = 0;      // in 0.01%
+    uint256 public sellFees = 0;               // accumulated fees
+    address public feeAddress = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     
     uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
     uint256 private minterRoyaltyN = 0;      // in 0.01%
-
-    bool private royaltyType = true;            //true - royalty decrease with a transactions number, false - royalty decrease with a token price    
     
     address[] private beneficiaries;
     uint256[] private rates;
@@ -41,10 +37,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     string public baseTokenURI;
 
-    bytes32 constant private VALIDATOR = keccak256("VALIDATOR");
-    bytes32 constant private ADMIN = keccak256("ADMIN");
-    bytes32 constant private AUTHOR = keccak256("AUTHOR");
-    bytes32 constant private PLATFORM = keccak256("PLATFORM");
+    bytes32 constant public VALIDATOR = keccak256("VALIDATOR");
+    bytes32 constant public ADMIN = keccak256("ADMIN");
+    bytes32 constant public AUTHOR = keccak256("AUTHOR");
+    bytes32 constant public PLATFORM = keccak256("PLATFORM");
 
     event AddingValidator(address _validatorAddress);
     event RemoveValidator(address _validatorAddress);
@@ -65,8 +61,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     DATA STRUCTURES 
     //////////////////////////////////////////////////////////////*/
     
-    mapping (address => bytes32) private _roles;
-    mapping (uint256 => address) private _minters;
+    mapping (address => bytes32) public roles;
+    mapping (uint256 => address) public minters;
 
     mapping (uint256 => uint256) public mintPrices;
     mapping (uint256 => uint256) public presalePrices;
@@ -85,22 +81,22 @@ contract NFTArt is ERC721Enumerable, Ownable{
     mapping (uint256 => uint256) private _tokenTransactions;
     
     modifier onlyAdmin() {
-        require(_roles[_msgSender()] == ADMIN, "caller is not an admin!");
+        require(roles[_msgSender()] == ADMIN, "Caller is not an admin");
         _;
     }
 
     modifier onlyValidator() {
-        require(_roles[_msgSender()] == VALIDATOR, "caller is not a validator!");
+        require(roles[_msgSender()] == VALIDATOR, "Caller is not a validator");
         _;
     }
 
     modifier onlyAuthor() {
-        require(_roles[_msgSender()] == AUTHOR, "caller is not an author!");
+        require(roles[_msgSender()] == AUTHOR, "Caller is not an author!");
         _;
     }
 
     modifier onlyPlatform() {
-        require(_roles[_msgSender()] == PLATFORM, "caller is not a platform!");
+        require(roles[_msgSender()] == PLATFORM, "Caller is not a platform");
         _;
     }
 
@@ -120,7 +116,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
         _addAuthor(_authors);
 
-        _roles[_platformAddress] = PLATFORM;
+        roles[_platformAddress] = PLATFORM;
 
         _premint();
         
@@ -133,39 +129,39 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
     
     function addValidator(address _address) external onlyOwner {
-        _roles[_address] = VALIDATOR;
+        roles[_address] = VALIDATOR;
         emit AddingValidator(_address);
     }
 
     function removeValidator(address _address) external onlyOwner {
-        require(_roles[_address] == VALIDATOR, "This is not a validator");
-        _roles[_address] = 0;
+        require(roles[_address] == VALIDATOR, "This is not a validator");
+        roles[_address] = 0;
         emit RemoveValidator(_address);
     }
 
     function addAdmin(address _address) external onlyOwner {
-        _roles[_address] = ADMIN;
+        roles[_address] = ADMIN;
         emit AddingAdmin(_address);
     }
 
     function removeAdmin(address _address) external onlyOwner {
-        require(_roles[_address] == ADMIN, "This is not an admin");
-        _roles[_address] = 0;
+        require(roles[_address] == ADMIN, "This is not an admin");
+        roles[_address] = 0;
         emit RemoveAdmin(_address);
     }
 
     function addAuthor(address _address) external onlyOwner {
-        _roles[_address] = AUTHOR;
+        roles[_address] = AUTHOR;
         emit AddingAuthor(_address);
     }
 
     function removeAuthor(address _address) external onlyOwner {
-        require(_roles[_address] == AUTHOR, "This is not an author");
-        _roles[_address] = 0;
+        require(roles[_address] == AUTHOR, "This is not an author");
+        roles[_address] = 0;
         emit RemoveAuthor(_address);
     }
 
-    function setBaseURI(string calldata baseURI) public onlyOwner {
+    function setBaseURI(string calldata baseURI) external onlyOwner {
         baseTokenURI = baseURI;
         emit ChangeBaseURI(baseURI);
     }
@@ -186,15 +182,15 @@ contract NFTArt is ERC721Enumerable, Ownable{
         presaleEligible[_address] = false;
     }
 
-    function setPresaleMaxSupply(uint256 _presaleMaxSupply) public onlyOwner {
+    function setPresaleMaxSupply(uint256 _presaleMaxSupply) external onlyOwner {
         presaleMaxSupply = _presaleMaxSupply;
     }
 
-    function setPresaleMaxMint(uint256 _presaleMaxMint) public onlyOwner {
+    function setPresaleMaxMint(uint256 _presaleMaxMint) external onlyOwner {
         presaleMaxMint = _presaleMaxMint;
     }
 
-    function setPresaleMaxPerMint(uint256 _presaleMaxPerMint) public onlyOwner {
+    function setPresaleMaxPerMint(uint256 _presaleMaxPerMint) external onlyOwner {
         presaleMaxPerMint = _presaleMaxPerMint;
     }
 
@@ -293,7 +289,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         mintFees += totalPrice * mintFeePercentage / 10_000;
 
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            _minters[_tokenIDs[i]] = minter;
+            minters[_tokenIDs[i]] = minter;
             _safeMint(minter, _tokenIDs[i]);
         }
 
@@ -314,7 +310,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
         address minter = _msgSender();
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            _minters[_tokenIDs[i]] = minter;
+            minters[_tokenIDs[i]] = minter;
             _safeMint(minter, _tokenIDs[i]);
         }
 
@@ -368,7 +364,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         sellFees += getTokenPrice(_tokenID) * sellFeePercentage / 10_000;
 
         uint256 _earning;
-        address _tokenMinter = _minters[_tokenID];
+        address _tokenMinter = minters[_tokenID];
         uint256 _minterRoyalty;
         (_earning, _minterRoyalty,) = getTokenEarnings(_tokenID);
         payable(_previousOwner).transfer(_earning);
@@ -380,15 +376,15 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function widthdraw() public {
-        payable(FEE_ADDRESS).transfer(sellFees + mintFees);
+        uint256 fees = sellFees + mintFees;
         sellFees = 0;
         mintFees = 0;
+        payable(feeAddress).transfer(fees);
 
         uint256 _amount = address(this).balance;
         for (uint256 i = 0; i < beneficiaries.length; i++) {
             uint256 share = (_amount * rates[i]) / 100;
-            (bool success, ) = beneficiaries[i].call{value: share}("");
-            require(success, "Failed to transfer Ether");
+            payable(beneficiaries[i]).transfer(share);
         } 
     }
 
@@ -416,10 +412,15 @@ contract NFTArt is ERC721Enumerable, Ownable{
         mintFeePercentage = _feePercentage;     // in 0.01%
     }
 
+    function changeFeeAddress(address _newFeeAddress) external onlyPlatform {
+        require(_newFeeAddress != address(0), "Wrong address");
+        feeAddress = _newFeeAddress;
+    }
+
     function changePlatformAddress(address _newAddress) external onlyPlatform {
         require(_newAddress != address(0), "Wrong address");
-        _roles[_msgSender()] = bytes32(0);
-        _roles[_newAddress] = PLATFORM;
+        roles[_msgSender()] = bytes32(0);
+        roles[_newAddress] = PLATFORM;
         emit AddingValidator(_newAddress);
     }
 
@@ -447,15 +448,15 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function isAuthor(address _user) public view returns(bool) {
-        return _roles[_user] == AUTHOR;
+        return roles[_user] == AUTHOR;
     }
 
     function isAdmin(address _user) public view returns(bool) {
-        return _roles[_user] == ADMIN;
+        return roles[_user] == ADMIN;
     }
 
     function isValidator(address _user) public view returns(bool) {
-        return _roles[_user] == VALIDATOR;
+        return roles[_user] == VALIDATOR;
     }
 
     function getMintFeePercentage() public view returns(uint256) {
@@ -485,7 +486,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     
     function _addAuthor(address[] memory _addresses) private {
         for (uint256 i = 0; i < _addresses.length; i++) {
-            _roles[_addresses[i]] = AUTHOR;
+            roles[_addresses[i]] = AUTHOR;
         }
     }
 
@@ -501,7 +502,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     // calculates a^(1/3) to dp decimal places
     // maxIts bounds the number of iterations performed
-    function thirdRoot(uint _a, uint _dp, uint _maxIts) pure public returns(uint) {
+    function thirdRoot(uint _a, uint _dp, uint _maxIts) public pure returns(uint) {
         // The scale factor is a crude way to turn everything into integer calcs.
         // Actually do (a * (10 ^ ((dp + 1) * 3))) ^ (1/3)
         // We calculate to one extra dp and round at the end
