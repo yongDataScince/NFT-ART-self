@@ -30,6 +30,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     
     uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
     uint256 private minterRoyaltyN = 0;      // in 0.01%
+    uint256 private authorRoyaltyPercentage = 0;    // in 0.01%
     
     address[] private beneficiaries;
     uint256[] private rates;
@@ -224,13 +225,15 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function changeMinterRoyalty(
-        uint256 _royaltyPercentage,
-        uint256 _numberOfTransactions)
+        uint256 _minterRoyaltyPercentage,
+        uint256 _numberOfTransactions,
+        uint256 _authorRoyaltyPercentage)
         external
         onlyAdmin
         {
-        minterRoyaltyPercentage = _royaltyPercentage;     // in 0.01% of a price
-        minterRoyaltyN = _numberOfTransactions;           // in 0.01% of a price
+        minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
+        minterRoyaltyN = _numberOfTransactions;                 // in 0.01% of a price
+        authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
     }
 
     function setAuthorsRoyaltyDistribution(
@@ -430,15 +433,21 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _earning, uint256 _minterRoyalty, uint256 _authorRoyalty) {
+        uint256 _price = getTokenPrice(_tokenID);
         // A minter royalty decreases with each transaction
         if(minterRoyaltyN - _tokenTransactions[_tokenID] > 0) {
-            _minterRoyalty = minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
+            _minterRoyalty = _price * minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
         }
         else {
             _minterRoyalty = 0;
         }
         // An author royalty decreases with a price
-        _authorRoyalty = 10_000 / thirdRoot(getTokenPrice(_tokenID), 0, 10) + 20;
+        if(getTokenPrice(_tokenID) < 50_000 ether) {
+            _authorRoyalty = _price * authorRoyaltyPercentage / 10_000;
+        }
+        else {
+            _authorRoyalty = 10_000 / thirdRoot(getTokenPrice(_tokenID), 0, 10) + 20;
+        }
 
         _earning = _tokenPrice[_tokenID] * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
     }
