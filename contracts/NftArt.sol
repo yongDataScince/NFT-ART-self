@@ -31,6 +31,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
     uint256 private minterRoyaltyN = 0;      // in 0.01%
     uint256 private authorRoyaltyPercentage = 0;    // in 0.01%
+    uint256 private fiatRate = 0;    // for athor royalty  
     
     address[] private beneficiaries;
     uint256[] private rates;
@@ -198,7 +199,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function changePresaleMintPrice(uint256[] calldata _ids, uint256[] calldata _prices) external onlyOwner {
         require(_ids.length == _prices.length, "Mismatched arrays length");
         for (uint256 i = 0; i < _ids.length; i++) {
-            _tokenPrice[_ids[i]] = _prices[i];
+            presalePrices[_ids[i]] = _prices[i];
         }
     }
 
@@ -210,7 +211,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function changeMintPrice(uint256[] calldata _ids, uint256[] calldata _prices) external onlyOwner {
         require(_ids.length == _prices.length, "Mismatched arrays length");
         for (uint256 i = 0; i < _ids.length; i++) {
-            presalePrices[_ids[i]] = _prices[i];
+            mintPrices[_ids[i]] = _prices[i];
         }
     }
 
@@ -443,10 +444,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         }
         // An author royalty decreases with a price
         if(getTokenPrice(_tokenID) < 50_000 ether) {
-            _authorRoyalty = _price * authorRoyaltyPercentage / 10_000;
+            _authorRoyalty = _price * fiatRate * authorRoyaltyPercentage / 10_000;
         }
         else {
-            _authorRoyalty = 10_000 / thirdRoot(getTokenPrice(_tokenID), 0, 10) + 20;
+            _authorRoyalty = 10_000 / thirdRoot(_price * fiatRate, 0, 10) + 20;
         }
 
         _earning = _tokenPrice[_tokenID] * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
