@@ -28,20 +28,20 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public sellFees = 0;               // accumulated fees
     address public feeAddress = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     
-    uint256 private minterRoyaltyPercentage = 0;    // in 0.01%
-    uint256 private minterRoyaltyN = 0;      // in 0.01%
-    uint256 private authorRoyaltyPercentage = 0;    // in 0.01%
-    uint256 private fiatRate = 0;    // for athor royalty  
+    uint256 public minterRoyaltyPercentage = 0;    // in 0.01%
+    uint256 public minterRoyaltyN = 0;             // in 0.01%
+    uint256 public authorRoyaltyPercentage = 0;    // in 0.01%
+    bool public authorRoyaltyType;                 // false - constant percentage, true - decreasing 
+    uint256 public fiatRate = 0;                   // for athor royalty, 1:1 ratio equals 1 ether or 10^18
     
-    address[] private beneficiaries;
-    uint256[] private rates;
-    uint256 constant private MAX_RATE = 100;
+    address[] private authors;
+    uint256[] private rates;        // in 0.01%
+    uint256 constant private MAX_RATE = 10_000; // in 0.01%
 
     string public baseTokenURI;
 
     bytes32 constant public VALIDATOR = keccak256("VALIDATOR");
     bytes32 constant public ADMIN = keccak256("ADMIN");
-    bytes32 constant public AUTHOR = keccak256("AUTHOR");
     bytes32 constant public PLATFORM = keccak256("PLATFORM");
 
     event AddingValidator(address _validatorAddress);
@@ -92,11 +92,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _;
     }
 
-    modifier onlyAuthor() {
-        require(roles[_msgSender()] == AUTHOR, "Caller is not an author!");
-        _;
-    }
-
     modifier onlyPlatform() {
         require(roles[_msgSender()] == PLATFORM, "Caller is not a platform");
         _;
@@ -109,14 +104,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     constructor(
         string memory baseURI,
-        address[] memory _authors,
         address _platformAddress,
         string memory _name,
         string memory _symbol)
      ERC721(_name,_symbol) {
         baseTokenURI = baseURI;
-
-        _addAuthor(_authors);
 
         roles[_platformAddress] = PLATFORM;
 
@@ -150,17 +142,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(roles[_address] == ADMIN, "This is not an admin");
         roles[_address] = 0;
         emit RemoveAdmin(_address);
-    }
-
-    function addAuthor(address _address) external onlyOwner {
-        roles[_address] = AUTHOR;
-        emit AddingAuthor(_address);
-    }
-
-    function removeAuthor(address _address) external onlyOwner {
-        require(roles[_address] == AUTHOR, "This is not an author");
-        roles[_address] = 0;
-        emit RemoveAuthor(_address);
     }
 
     function setBaseURI(string calldata baseURI) external onlyOwner {
@@ -225,16 +206,18 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     ADMIN FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    function changeMinterRoyalty(
+    function changeRoyalties(
         uint256 _minterRoyaltyPercentage,
         uint256 _numberOfTransactions,
-        uint256 _authorRoyaltyPercentage)
+        uint256 _authorRoyaltyPercentage,
+        bool _authorRoyaltyType)
         external
         onlyAdmin
         {
         minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
         minterRoyaltyN = _numberOfTransactions;                 // in 0.01% of a price
         authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
+        authorRoyaltyType = _authorRoyaltyType;                 // false - constant percentage, true - decreasing 
     }
 
     function setAuthorsRoyaltyDistribution(
@@ -243,15 +226,20 @@ contract NFTArt is ERC721Enumerable, Ownable{
         external
         onlyAdmin
         {
-        require(_addresses.length == _rates.length, "different array sizes");
+        require(_addresses.length == _rates.length, "Different array sizes");
         uint256 totalRate = 0;
         for (uint256 i = 0; i < _rates.length; i++) {
-            totalRate += _rates[i];
+            totalRate += _rates[i]; // in 0.01%
         }
-        require(totalRate <= MAX_RATE, "totalRate cannot be more than 100");
+        require(totalRate <= MAX_RATE, "Sum of rates cannot be grater than 100");
 
         rates = _rates;
-        beneficiaries = _addresses;
+        authors = _addresses;
+    }
+
+    function setFiatRate(uint256 _fiatRate) external onlyOwner {
+        require(_fiatRate != 0, "Rate should be greater than zero");
+        fiatRate = _fiatRate;
     }
 
 
@@ -260,17 +248,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function verify(uint256 _id) external onlyValidator {
-        require(_lotStates[_id] == 1, "invalid lot status");
+        require(_lotStates[_id] == 1, "Invalid lot status");
         _lotStates[_id] = 2;
         emit ChangeStateLot(_id, 2);
     }
-
-
-    /*///////////////////////////////////////////////////////////////
-                    AUTHOR FUNCTIONS
-    //////////////////////////////////////////////////////////////*/
-
-    
 
 
     /*///////////////////////////////////////////////////////////////
@@ -379,17 +360,17 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit BuyToken(_tokenID);
     }
 
-    function widthdraw() public {
+    function withdraw(address[] calldata _receivers) public {
         uint256 fees = sellFees + mintFees;
         sellFees = 0;
         mintFees = 0;
         payable(feeAddress).transfer(fees);
 
         uint256 _amount = address(this).balance;
-        for (uint256 i = 0; i < beneficiaries.length; i++) {
-            uint256 share = (_amount * rates[i]) / 100;
-            payable(beneficiaries[i]).transfer(share);
-        } 
+        for (uint256 i = 0; i < authors.length; i++) {
+            uint256 share = (_amount * rates[i]) / 10_000;
+            payable(authors[i]).transfer(share);
+        }
     }
 
     function safeTransferFrom(
@@ -434,31 +415,31 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _earning, uint256 _minterRoyalty, uint256 _authorRoyalty) {
-        uint256 _price = getTokenPrice(_tokenID);
+        uint256 _price = _tokenPrice[_tokenID];
+
+        _minterRoyalty = 0;
         // A minter royalty decreases with each transaction
-        if(minterRoyaltyN - _tokenTransactions[_tokenID] > 0) {
-            _minterRoyalty = _price * minterRoyaltyPercentage * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN;
-        }
-        else {
-            _minterRoyalty = 0;
-        }
-        // An author royalty decreases with a price
-        if(getTokenPrice(_tokenID) < 50_000 ether) {
-            _authorRoyalty = _price * fiatRate * authorRoyaltyPercentage / 10_000;
-        }
-        else {
-            _authorRoyalty = 10_000 / thirdRoot(_price * fiatRate, 0, 10) + 20;
+        if(minterRoyaltyN > _tokenTransactions[_tokenID]) {
+            uint256 percentage = ((minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN) * minterRoyaltyPercentage;  // in 0.01%
+            _minterRoyalty = _price * percentage / 10_000;
         }
 
-        _earning = _tokenPrice[_tokenID] * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
+        uint256 _fiatPrice = _price * fiatRate / 1 ether;
+        // An author royalty 
+        // Decreases with a price
+        if(authorRoyaltyType && _fiatPrice > 5000 ether) {
+            _authorRoyalty = _fiatPrice * (10_000 / thirdRoot(_fiatPrice, 0, 10) + 20) / 10_000;
+        }
+        // Contant
+        else {
+            _authorRoyalty = _fiatPrice * authorRoyaltyPercentage / 10_000;
+        }
+
+        _earning = _price * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
     }
 
     function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
         return _tokenPrice[_tokenID];
-    }
-
-    function isAuthor(address _user) public view returns(bool) {
-        return roles[_user] == AUTHOR;
     }
 
     function isAdmin(address _user) public view returns(bool) {
@@ -477,12 +458,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
         return sellFeePercentage;   // in 0.01%
     }
 
-    function getBeneficiaries() public view returns(address[] memory) {
-        return beneficiaries;
+    function getAuthors() public view returns(address[] memory) {
+        return authors;
     }
 
     function getRates() public view returns(uint256[] memory) {
-        return rates;
+        return rates;       // in 0.01%
     }
 
     function getLotStates(uint256 _id) public view returns (uint256) {
@@ -493,12 +474,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
     /*///////////////////////////////////////////////////////////////
                             INTERNAL HELPERS
     //////////////////////////////////////////////////////////////*/
-    
-    function _addAuthor(address[] memory _addresses) private {
-        for (uint256 i = 0; i < _addresses.length; i++) {
-            roles[_addresses[i]] = AUTHOR;
-        }
-    }
 
     function _premint() private {
         for (uint256 i = 0; i < AMOUNT_PREMINT; i++) {
