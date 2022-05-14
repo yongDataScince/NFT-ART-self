@@ -387,7 +387,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit BuyToken(_tokenID);
     }
 
-    function withdraw(address[] calldata _receivers) public {
+    function withdraw() public {
         uint256 fees = sellFees + mintFees;
         sellFees = 0;
         mintFees = 0;
@@ -444,6 +444,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function isAdmin(address _user) public view returns(bool) {
         return roles[_user] == ADMIN;
+    }
+
+    function isPlatform(address _user) public view returns(bool) {
+        return roles[_user] == PLATFORM;
     }
 
     function isValidator(address _user) public view returns(bool) {
