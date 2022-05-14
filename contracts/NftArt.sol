@@ -13,8 +13,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     address constant public PREMINT_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     uint256 constant public AMOUNT_PREMINT = 10;
+
     bool public startPresale = false;
-    
     uint256 public presaleMaxSupply = 20;
     uint256 public presaleMaxPerMint = 8;
     uint256 public presaleMaxMint = 11;    
@@ -29,7 +29,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     address public feeAddress = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     
     uint256 public minterRoyaltyPercentage = 0;    // in 0.01%
-    uint256 public minterRoyaltyN = 0;             // in 0.01%
+    uint256 public minterRoyaltyN = 0;             // max number of transactions to gain royalty
     uint256 public authorRoyaltyPercentage = 0;    // in 0.01%
     bool public authorRoyaltyType;                 // false - constant percentage, true - decreasing 
     uint256 public fiatRate = 0;                   // for athor royalty, 1:1 ratio equals 1 ether or 10^18
@@ -215,7 +215,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         onlyAdmin
         {
         minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
-        minterRoyaltyN = _numberOfTransactions;                 // in 0.01% of a price
+        minterRoyaltyN = _numberOfTransactions;                 // max number of transactions to gain royalty
         authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
         authorRoyaltyType = _authorRoyaltyType;                 // false - constant percentage, true - decreasing 
     }
@@ -237,9 +237,36 @@ contract NFTArt is ERC721Enumerable, Ownable{
         authors = _addresses;
     }
 
-    function setFiatRate(uint256 _fiatRate) external onlyOwner {
+    function setFiatRate(uint256 _fiatRate) external onlyAdmin {
         require(_fiatRate != 0, "Rate should be greater than zero");
         fiatRate = _fiatRate;
+    }
+
+
+    /*///////////////////////////////////////////////////////////////
+                        PLATFORM FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    function setMintFeePercentage(uint256 _feePercentage) external onlyPlatform {
+        require(_feePercentage <= 4000, "Wrong value");
+        mintFeePercentage = _feePercentage;     // in 0.01%
+    }
+
+    function setSellFeePercentage(uint256 _feePercentage) external onlyPlatform {
+        require(_feePercentage <= 300, "Wrong value");
+        sellFeePercentage = _feePercentage;     // in 0.01%
+    }
+
+    function changeFeeAddress(address _newFeeAddress) external onlyPlatform {
+        require(_newFeeAddress != address(0), "Wrong address");
+        feeAddress = _newFeeAddress;
+    }
+
+    function changePlatformAddress(address _newAddress) external onlyPlatform {
+        require(_newAddress != address(0), "Wrong address");
+        roles[_msgSender()] = bytes32(0);
+        roles[_newAddress] = PLATFORM;
+        emit AddingValidator(_newAddress);
     }
 
 
@@ -384,33 +411,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
 
     /*///////////////////////////////////////////////////////////////
-                        PLATFORM FUNCTIONS
-    //////////////////////////////////////////////////////////////*/
-
-    function setSellFeePercentage(uint256 _feePercentage) external onlyPlatform {
-        require(_feePercentage <= 300, "Wrong value");
-        sellFeePercentage = _feePercentage;     // in 0.01%
-    }
-
-    function setMintFeePercentage(uint256 _feePercentage) external onlyPlatform {
-        require(_feePercentage <= 4000, "Wrong value");
-        mintFeePercentage = _feePercentage;     // in 0.01%
-    }
-
-    function changeFeeAddress(address _newFeeAddress) external onlyPlatform {
-        require(_newFeeAddress != address(0), "Wrong address");
-        feeAddress = _newFeeAddress;
-    }
-
-    function changePlatformAddress(address _newAddress) external onlyPlatform {
-        require(_newAddress != address(0), "Wrong address");
-        roles[_msgSender()] = bytes32(0);
-        roles[_newAddress] = PLATFORM;
-        emit AddingValidator(_newAddress);
-    }
-
-
-    /*///////////////////////////////////////////////////////////////
                             VIEWERS
     //////////////////////////////////////////////////////////////*/
 
@@ -450,14 +450,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
         return roles[_user] == VALIDATOR;
     }
 
-    function getMintFeePercentage() public view returns(uint256) {
-        return mintFeePercentage;   // in 0.01%
-    }
-
-    function getSellFeePercentage() public view returns(uint256) {
-        return sellFeePercentage;   // in 0.01%
-    }
-
     function getAuthors() public view returns(address[] memory) {
         return authors;
     }
@@ -487,22 +479,22 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     // calculates a^(1/3) to dp decimal places
     // maxIts bounds the number of iterations performed
-    function thirdRoot(uint _a, uint _dp, uint _maxIts) public pure returns(uint) {
+    function thirdRoot(uint256 _a, uint256 _dp, uint256 _maxIts) public pure returns(uint256) {
         // The scale factor is a crude way to turn everything into integer calcs.
         // Actually do (a * (10 ^ ((dp + 1) * 3))) ^ (1/3)
         // We calculate to one extra dp and round at the end
-        uint one = 10 ** (1 + _dp);
-        uint a0 = one ** 3 * _a;
+        uint256 one = 10 ** (1 + _dp);
+        uint256 a0 = one ** 3 * _a;
 
         // Initial guess: 1.0
-        uint xNew = one;
+        uint256 xNew = one;
 
-        uint iter = 0;
-        uint x = xNew;
+        uint256 iter = 0;
+        uint256 x = xNew;
 
         while (xNew != x && iter < _maxIts) {
             x = xNew;
-            uint t0 = x ** 2;
+            uint256 t0 = x ** 2;
             if (x * t0 > a0) {
                 xNew = x - (x - a0 / t0) / 3;
             } else {
