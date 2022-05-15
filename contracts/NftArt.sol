@@ -415,26 +415,27 @@ contract NFTArt is ERC721Enumerable, Ownable{
     //////////////////////////////////////////////////////////////*/
 
     function getTokenEarnings(uint256 _tokenID) public view returns(uint256 _earning, uint256 _minterRoyalty, uint256 _authorRoyalty) {
-        uint256 _price = _tokenPrice[_tokenID];
+        uint256 _price = getTokenPrice(_tokenID);
 
         _minterRoyalty = 0;
         // A minter royalty decreases with each transaction until minterRoyaltyN is reached
         if(minterRoyaltyN > _tokenTransactions[_tokenID]) {
-            _minterRoyalty = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN)) / 1000;  // in 0.01%
+            uint256 percentage = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN)) / 1000;  // in 0.01%
+            _minterRoyalty = _price * percentage / 10_000;
         }
 
         uint256 _fiatPrice = _price * fiatRate / 1 ether;
         // An author royalty 
         // Decreases with a price if _fiatPrice is more 5000
         if(authorRoyaltyType && _fiatPrice > 5000 ether) {
-            _authorRoyalty = 10_000 / thirdRoot(_fiatPrice, 0, 10) + 20;
+            _authorRoyalty = _price * (10_000 / thirdRoot(_fiatPrice, 0, 10) + 20) / 10_000;
         }
         // Constant otherwise
         else {
-            _authorRoyalty = authorRoyaltyPercentage;
+            _authorRoyalty = _price * authorRoyaltyPercentage / 10_000;
         }
 
-        _earning = _price * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
+        _earning = _price * (10_000 - sellFeePercentage) / 10_000 - _minterRoyalty - _authorRoyalty;
     }
 
     function getTokenPrice(uint256 _tokenID) public view returns(uint256 _totalPrice) {
