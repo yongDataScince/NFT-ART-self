@@ -44,12 +44,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
     bytes32 constant public ADMIN = keccak256("ADMIN");
     bytes32 constant public PLATFORM = keccak256("PLATFORM");
 
-    event AddingValidator(address _validatorAddress);
-    event RemoveValidator(address _validatorAddress);
-    event AddingAuthor(address authorAddress);
-    event RemoveAuthor(address authorAddress);
+    event AddingValidator(address validatorAddress);
+    event RemoveValidator(address validatorAddress);
     event AddingAdmin(address adminAddress);
     event RemoveAdmin(address adminAddress);
+    event ChangePlatform(address platformAddress);
     event ChangeBaseURI(string baseURI); 
     event ChangeStateLot(uint256 lot, uint256 value);
     event PresaleMint(address minter, uint256[] tokensID);
@@ -156,7 +155,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function addToPresale(address[] calldata _addresses) external onlyOwner {
         for (uint256 i = 0; i < _addresses.length; i++) {
-            require(_addresses[i] != address(0), "Cannot add null address");
+            require(_addresses[i] != address(0), "Cannot add a null address");
             presaleEligible[_addresses[i]] = true;
         }
     }
@@ -229,9 +228,10 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(_addresses.length == _rates.length, "Different array sizes");
         uint256 totalRate = 0;
         for (uint256 i = 0; i < _rates.length; i++) {
+            require(_addresses[i] != address(0), "Cannot add a null address");
             totalRate += _rates[i]; // in 0.01%
         }
-        require(totalRate <= MAX_RATE, "Sum of rates cannot be grater than 100");
+        require(totalRate <= MAX_RATE, "Rates sum cannot be grater than 100");
 
         rates = _rates;
         authors = _addresses;
@@ -239,7 +239,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function setFiatRate(uint256 _fiatRate) external onlyAdmin {
         require(_fiatRate != 0, "Rate should be greater than zero");
-        fiatRate = _fiatRate;
+        fiatRate = _fiatRate;       // for athor royalty, 1:1 ratio equals 1 ether or 10^18
     }
 
 
@@ -266,7 +266,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(_newAddress != address(0), "Wrong address");
         roles[_msgSender()] = bytes32(0);
         roles[_newAddress] = PLATFORM;
-        emit AddingValidator(_newAddress);
+        emit ChangePlatform(_newAddress);
     }
 
 
@@ -291,6 +291,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(presaleEligible[minter], "You are not eligible for the presale");
         require(totalSupply() + _tokenIDs.length < AMOUNT_PREMINT + presaleMaxSupply, "All presale tokens have been minted");
         require(balanceOf(minter) + _tokenIDs.length < presaleMaxMint, "Purchase exceeds max allowed for presale");
+        require(_tokenIDs.length <= presaleMaxPerMint, "You exceed max tokens allowed per mint");
         
         uint256 totalPrice = 0;
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
@@ -310,7 +311,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function mint(uint256[] calldata _tokenIDs) external payable {
         require(startSale, "Sale has not started");
-        require(totalSupply() + _tokenIDs.length < maxSupply, "All tokens have been minted");
+        require(totalSupply() + _tokenIDs.length <= maxSupply, "All tokens have been minted");
 
         uint256 totalPrice = 0;
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
@@ -337,7 +338,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         
         _tokenPrice[_tokenID] = _priceWei;
         
-        if (selfValidate == true) {
+        if (selfValidate) {
             _lotStates[_tokenID] = 3;
         }
         else {
@@ -347,18 +348,17 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _tokensPreviousOwner[_tokenID] = _owner;
         _transfer(_owner, address(this), _tokenID);
 
-        emit ListToken(_msgSender(), _tokenID, _priceWei, selfValidate);
+        emit ListToken(_owner, _tokenID, _priceWei, selfValidate);
     }
 
-    function revokeToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
+    function revokeToken(uint256 _tokenID) external ifTockenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] != 0, "Token is not listed");
         require(_previousOwner == _msgSender(), "You can only revoke your own token");
 
         _lotStates[_tokenID] = 0;
-        _tokenPrice[_tokenID] = 0;
-        _transfer(address(this), _msgSender(), _tokenID);
+        _transfer(address(this), _previousOwner, _tokenID);
 
         emit RevokeToken(_tokenID);
     }
@@ -376,8 +376,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
         sellFees += getTokenPrice(_tokenID) * sellFeePercentage / 10_000;
 
         uint256 _earning;
-        address _tokenMinter = minters[_tokenID];
         uint256 _minterRoyalty;
+        address _tokenMinter = minters[_tokenID];
         (_earning, _minterRoyalty,) = getTokenEarnings(_tokenID);
         payable(_previousOwner).transfer(_earning);
         payable(_tokenMinter).transfer(_minterRoyalty);
@@ -387,7 +387,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit BuyToken(_tokenID);
     }
 
-    function withdraw() public {
+    function withdraw() external {
         uint256 fees = sellFees + mintFees;
         sellFees = 0;
         mintFees = 0;
@@ -418,21 +418,20 @@ contract NFTArt is ERC721Enumerable, Ownable{
         uint256 _price = _tokenPrice[_tokenID];
 
         _minterRoyalty = 0;
-        // A minter royalty decreases with each transaction
+        // A minter royalty decreases with each transaction until minterRoyaltyN is reached
         if(minterRoyaltyN > _tokenTransactions[_tokenID]) {
-            uint256 percentage = ((minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN) * minterRoyaltyPercentage;  // in 0.01%
-            _minterRoyalty = _price * percentage / 10_000;
+            _minterRoyalty = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN)) / 1000;  // in 0.01%
         }
 
         uint256 _fiatPrice = _price * fiatRate / 1 ether;
         // An author royalty 
-        // Decreases with a price
+        // Decreases with a price if _fiatPrice is more 5000
         if(authorRoyaltyType && _fiatPrice > 5000 ether) {
-            _authorRoyalty = _fiatPrice * (10_000 / thirdRoot(_fiatPrice, 0, 10) + 20) / 10_000;
+            _authorRoyalty = 10_000 / thirdRoot(_fiatPrice, 0, 10) + 20;
         }
-        // Contant
+        // Constant otherwise
         else {
-            _authorRoyalty = _fiatPrice * authorRoyaltyPercentage / 10_000;
+            _authorRoyalty = authorRoyaltyPercentage;
         }
 
         _earning = _price * (10_000 - _minterRoyalty - _authorRoyalty - sellFeePercentage) / 10_000;
@@ -442,27 +441,27 @@ contract NFTArt is ERC721Enumerable, Ownable{
         return _tokenPrice[_tokenID];
     }
 
-    function isAdmin(address _user) public view returns(bool) {
+    function isAdmin(address _user) external view returns(bool) {
         return roles[_user] == ADMIN;
     }
 
-    function isPlatform(address _user) public view returns(bool) {
+    function isPlatform(address _user) external view returns(bool) {
         return roles[_user] == PLATFORM;
     }
 
-    function isValidator(address _user) public view returns(bool) {
+    function isValidator(address _user) external view returns(bool) {
         return roles[_user] == VALIDATOR;
     }
 
-    function getAuthors() public view returns(address[] memory) {
+    function getAuthors() external view returns(address[] memory) {
         return authors;
     }
 
-    function getRates() public view returns(uint256[] memory) {
+    function getRates() external view returns(uint256[] memory) {
         return rates;       // in 0.01%
     }
 
-    function getLotStates(uint256 _id) public view returns (uint256) {
+    function getLotState(uint256 _id) external view returns (uint256) {
         return _lotStates[_id];
     }
 
@@ -483,7 +482,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     // calculates a^(1/3) to dp decimal places
     // maxIts bounds the number of iterations performed
-    function thirdRoot(uint256 _a, uint256 _dp, uint256 _maxIts) public pure returns(uint256) {
+    function thirdRoot(uint256 _a, uint256 _dp, uint256 _maxIts) private pure returns(uint256) {
         // The scale factor is a crude way to turn everything into integer calcs.
         // Actually do (a * (10 ^ ((dp + 1) * 3))) ^ (1/3)
         // We calculate to one extra dp and round at the end
