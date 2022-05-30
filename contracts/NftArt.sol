@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.9;
+pragma solidity ^0.8.0;
 
 import "./access/Ownable.sol";
 import "./token/ERC721/extensions/ERC721Enumerable.sol";
+import "./ABDKMath64x64.sol";
 
 contract NFTArt is ERC721Enumerable, Ownable{
 
@@ -11,7 +12,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     GLOBAL STATE
     //////////////////////////////////////////////////////////////*/
 
-    address constant public PREMINT_ADDRESS = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    address constant public PREMINT_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     uint256 constant public AMOUNT_PREMINT = 10;
 
     bool public startPresale = false;
@@ -26,7 +27,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public mintFees = 0;               // accumulated fees
     uint256 public sellFeePercentage = 0;      // in 0.01%
     uint256 public sellFees = 0;               // accumulated fees
-    address public feeAddress = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    address public feeAddress = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     address public platformAddress;
 
     uint256 public minterRoyaltyPercentage = 0;    // in 0.01%
@@ -96,7 +97,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _;
     }
 
-    modifier ifTockenExist(uint256 _tokenID) {
+    modifier ifTokenExist(uint256 _tokenID) {
         _exists(_tokenID);
         _;
     }
@@ -329,11 +330,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit PublicSaleMint(minter, _tokenIDs);
     }
 
-    function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTockenExist(_tokenID) {
+    function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTokenExist(_tokenID) {
         address _owner = ownerOf(_tokenID);
 
         require(_owner == _msgSender(), "You are not token owner");
-        require(_priceWei > 0, "Error amount");
+        require(_priceWei > 10_000, "Error amount");
         
         _tokenPrice[_tokenID] = _priceWei;
         
@@ -350,7 +351,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit ListToken(_owner, _tokenID, _priceWei, selfValidate);
     }
 
-    function revokeToken(uint256 _tokenID) external ifTockenExist(_tokenID) {
+    function revokeToken(uint256 _tokenID) external ifTokenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] != 0, "Token is not listed");
@@ -362,7 +363,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit RevokeToken(_tokenID);
     }
 
-    function buyToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
+    function buyToken(uint256 _tokenID) external payable ifTokenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
@@ -426,7 +427,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         uint256 _fiatPrice = _price * fiatRate / 1 ether;
         // An author royalty 
         // Decreases with a price if _fiatPrice is more 5000
-        if(decreaseAuthorRoyalty && _fiatPrice > 5000 ether) {
+        if(decreaseAuthorRoyalty && _fiatPrice > 5000) {
             _authorRoyalty = _price * (10_000 / thirdRoot(_fiatPrice, 0, 30) + 120) / 10_000;   // 1 ÷ ( X ^ (1/3)) + 0,012
         }
         // Constant otherwise
@@ -479,12 +480,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     // calculates a^(1/3) to dp decimal places
     // maxIts bounds the number of iterations performed
-    function thirdRoot(uint256 _a, uint256 _dp, uint256 _maxIts) internal pure returns(uint256) {
+    function thirdRoot(uint256 _a, uint256 _dp, uint256 _maxIts) public pure returns(uint256) {
         // The scale factor is a crude way to turn everything into integer calcs.
         // Actually do (a * (10 ^ ((dp + 1) * 3))) ^ (1/3)
         // We calculate to one extra dp and round at the end
         uint256 one = 10 ** (1 + _dp);
-        uint256 a0 = one ** 3 * _a;
+        uint256 a0 = one ** 10 * _a ** 3;
 
         // Initial guess: 1.0
         uint256 xNew = one;
@@ -494,16 +495,26 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
         while (xNew != x && iter < _maxIts) {
             x = xNew;
-            uint256 t0 = x ** 2;
+            uint256 t0 = x ** 9;
             if (x * t0 > a0) {
-                xNew = x - (x - a0 / t0) / 3;
+                xNew = x - (x - a0 / t0) / 10;
             } else {
-                xNew = x + (a0 / t0 - x) / 3;
+                xNew = x + (a0 / t0 - x) / 10;
             }
             ++iter;
         }
 
         // Round to nearest in the last dp.
         return (xNew + 5) / 10;
+    }
+
+    // using ABDKMath64x64 for uint256;
+
+    function thirdRoot2(uint256 x) public pure returns(uint256) {
+        return uint256(ABDKMath64x64.toUInt(ABDKMath64x64.exp_2(ABDKMath64x64.div(ABDKMath64x64.mul(3, ABDKMath64x64.log_2(ABDKMath64x64.fromUInt(x))),10))));
+    } 
+
+    function calc(uint256 x) public pure returns(uint256) {
+        return 1000 / (thirdRoot2(x) + 2);
     }
 }
