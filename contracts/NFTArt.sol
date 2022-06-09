@@ -232,7 +232,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
             require(_addresses[i] != address(0), "Cannot add a null address");
             totalRate += _rates[i]; // in 0.01%
         }
-        require(totalRate <= MAX_RATE, "Rates sum cannot be grater than 100.00%");
+        require(totalRate == MAX_RATE, "Rates sum should be equal 100.00%");
 
         rates = _rates;
         authors = _addresses;
