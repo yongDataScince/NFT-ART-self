@@ -12,7 +12,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     GLOBAL STATE
     //////////////////////////////////////////////////////////////*/
 
-    address constant public PREMINT_ADDRESS = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    address constant public PREMINT_ADDRESS = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     uint256 constant public AMOUNT_PREMINT = 10;
 
     bool public startPresale = false;
@@ -27,7 +27,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public mintFees = 0;               // accumulated fees
     uint256 public sellFeePercentage = 0;      // in 0.01%
     uint256 public sellFees = 0;               // accumulated fees
-    address public feeAddress = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    address public feeAddress = 0x0eab415C80DC6B1c3265a75dbB836932A9938c83;
     address public platformAddress;
 
     uint256 public minterRoyaltyPercentage = 0;    // in 0.01%
@@ -97,7 +97,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _;
     }
 
-    modifier ifTockenExist(uint256 _tokenID) {
+    modifier ifTokenExist(uint256 _tokenID) {
         _exists(_tokenID);
         _;
     }
@@ -330,11 +330,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit PublicSaleMint(minter, _tokenIDs);
     }
 
-    function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTockenExist(_tokenID) {
+    function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTokenExist(_tokenID) {
         address _owner = ownerOf(_tokenID);
 
         require(_owner == _msgSender(), "You are not token owner");
-        require(_priceWei >= 10000, "Error amount");
+        require(_priceWei >= 10_000, "Error amount");
         
         _tokenPrice[_tokenID] = _priceWei;
         
@@ -351,7 +351,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit ListToken(_owner, _tokenID, _priceWei, selfValidate);
     }
 
-    function revokeToken(uint256 _tokenID) external ifTockenExist(_tokenID) {
+    function revokeToken(uint256 _tokenID) external ifTokenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] != 0, "Token is not listed");
@@ -363,7 +363,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         emit RevokeToken(_tokenID);
     }
 
-    function buyToken(uint256 _tokenID) external payable ifTockenExist(_tokenID) {
+    function buyToken(uint256 _tokenID) external payable ifTokenExist(_tokenID) {
         address _previousOwner = _tokensPreviousOwner[_tokenID];
 
         require(_lotStates[_tokenID] == 2 || _lotStates[_tokenID] == 3, "Token is not listed");
@@ -379,8 +379,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
         address _tokenMinter = minters[_tokenID];
         (_earning, _minterRoyalty,) = getTokenEarnings(_tokenID);
         _tokenPrice[_tokenID] = 0;
-        payable(_previousOwner).transfer(_earning); 
-        payable(_tokenMinter).transfer(_minterRoyalty); 
+        payable(_previousOwner).transfer(_earning);
+        payable(_tokenMinter).transfer(_minterRoyalty);
 
         _transfer(address(this), _msgSender(), _tokenID);
 
