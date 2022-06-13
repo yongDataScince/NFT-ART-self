@@ -34,7 +34,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public minterRoyaltyN = 0;             // max number of transactions to gain royalty
     uint256 public authorRoyaltyPercentage = 0;    // in 0.01%
     bool public decreaseAuthorRoyalty;             // false - constant percentage, true - decreasing 
-    uint256 public fiatRate = 1;                   // for athor royalty, fiat per 1 ether
+    uint256 public fiatRate = 100;                 // for athor royalty, 0.01 fiat per 1 ether
     
     address[] private authors;
     uint256[] private rates;        // in 0.01%
@@ -240,7 +240,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
     function setFiatRate(uint256 _fiatRate) external onlyAdmin {
         require(_fiatRate != 0, "Rate should be greater than zero");
-        fiatRate = _fiatRate;       // for athor royalty, fiat per 1 ether
+        fiatRate = _fiatRate;       // for athor royalty, 0.01 fiat per 1 ether
     }
 
 
@@ -424,7 +424,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
             _minterRoyalty = _price * percentage / 10_000;
         }
 
-        uint256 _fiatPrice = _price * fiatRate / 1 ether;
+        uint256 _fiatPrice = _price * fiatRate / 100 ether;
         // An author royalty 
         // Decreases with a price if _fiatPrice is more 5000
         uint256 _authorRoyaltyPercentage;
