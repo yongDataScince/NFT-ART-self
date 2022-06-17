@@ -34,7 +34,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     uint256 public minterRoyaltyN = 0;             // max number of transactions to gain royalty
     uint256 public authorRoyaltyPercentage = 0;    // in 0.01%
     bool public decreaseAuthorRoyalty;             // false - constant percentage, true - decreasing 
-    uint256 public fiatRate = 100;                 // for athor royalty, 0.01 fiat per 1 ether
+    uint256 public fiatRate = 1 ether;             // for athor royalty, in 10^(-18) fiat units per 1 ether
     
     address[] private authors;
     uint256[] private rates;        // in 0.01%
@@ -419,17 +419,17 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
         _minterRoyalty = 0;
         // A minter royalty decreases with each transaction until minterRoyaltyN is reached
-        if(minterRoyaltyN > _tokenTransactions[_tokenID]) {
+        if(_tokenTransactions[_tokenID] <= minterRoyaltyN) {
             uint256 percentage = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN - _tokenTransactions[_tokenID]) / minterRoyaltyN)) / 1000;  // in 0.01%
             _minterRoyalty = _price * percentage / 10_000;
         }
 
-        uint256 _fiatPrice = _price * fiatRate / 100 ether;
+        uint256 _fiatPrice = _price * fiatRate / (1 ether * 1 ether);
         // An author royalty 
         // Decreases with a price if _fiatPrice is more 5000
         uint256 _authorRoyaltyPercentage;
         if(decreaseAuthorRoyalty && _fiatPrice > 5000) {
-            _authorRoyaltyPercentage = 10_000_000 / pow_n_m(_price, 10, 33) + 20;   // in 0.01% 
+            _authorRoyaltyPercentage = 10_000_000 / pow_n_m(_fiatPrice, 10, 33) + 20;   // in 0.01% 
         }
         // Constant otherwise
         else {
