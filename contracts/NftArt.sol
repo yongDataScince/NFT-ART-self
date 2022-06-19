@@ -214,6 +214,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
         external
         onlyAdmin
         {
+        require(_minterRoyaltyPercentage <= 500, "Minter royalty percentage should be less than 5%");
+        require(_authorRoyaltyPercentage <= 1000, "Author royalty percentage should be less than 10%");
         minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
         minterRoyaltyN = _numberOfTransactions;                 // max number of transactions to gain royalty
         authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
