@@ -31,11 +31,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
     address public platformAddress;
 
     uint256 public minterRoyaltyPercentage = 0;    // in 0.01%
-    uint256 public minterRoyaltyN = 0;             // max number of transactions to gain royalty
+    uint256 public minterRoyaltyN = 1;             // max number of transactions to gain royalty
     uint256 public authorRoyaltyPercentage = 0;    // in 0.01%
     bool public decreaseAuthorRoyalty;             // false - constant percentage, true - decreasing 
     uint256 public fiatRate = 1 ether;             // for athor royalty, in 10^(-18) fiat units per 1 ether
-    
+
     address[] private authors;
     uint256[] private rates;        // in 0.01%
     uint256 constant private MAX_RATE = 10_000; // in 0.01%
@@ -170,10 +170,12 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setPresaleMaxMint(uint256 _presaleMaxMint) external onlyOwner {
+        require(_presaleMaxMint <= presaleMaxSupply, "New presaleMaxMint per address exceeds presaleMaxSupply");
         presaleMaxMint = _presaleMaxMint;
     }
 
     function setPresaleMaxPerMint(uint256 _presaleMaxPerMint) external onlyOwner {
+        require(_presaleMaxPerMint <= presaleMaxMint, "New presaleMaxPerMint exceeds presaleMaxMint per address");
         presaleMaxPerMint = _presaleMaxPerMint;
     }
 
@@ -197,7 +199,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
-        require(_maxSupply > maxSupply, "You can only increase max supply");
+        require(_maxSupply > maxSupply, "You can only increase the max supply");
         maxSupply = _maxSupply;
     }
 
@@ -214,8 +216,9 @@ contract NFTArt is ERC721Enumerable, Ownable{
         external
         onlyAdmin
         {
-        require(_minterRoyaltyPercentage <= 500, "Minter royalty percentage shouldn't be more than 5%");
-        require(_authorRoyaltyPercentage <= 1000, "Author royalty percentage shouldn't be more than 10%");
+        require(_minterRoyaltyPercentage <= 500, "Minter royalty percentage shouldn't be greater than 5%");
+        require(_numberOfTransactions > 0, "_numberOfTransactions cannot be zero");
+        require(_authorRoyaltyPercentage <= 1000, "Author royalty percentage shouldn't be greater than 10%");
         minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
         minterRoyaltyN = _numberOfTransactions;                 // max number of transactions to gain royalty
         authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
@@ -228,7 +231,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         external
         onlyAdmin
         {
-        require(_addresses.length == _rates.length, "Different array sizes");
+        require(_addresses.length == _rates.length, "Mismatched arrays length");
         uint256 totalRate = 0;
         for (uint256 i = 0; i < _rates.length; i++) {
             require(_addresses[i] != address(0), "Cannot add a null address");
@@ -293,11 +296,11 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(presaleEligible[minter], "You are not eligible for the presale");
         require(totalSupply() + _tokenIDs.length < AMOUNT_PREMINT + presaleMaxSupply, "All presale tokens have been minted");
         require(balanceOf(minter) + _tokenIDs.length < presaleMaxMint, "Purchase exceeds max allowed for presale");
-        require(_tokenIDs.length <= presaleMaxPerMint, "You exceed max tokens allowed per mint");
+        require(_tokenIDs.length <= presaleMaxPerMint, "Purchase exceeds max tokens allowed per mint");
         
         uint256 totalPrice = 0;
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            require(!_exists(_tokenIDs[i]), "Token is alredy minted");
+            require(!_exists(_tokenIDs[i]), "Token is already minted");
             totalPrice += presalePrices[_tokenIDs[i]];
         }
         require(msg.value == totalPrice, "ETH amount is incorrect");
@@ -317,7 +320,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
 
         uint256 totalPrice = 0;
         for (uint256 i = 0; i < _tokenIDs.length; i++) {
-            require(!_exists(_tokenIDs[i]), "Token is alredy minted");
+            require(!_exists(_tokenIDs[i]), "Token is already minted");
             totalPrice += mintPrices[_tokenIDs[i]];
         }
         require(msg.value == totalPrice, "ETH amount is incorrect");
@@ -335,8 +338,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
     function listToken(uint256 _tokenID, uint256 _priceWei, bool selfValidate) external ifTokenExist(_tokenID) {
         address _owner = ownerOf(_tokenID);
 
-        require(_owner == _msgSender(), "You are not token owner");
-        require(_priceWei >= 10_000, "Error amount");
+        require(_owner == _msgSender(), "You are not the token owner");
+        require(_priceWei >= 10_000, "Amount error");
         
         _tokenPrice[_tokenID] = _priceWei;
         
