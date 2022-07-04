@@ -200,6 +200,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
+        require(_maxSupply > totalSupply() + presaleMaxSupply, "New maxSupply should be higher than presaleMaxSupply + totalSupply");
         maxSupply = _maxSupply;
     }
 
