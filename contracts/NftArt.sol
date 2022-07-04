@@ -166,6 +166,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setPresaleMaxSupply(uint256 _presaleMaxSupply) external onlyOwner {
+        require(_presaleMaxSupply <= maxSupply, "New presaleMaxSupply exceeds maxSupply");
         presaleMaxSupply = _presaleMaxSupply;
     }
 
@@ -199,7 +200,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
-        require(_maxSupply > maxSupply, "You can only increase the max supply");
         maxSupply = _maxSupply;
     }
 
@@ -208,19 +208,25 @@ contract NFTArt is ERC721Enumerable, Ownable{
                     ADMIN FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    function changeRoyalties(
+    function changeMinterRoyalty(
         uint256 _minterRoyaltyPercentage,
-        uint256 _numberOfTransactions,
-        uint256 _authorRoyaltyPercentage,
-        bool _decreaseAuthorRoyalty)
+        uint256 _numberOfTransactions)
         external
         onlyAdmin
         {
         require(_minterRoyaltyPercentage <= 500, "Minter royalty percentage shouldn't be greater than 5%");
         require(_numberOfTransactions > 0, "_numberOfTransactions cannot be zero");
-        require(_authorRoyaltyPercentage <= 1000, "Author royalty percentage shouldn't be greater than 10%");
         minterRoyaltyPercentage = _minterRoyaltyPercentage;     // in 0.01% of a price
         minterRoyaltyN = _numberOfTransactions;                 // max number of transactions to gain royalty
+    }
+
+    function changeAuthorRoyalty(
+        uint256 _authorRoyaltyPercentage,
+        bool _decreaseAuthorRoyalty)
+        external
+        onlyAdmin
+        {
+        require(_authorRoyaltyPercentage <= 1000, "Author royalty percentage shouldn't be greater than 10%");
         authorRoyaltyPercentage = _authorRoyaltyPercentage;     // in 0.01% of a price
         decreaseAuthorRoyalty = _decreaseAuthorRoyalty;         // false - constant percentage, true - decreasing 
     }
@@ -425,8 +431,8 @@ contract NFTArt is ERC721Enumerable, Ownable{
         _minterRoyalty = 0;
         // A minter royalty decreases with each transaction until minterRoyaltyN is reached
         uint256 _transactions = _tokenTransactions[_tokenID];
-        if(_transactions > 1 && _transactions < minterRoyaltyN + 2) {     // skip minter's first selling, where _transactions == 1
-            uint256 percentage = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN - _transactions - 2) / minterRoyaltyN)) / 1000;  // in 0.01%
+        if(_transactions > 0 && _transactions < minterRoyaltyN + 1) {     // skip minter's first selling, where _transactions == 0
+            uint256 percentage = (minterRoyaltyPercentage * (1000 * (minterRoyaltyN + 1 - _transactions) / minterRoyaltyN)) / 1000;  // in 0.01%
             _minterRoyalty = _price * percentage / 10_000;
         }
 
