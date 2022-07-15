@@ -200,7 +200,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
     }
 
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
-        require(_maxSupply > totalSupply() + presaleMaxSupply, "New maxSupply should be higher than presaleMaxSupply + totalSupply");
+        require(_maxSupply >= totalSupply() + presaleMaxSupply, "New maxSupply should be higher or equal than presaleMaxSupply + totalSupply");
         maxSupply = _maxSupply;
     }
 
@@ -382,7 +382,6 @@ contract NFTArt is ERC721Enumerable, Ownable{
         require(_previousOwner != _msgSender(), "You cannot buy token from yourself");
         require(msg.value == getTokenPrice(_tokenID), "ETH amount is incorrect");
         
-        _tokenTransactions[_tokenID]++;
         _lotStates[_tokenID] = 0;
         sellFees += getTokenPrice(_tokenID) * sellFeePercentage / 10_000;
 
@@ -390,6 +389,7 @@ contract NFTArt is ERC721Enumerable, Ownable{
         uint256 _minterRoyalty;
         address _tokenMinter = minters[_tokenID];
         (_earning, _minterRoyalty,) = getTokenEarnings(_tokenID);
+        _tokenTransactions[_tokenID]++;
         _tokenPrice[_tokenID] = 0;
         payable(_previousOwner).transfer(_earning);
         payable(_tokenMinter).transfer(_minterRoyalty);
