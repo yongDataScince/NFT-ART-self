@@ -1,5 +1,5 @@
 import * as Styled from './styles';
-import HomeIcon from '../icons/HomeIcon'
+import HomeIcon from '../UI/icons/HomeIcon'
 
 export const Header: React.FC = () => {
   return (
