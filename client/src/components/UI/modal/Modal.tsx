@@ -1,3 +1,5 @@
+import CloseIcon from '@mui/icons-material/Close';
+import { useEffect, useState } from 'react';
 import * as Styled from './styles'
 
 type LinkProps = 
@@ -13,16 +15,25 @@ type LinkProps =
   }
 
 interface CommonProps {
-  variant?: 'error' | 'warning' | 'default',
+  variant?: 'error' | 'warning' | 'default';
+  show?: boolean;
   message: string
 }
 
 type Props = CommonProps & LinkProps
 
-export const Modal: React.FC<Props> = ({ variant, message, haveLink, src, text }) => {
+export const Modal: React.FC<Props> = ({ variant, message, haveLink, src, text, show }) => {
+  const [active, setActive] = useState<boolean | undefined>(false)
+  useEffect(() => {
+    setActive(show)
+  }, [show])
+
   return (
-    <Styled.ModalBox variant={variant}>
+    <Styled.ModalBox variant={variant} show={active}>
       <Styled.ModalWrapper>
+        <Styled.ModalClose variant={variant} onClick={() => setActive(false)}>
+          <CloseIcon />
+        </Styled.ModalClose>
         <Styled.ModalTitle variant={variant}>Hello</Styled.ModalTitle>
         <Styled.ModalMessage variant={variant}>
           {message}

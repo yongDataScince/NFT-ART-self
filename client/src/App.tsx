@@ -48,8 +48,7 @@ function App() {
     <div className="app">
       <Header />
       <Filters />
-      <Modal variant={variant} message={errorMessage} />
-      {errorMessage.length > 0 && <Modal variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' />}
+      <Modal variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
     </div>
   );
 }

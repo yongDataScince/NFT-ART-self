@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const colors = {
   'error': '#EE204D',
@@ -7,7 +7,8 @@ const colors = {
 }
 
 interface Props {
-  variant?: 'error' | 'warning' | 'default'
+  variant?: 'error' | 'warning' | 'default',
+  show?: boolean
 }
 
 export const ModalBox = styled.div<Props>`
@@ -24,6 +25,14 @@ export const ModalBox = styled.div<Props>`
   justify-content: center;
   padding: 8px;
   overflow: hidden;
+  transition: all 0.2s;
+  transform-origin: top;
+
+  ${({ show }) => show ? css`
+      transform: scale(1) translate(-50%, -50%);
+  ` : css`
+      transform: scale(0) translate(-50%, -50%);
+  `}
 `
 
 export const ModalWrapper = styled.div`
@@ -31,8 +40,25 @@ export const ModalWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
   align-items: center;
   justify-content: center;
+`
+
+export const ModalClose = styled.button<Props>`
+  width: 28px;
+  height: 28px;
+  background: #000;
+  border: 1px solid ${({ variant }) => colors[variant || 'default']};
+  position: absolute;
+  right: 0px;
+  margin: 0;
+  padding: 0;
+  top: 0px;
+
+  svg {
+    color: ${({ variant }) => colors[variant || 'default']};
+  }
 `
 
 export const ModalTitle = styled.p<Props>`
