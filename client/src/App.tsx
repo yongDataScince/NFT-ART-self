@@ -5,7 +5,7 @@ import Modal from './components/UI/modal';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Main from './routes/Main'
 import CardPage from './routes/CardPage'
-import { initContract, getTokens } from './store/reducer';
+import { initContract } from './store/reducer';
 import { useAppDispatch, useAppSelector } from './store';
 import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
@@ -40,8 +40,9 @@ function App() {
       // window.open('https://metamask.app.link/dapp/nft-art');
     }
     if ((window as any).ethereum) {
-      dispatch(initContract())
+      dispatch(initContract({ haveEth: true })) 
     } else {
+      dispatch(initContract({ haveEth: false })) 
       if (isMobileDevice()) {
         if (getMobileOS() === 'iOS') {
           setLinkSrc('https://apps.apple.com/ru/app/metamask-blockchain-wallet/id1438144202')
@@ -66,7 +67,7 @@ function App() {
           <Filters />
         </>
       }
-      <Modal variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
+      <Modal title='Alert!' variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
       <Routes>
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />

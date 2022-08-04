@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { getTokens } from "../../store/reducer";
+
 import * as Styled from './styles'
 
 export const Main: React.FC = () => {
@@ -12,7 +13,7 @@ export const Main: React.FC = () => {
   const { loading, tokens, contract } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
 
-  useEffect(() => {
+  useEffect(() => {    
     dispatch(getTokens(contract))
   }, [contract, dispatch])
 

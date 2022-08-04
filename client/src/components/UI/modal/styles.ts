@@ -27,6 +27,7 @@ export const ModalBox = styled.div<Props>`
   overflow: hidden;
   transition: all 0.2s;
   transform-origin: top;
+  z-index: 10000;
 
   ${({ show }) => show ? css`
       transform: scale(1) translate(-50%, -50%);

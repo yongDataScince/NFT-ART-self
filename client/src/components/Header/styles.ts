@@ -1,6 +1,10 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { AppBar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+
+interface Props {
+  open?: boolean
+}
 
 export const HeaderBar = styled(AppBar)`
   background-color: #000000 !important;
@@ -21,6 +25,81 @@ export const HeaderButton = styled.button`
   background-color: #000000 !important;
   &:first-child {
     margin-right: 24px;
+  }
+`
+
+export const MenuSwiper = styled.div<Props>`
+  width: 50vw;
+  height: 100vh;
+  background-color: #000000;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 150;
+  transition: all 0.2s;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  transform: translateX(${({ open }) => open ? '0' : '-100%'});
+  ${({ open }) => open && css`
+    box-shadow: 400px 0px 0px  1800px rgba(0,0,0,0.65);
+  `}
+`
+
+export const MenuSwiperTitle = styled.p`
+  padding: 0;
+  margin: 0 0 20px 0;
+  width: 100%;
+  border-bottom: 1px solid #FFF;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 100%;
+  letter-spacing: -0.05em;
+  color: #FFFFFF;
+`
+
+export const MenuSwiperLinks = styled.ul`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+`
+
+export const MenuSwiperLink = styled.li<{ active?: boolean }>`
+  width: 100%;
+  padding-left: 10px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: -0.05em;
+  position: relative;
+  margin-bottom: 3px;
+
+  ${({ active }) => css`
+    cursor: ${ active ? 'pointer' : 'not-allowed' };
+    color: ${ active ? '#FFFFFF' : '#888888' };
+  `}
+
+  &::before {
+    content: "";
+    position: absolute;
+    background: #888888;
+    width: 5px;
+    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
 `
 

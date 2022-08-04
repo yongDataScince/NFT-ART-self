@@ -13,23 +13,40 @@ interface ContractState {
   currToken?: any,
   totalSupply?: number,
   signerAddress?: string;
+  haveEth?: boolean;
 }
 
 export const initContract = createAsyncThunk(
   'web3/initContract',
-  async () => {
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, signer)
-    const signerAddress = await signer?.getAddress()
-    const totalSupply = (await contract?.totalSupply()).toNumber() || 0
-    return {
-      provider,
-      signer,
-      signerAddress,
-      contract,
-      totalSupply
+  async ({ haveEth }: { haveEth: boolean }) => {    
+    if (haveEth) {
+      await (window as any).ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${Number(97).toString(16)}` }],
+      })
+      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const signerAddress = await signer?.getAddress()
+      const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, signer)
+      const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+      
+      return {
+        provider,
+        signer,
+        signerAddress,
+        contract,
+        totalSupply,
+        haveEth
+      }
+    } else {
+      const provider = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
+      const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, provider)
+      return {
+        provider,
+        contract,
+        haveEth
+      }
     }
   }
 )
@@ -59,10 +76,11 @@ export const tokenInfo = createAsyncThunk(
 export const getTokens = createAsyncThunk(
   'web3/tokens',
   async (contract?: ethers.Contract) => {
+    
     const maxSupply = (await contract?.maxSupply())?.toNumber() || 0
     const tokens = []
+    console.log(contract);
     const baseUri = await contract?.baseTokenURI();
-    console.log(baseUri);
     if (baseUri) {
       for await (const id of _.times(maxSupply)) {
         let uri;
@@ -147,6 +165,7 @@ export const contractSlice = createSlice({
       state.totalSupply = payload.totalSupply
       state.loading = false
       state.signerAddress = payload.signerAddress
+      state.haveEth = payload.haveEth
     });
 
     builder.addCase(tokenInfo.rejected, (state, { error }) => {

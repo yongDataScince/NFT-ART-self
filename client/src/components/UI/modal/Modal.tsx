@@ -17,12 +17,13 @@ type LinkProps =
 interface CommonProps {
   variant?: 'error' | 'warning' | 'default';
   show?: boolean;
-  message: string
+  message: string;
+  title?: string
 }
 
 type Props = CommonProps & LinkProps
 
-export const Modal: React.FC<Props> = ({ variant, message, haveLink, src, text, show }) => {
+export const Modal: React.FC<Props> = ({ title, variant, message, haveLink, src, text, show }) => {
   const [active, setActive] = useState<boolean | undefined>(false)
   useEffect(() => {
     setActive(show)
@@ -34,7 +35,7 @@ export const Modal: React.FC<Props> = ({ variant, message, haveLink, src, text, 
         <Styled.ModalClose variant={variant} onClick={() => setActive(false)}>
           <CloseIcon />
         </Styled.ModalClose>
-        <Styled.ModalTitle variant={variant}>Hello</Styled.ModalTitle>
+        <Styled.ModalTitle variant={variant}>{title}</Styled.ModalTitle>
         <Styled.ModalMessage variant={variant}>
           {message}
           {haveLink && <Styled.ModalLink href={src}>{text}</Styled.ModalLink>}
