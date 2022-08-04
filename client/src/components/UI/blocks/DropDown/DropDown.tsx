@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import ChevronIcon from '../../../UI/icons/ChevronIcon';
+import ChevronIcon from '../../icons/ChevronIcon';
 import * as Styled from './styles';
 
 interface Item {

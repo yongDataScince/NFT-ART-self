@@ -2,11 +2,24 @@ import React, { useEffect, useState } from 'react';
 import Filters from './components/Filters';
 import Header from './components/Header'
 import Modal from './components/UI/modal';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import Main from './routes/Main'
+import CardPage from './routes/CardPage'
+import { initContract, getTokens } from './store/reducer';
+import { useAppDispatch, useAppSelector } from './store';
+import Loader from './components/UI/loader';
+import Cabinet from './routes/Cabinet';
+
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [variant, setVariant] = useState<'error' | 'warning' | 'default'>('default');
   const [linkSrc, setLinkSrc] = useState<string>('');
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { contract, loading } = useAppSelector((state) => state.web3)
+  const location = useLocation()
+
   function isMobileDevice() {
     return 'ontouchstart' in window || 'onmsgesturechange' in window;
   }
@@ -23,10 +36,11 @@ function App() {
   }
 
   useEffect(() => {
+    if (isMobileDevice()) {
+      // window.open('https://metamask.app.link/dapp/nft-art');
+    }
     if ((window as any).ethereum) {
-      (window as any).ethereum.request({method:'eth_requestAccounts'}).then((res: any) => {
-        console.log(res) 
-      })
+      dispatch(initContract())
     } else {
       if (isMobileDevice()) {
         if (getMobileOS() === 'iOS') {
@@ -41,14 +55,23 @@ function App() {
         setErrorMessage("please install Metamask on your device")
       }
     }
-  }, [])
-
+  }, [dispatch])
 
   return (
     <div className="app">
-      <Header />
-      <Filters />
+      <Loader show={loading} />
+      {
+        (location.pathname === '/' && !loading) && <>
+          <Header />
+          <Filters />
+        </>
+      }
       <Modal variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
+      <Routes>
+        <Route element={<Main />} path='/' />
+        <Route element={<Cabinet />} path='/cabinet' />
+        <Route path='picture/:id' element={<CardPage />} />
+      </Routes>
     </div>
   );
 }

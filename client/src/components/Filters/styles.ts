@@ -6,7 +6,6 @@ interface Props {
 
 export const FiltersBox = styled.div<Props>`
   height: 100%;
-  position: fixed;
   top: 72px;
   width: 100%;
   max-height: ${({ opened }) => opened ? '100%' : '72px'};
@@ -17,7 +16,7 @@ export const FiltersBox = styled.div<Props>`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  overflow-y: auto;
+  overflow-y: ${({ opened }) => opened ? 'auto' : 'hodden'};;
   &::-webkit-scrollbar {
     width: 2px;
     background: #000000;

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import ChevronIcon from '../UI/icons/ChevronIcon';
 import FilterIcon from '../UI/icons/FilterIcon';
-import Colors from './blocks/Colors';
-import DropDown from './blocks/DropDown';
-import Price from './blocks/Price';
-import Size from './blocks/Size';
-import TypeChoiser from './blocks/TypeChoiser';
+import Colors from '../UI/blocks/Colors';
+import DropDown from '../UI/blocks/DropDown';
+import Price from '../UI/blocks/Price';
+import Size from '../UI/blocks/Size';
+import TypeChoiser from '../UI/blocks/TypeChoiser';
 
 import * as Styled from './styles';
 
@@ -34,7 +34,7 @@ interface IColor {
 }
 
 export const Filters: React.FC = () => {
-  const [opened, setOpened] = useState<boolean>(true);
+  const [opened, setOpened] = useState<boolean>(false);
   const [sizes, setSizes] = useState<ISize[]>([
     {id: 1, name: 'S', choised: false},
     {id: 2, name: 'M', choised: false},

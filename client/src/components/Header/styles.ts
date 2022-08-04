@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 export const HeaderBar = styled(AppBar)`
   background-color: #000000 !important;
   padding: 20px 32px;
+  position: relative !important;
   border-bottom: 0.5px #CCCCCC solid;
   display: flex;
   flex-direction: row !important;
