@@ -1,11 +1,51 @@
 import styled from "styled-components";
 
+export const MainHeader = styled.div`
+  width: 100%;
+  height: auto;
+  padding: 250px 70px 350px 60px;
+  box-sizing: border-box;
+`
+
+export const MainHeaderWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  border-left: 1px solid #CCCCCC;
+  padding-left: 12px;
+`
+
+export const MainHeaderTitle = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 200;
+  font-size: 52px;
+  line-height: 52px;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+  white-space: wrap;
+`
+
+export const MainHeaderSubTitile = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 52px;
+  line-height: 78px;
+  color: #FFFFFF;
+`
+
 export const MainBody = styled.div`
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 140px 16px;
   box-sizing: border-box;
-  padding-bottom: 140px;
-  cursor: pointer;
+  overflow-y: scroll;
 `
 
 export const MainWrapper = styled.div`
@@ -19,7 +59,9 @@ export const MainWrapper = styled.div`
   justify-content: space-between;
   padding: 8px;
   overflow-y: auto;
-  
+  @media (min-width: 1440px) {
+    justify-content: center;
+  }
 `
 
 export const MainCard = styled.div`
@@ -30,6 +72,9 @@ export const MainCard = styled.div`
   flex-direction: column;
   border: 1px solid #FFFFFF;
   position: relative;
+  @media (min-width: 1440px)  {
+    margin-right: 16px;
+  }
 `
 
 export const MainCardImg = styled.img`

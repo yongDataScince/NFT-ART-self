@@ -42,10 +42,12 @@ export const initContract = createAsyncThunk(
     } else {
       const provider = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
       const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, provider)
+      const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
       return {
         provider,
         contract,
-        haveEth
+        haveEth,
+        totalSupply
       }
     }
   }
@@ -76,11 +78,11 @@ export const tokenInfo = createAsyncThunk(
 export const getTokens = createAsyncThunk(
   'web3/tokens',
   async (contract?: ethers.Contract) => {
-    
     const maxSupply = (await contract?.maxSupply())?.toNumber() || 0
     const tokens = []
     console.log(contract);
     const baseUri = await contract?.baseTokenURI();
+  
     if (baseUri) {
       for await (const id of _.times(maxSupply)) {
         let uri;

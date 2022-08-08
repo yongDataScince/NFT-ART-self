@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import _ from "lodash";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ImageCarousel } from "../../components/UI/ImageCarousel";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { getTokens } from "../../store/reducer";
@@ -14,23 +15,25 @@ export const Main: React.FC = () => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {    
-    dispatch(getTokens(contract))
+    // dispatch(getTokens(contract))
   }, [contract, dispatch])
 
   return (
     <Styled.MainBody>
       <Loader show={loading} />
-      <Styled.MainWrapper>
-        {tokens?.map((token) => (
-          <Styled.MainCard key={token.id} onClick={() => navigate(`picture/${token.id}`)}>
-            <Styled.MainCardImg src={token.image === 'placeholder' ? require(`./placeholder.png`) : token.image} />
-            <Styled.MainCardFooter>
-              <Styled.MainCardFooterTitle>{token.name}</Styled.MainCardFooterTitle>
-              <Styled.CardInfo>current bid <Styled.CardPrice>{ethers.utils.formatEther(token.price)} BNB</Styled.CardPrice></Styled.CardInfo>
-            </Styled.MainCardFooter>
-          </Styled.MainCard>
-        ))}
-      </Styled.MainWrapper>
+      <Styled.MainHeader>
+        <Styled.MainHeaderWrapper>
+          <Styled.MainHeaderTitle>
+            On the blockchain, art can take on any form.
+          </Styled.MainHeaderTitle>
+          <Styled.MainHeaderSubTitile>
+            Artform
+          </Styled.MainHeaderSubTitile>
+        </Styled.MainHeaderWrapper>
+      </Styled.MainHeader>
+      <ImageCarousel title="Collection 1 / Ivan Shalmin [12]" images={[1, 2, 3, 4]} />
+      <ImageCarousel title="Collection 2 / Shysha [10]" images={[5, 6, 7, 8, 9]} />
+
     </Styled.MainBody>
   )
 }

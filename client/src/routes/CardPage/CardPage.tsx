@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 export const CardPage: React.FC = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch()
-  const { contract, currToken, loading, signerAddress } = useAppSelector((state) => state.web3)
+  const { contract, currToken, loading, signerAddress, haveEth } = useAppSelector((state) => state.web3)
   const [nwidth, setNwidth] = useState<number>(0);
   const [nheight, setNheight] = useState<number>(0);
   const [currImgSrc, setCurrImgSrc] = useState<string>('');
@@ -102,7 +102,7 @@ export const CardPage: React.FC = () => {
         </Styled.CardInfoText>
       </Styled.CardInfo>
 
-      {currToken?.owner === signerAddress && (
+      {(currToken?.owner === signerAddress && haveEth) && (
         <Styled.InputsGroup>
           <Styled.CardInfoTitle>List token parameters:</Styled.CardInfoTitle>
           <Styled.Input placeholder="price" value={newPrice} onChange={(e) => setPrice(e.target.value)} />
@@ -116,12 +116,12 @@ export const CardPage: React.FC = () => {
 
       <Styled.CardButtonGroup>
         {
-          currToken?.owner === signerAddress ? (
+          currToken?.owner === signerAddress && haveEth ? (
             <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
               List Token
             </Styled.CardButton>
           ) : (
-            <Styled.CardButton onClick={() => buy()} disabled={currToken?.status === 'not listed'}>
+            <Styled.CardButton onClick={() => buy()} disabled={currToken?.status === 'not listed' || !haveEth}>
               Buy Token
             </Styled.CardButton>
           )

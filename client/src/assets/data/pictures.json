@@ -1,0 +1,65 @@
+{
+  "1": {
+    "tokenId": 1,
+    "image": "./1.png",
+    "authors": ["Ivan Shalmin", "Sasha Shalmina"],
+    "price": "1",
+    "status": "Available"
+  },
+  "2": {
+    "tokenId": 2,
+    "image": "./2.png",
+    "authors": ["Ivan Shalmin"],
+    "price": "1.5",
+    "status": "Not available"
+  },
+  "3": {
+    "tokenId": 3,
+    "image": "./3.png",
+    "authors": ["Sasha Shalmina"],
+    "price": "5.5",
+    "status": "Not available"
+  },
+  "4": {
+    "tokenId": 4,
+    "image": "./4.png",
+    "authors": ["Sasha Shalmina"],
+    "price": "0.5",
+    "status": "Not available"
+  },
+  "5": {
+    "tokenId": 5,
+    "image": "./5.png",
+    "authors": ["Sasha Shalmina"],
+    "price": "1.89",
+    "status": "Not available"
+  },
+  "6": {
+    "tokenId": 6,
+    "image": "./6.png",
+    "authors": ["Sasha Shalmina"],
+    "price": "8.1",
+    "status": "Available"
+  },
+  "7": {
+    "tokenId": 7,
+    "image": "./7.png",
+    "authors": ["Ivan Shalmin"],
+    "price": "3.8",
+    "status": "Not available"
+  },
+  "8": {
+    "tokenId": 8,
+    "image": "./8.png",
+    "authors": ["Ivan Shalmin", "Sasha Shalmina"],
+    "price": "25.12",
+    "status": "Available"
+  },
+  "9": {
+    "tokenId": 9,
+    "image": "./9.png",
+    "authors": ["Ivan Shalmin", "Sasha Shalmina"],
+    "price": "1000.12",
+    "status": "Available"
+  }
+}

@@ -47,6 +47,9 @@ export const MenuSwiper = styled.div<Props>`
   ${({ open }) => open && css`
     box-shadow: 400px 0px 0px  1800px rgba(0,0,0,0.65);
   `}
+  @media (min-width: 1440px) {
+    width: 20vw;
+  }
 `
 
 export const MenuSwiperTitle = styled.p`
