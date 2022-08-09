@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from './store';
 import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
 import Footer from './components/Footer';
+import Info from './routes/Info';
 
 
 function App() {
@@ -63,7 +64,7 @@ function App() {
     <div className="app">
       <Loader show={loading} />
       {
-        (location.pathname === '/' && !loading) && <>
+        ((location.pathname === '/' || location.pathname === '/info') && !loading) && <>
           <Header />
           {/* <Filters /> */}
         </>
@@ -72,6 +73,7 @@ function App() {
       <Routes>
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />
+        <Route element={<Info />} path='/info' />
         <Route path='picture/:id' element={<CardPage />} />
       </Routes>
       <Footer />
