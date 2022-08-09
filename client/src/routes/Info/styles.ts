@@ -1,7 +1,8 @@
 import styled, { css } from "styled-components";
 
 interface Props {
-  opened?: boolean
+  opened?: boolean;
+  delay?: number
 }
 
 export const MainInfo = styled.div`
@@ -18,17 +19,16 @@ export const InfoBlock = styled.div<Props>`
   width: 100%;
   transition: all 0.5s;
   border-bottom: 1px solid #CCCCCC;
-  height: 100%;
-  margin-bottom: 60px;
-
-  ${({ opened }) => css`
-    overflow-y: ${!opened ? 'hidden' : 'visible'};;
-    border-color: ${!opened ? '#CCCCCC' : '#000000'};
-    max-height: ${!opened ? '60px' : '2500px'};
+  height: auto;
+  margin-bottom: 40px;
+  ${({ delay, opened }) => css`
+    transition-delay: ${delay}s;
+    max-height: ${opened ? '150%' : '60px'};
+    border-color: ${opened ? '#000' : '#FFF'};
   `}
 `
 
-export const InfoTitle = styled.p`
+export const InfoTitle = styled.p<Props>`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 200;
@@ -40,15 +40,19 @@ export const InfoTitle = styled.p`
   margin-bottom: 8px;
   position: relative;
 
-  svg {
-    position: absolute;
-    left: -25px;
-    top: 60%;
-    transform: translateY(-50%);
-  }
+  ${({ opened }) => css`
+    svg {
+      transition: all 0.2s;
+      position: absolute;
+      left: -28px;
+      top: 60%;
+      transform-origin: center;
+      transform: translateY(${opened ? '-80%' : '-50%'}) rotate(${opened ? '180deg' : '0'});
+    }
+  `}
 `
 
-export const InfoBlockDescription = styled.p`
+export const InfoBlockDescription = styled.p<Props>`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 100;
@@ -57,13 +61,25 @@ export const InfoBlockDescription = styled.p`
   color: #FFFFFF;
   padding: 0;
   margin: 40px 0 60px 0;
+  transition: all 0.2s;
+  ${({ opened, delay }) => css`
+    transition-delay: ${delay}s;
+    opacity: ${Number(opened)};
+    visibility: ${opened ? 'visible' : 'hidden'};
+  `}
 `
 
-export const InfoDescriptionBlock = styled.div`
+export const InfoDescriptionBlock = styled.div<Props>`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: auto;
+  transition: all 0.2s;
+  ${({ opened, delay }) => css`
+    transition-delay: ${delay}s;
+    opacity: ${Number(opened)};
+    visibility: ${opened ? 'visible' : 'hidden'};
+  `}
 `
 
 export const InfoDescriptionBlockTitle = styled.p`

@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "name": "name",
+    "avatar": "author_1.png",
+    "address": "0x79D0BfE592B77acc9287eB914ee14F56f77a432B",
+    "collections": [1],
+    "social": {
+      "instagram": "",
+      "facebook": "",
+      "twitter": "",
+      "site": ""
+    },
+    "description": {
+      "bio": [
+        "In the 1980s, Ivan was an active member of the Russian paper architecture movement and the works that he has produced during this period are still touring across the globe.",
+        "In 2016, he began to produce digital abstract paintings, or 'paintings without paint', as he calls them. ‘They are paintless because they are made without paint, using pure colour and an 'RGB brush’.’ His works are formless, raw feelings, communicated through explosions of colour. The aim is to evoke an emotional response and to convey subtle imagery from his own subconscious to that of the viewer.",
+        "In 2020, Ivan had his first solo exhibitions; one in Moscow and two in Novosibirsk. His curator was Kirill Svietliyakov, an art expert, critic and historian responsible for the latest trends and developments  at the Tretiyakov Gallery in Moscow."
+      ],
+      "education": [
+        "In the 1980s, Ivan was an active member of the Russian paper architecture movement and the works that he has produced during this period are still touring across the globe.",
+        "In 2016, he began to produce digital abstract paintings, or 'paintings without paint', as he calls them. ‘They are paintless because they are made without paint, using pure colour and an 'RGB brush’.’ His works are formless, raw feelings, communicated through explosions of colour. The aim is to evoke an emotional response and to convey subtle imagery from his own subconscious to that of the viewer.",
+        "In 2020, Ivan had his first solo exhibitions; one in Moscow and two in Novosibirsk. His curator was Kirill Svietliyakov, an art expert, critic and historian responsible for the latest trends and developments  at the Tretiyakov Gallery in Moscow."
+      ],
+      "exhibitions": [""]
+    }
+  },
+  {
+    "id": 2,
+    "name": "name",
+    "avatar": "author_1.png",
+    "address": "0x79D0BfE592B77acc9287eB914ee14F56f77a432B",
+    "collections": [1],
+    "social": {
+      "instagram": "",
+      "facebook": "",
+      "twitter": "",
+      "site": ""
+    },
+    "description": {
+      "bio": [
+        "In the 1980s, Ivan was an active member of the Russian paper architecture movement and the works that he has produced during this period are still touring across the globe.",
+        "In 2016, he began to produce digital abstract paintings, or 'paintings without paint', as he calls them. ‘They are paintless because they are made without paint, using pure colour and an 'RGB brush’.’ His works are formless, raw feelings, communicated through explosions of colour. The aim is to evoke an emotional response and to convey subtle imagery from his own subconscious to that of the viewer.",
+        "In 2020, Ivan had his first solo exhibitions; one in Moscow and two in Novosibirsk. His curator was Kirill Svietliyakov, an art expert, critic and historian responsible for the latest trends and developments  at the Tretiyakov Gallery in Moscow."
+      ],
+      "education": [
+        "In the 1980s, Ivan was an active member of the Russian paper architecture movement and the works that he has produced during this period are still touring across the globe.",
+        "In 2016, he began to produce digital abstract paintings, or 'paintings without paint', as he calls them. ‘They are paintless because they are made without paint, using pure colour and an 'RGB brush’.’ His works are formless, raw feelings, communicated through explosions of colour. The aim is to evoke an emotional response and to convey subtle imagery from his own subconscious to that of the viewer.",
+        "In 2020, Ivan had his first solo exhibitions; one in Moscow and two in Novosibirsk. His curator was Kirill Svietliyakov, an art expert, critic and historian responsible for the latest trends and developments  at the Tretiyakov Gallery in Moscow."
+      ],
+      "exhibitions": [""]
+    }
+  }
+]

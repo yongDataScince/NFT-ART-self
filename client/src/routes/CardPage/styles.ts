@@ -100,6 +100,7 @@ export const CardTitle = styled.p`
   border-bottom: 1px solid #FFFFFF;
   width: 100%;
   margin-top: 16px;
+  font-weight: 400;
   span {
     font-weight: 100;
   }
@@ -116,6 +117,7 @@ export const Authors = styled.p`
   margin: 0;
   margin-top: 8px;
   border-bottom: 1px solid #FFFFFF;
+  font-weight: 320;
   span {
     font-weight: 100;
   }
@@ -322,5 +324,93 @@ export const Price = styled.p`
     color: #888789;
     margin: 0;
     padding: 0;
+  }
+`
+
+export const AuthorBlock = styled.div`
+  width: 100%;
+  margin-top: 40px;
+  border-top: 1px solid #FFF;
+  padding-top: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
+export const AuthorImage = styled.img`
+  width: 192px;
+  height: 192px;
+  border: 1px solid #FFF;
+  margin-bottom: 16px;
+`
+
+export const AuthorName = styled.p`
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 40px;
+  line-height: 100%;
+  color: #FFFFFF;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #FFF;
+`
+
+export const AuthorAddress = styled.p`
+  width: 100%;
+  font-family: 'Helvetica Neue';
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin: 0;
+  font-weight: 300;
+  padding: 0;
+  margin-top: 16px;
+  margin-bottom: 8px;
+`
+
+export const AuthorDescriptionBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  width: 100%;
+`
+
+export const AuthorDescriptionTitle = styled.p`
+  font-family: 'Helvetica Neue';
+  font-size: 25px;
+  line-height: 150%;
+  font-weight: 200;
+  width: 100%;
+  border-bottom: 1px solid #CCCCCC;
+  color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+`
+
+export const AuthorDescriptionText = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+export const AuthorDescriptionPar = styled.p`
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #A3A0A0;
+  font-weight: 300;
+`
+
+export const SocialBlock = styled.div`
+  display: flex;
+  margin-top: 24px;
+  svg {
+    margin-right: 8px;
   }
 `
