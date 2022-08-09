@@ -1,65 +1,92 @@
 {
   "1": {
     "tokenId": 1,
-    "image": "./1.png",
+    "image": "src/assets/images/1.png",
     "authors": ["Ivan Shalmin", "Sasha Shalmina"],
     "price": "1",
-    "status": "Available"
+    "name": "Ghoul",
+    "status": "Available",
+    "collectionAddress": "1",
+    "description": "The genre of landscape in Shalmin’s art is more of an association than a genre… As the viewer begins to examine these paintings, they may at first perceive these works as three dimensional and in perspective, but the layers soon merge into one, forming a two dimensional plane. As you continue to examine the painting, it appears to remain in a state of flux, gently changing between a two dimensional plane and a three dimensional space."
   },
   "2": {
     "tokenId": 2,
     "image": "./2.png",
     "authors": ["Ivan Shalmin"],
     "price": "1.5",
-    "status": "Not available"
+    "name": "Ghoul",
+    "status": "Not available",
+    "collectionAddress": "1",
+    "description": "text"
   },
   "3": {
     "tokenId": 3,
     "image": "./3.png",
     "authors": ["Sasha Shalmina"],
     "price": "5.5",
-    "status": "Not available"
+    "name": "Ghoul",
+    "status": "Not available",
+    "collectionAddress": "1",
+    "description": "text"
   },
   "4": {
     "tokenId": 4,
     "image": "./4.png",
     "authors": ["Sasha Shalmina"],
     "price": "0.5",
-    "status": "Not available"
+    "name": "Ghoul",
+    "status": "Not available",
+    "collectionAddress": "1",
+    "description": "text"
   },
   "5": {
     "tokenId": 5,
     "image": "./5.png",
     "authors": ["Sasha Shalmina"],
     "price": "1.89",
-    "status": "Not available"
+    "name": "Ghoul",
+    "status": "Not available",
+    "collectionAddress": "2",
+    "description": "text"
   },
   "6": {
     "tokenId": 6,
     "image": "./6.png",
     "authors": ["Sasha Shalmina"],
     "price": "8.1",
-    "status": "Available"
+    "name": "Ghoul",
+    "status": "Available",
+    "collectionAddress": "1",
+    "description": "text"
   },
   "7": {
     "tokenId": 7,
     "image": "./7.png",
     "authors": ["Ivan Shalmin"],
     "price": "3.8",
-    "status": "Not available"
+    "name": "Ghoul",
+    "status": "Not available",
+    "collectionAddress": "2",
+    "description": "text"
   },
   "8": {
     "tokenId": 8,
     "image": "./8.png",
     "authors": ["Ivan Shalmin", "Sasha Shalmina"],
     "price": "25.12",
-    "status": "Available"
+    "name": "Ghoul",
+    "status": "Available",
+    "collectionAddress": "1",
+    "description": "text"
   },
   "9": {
     "tokenId": 9,
     "image": "./9.png",
     "authors": ["Ivan Shalmin", "Sasha Shalmina"],
     "price": "1000.12",
-    "status": "Available"
+    "name": "Ghoul",
+    "status": "Available",
+    "collectionAddress": "2",
+    "description": "text"
   }
 }

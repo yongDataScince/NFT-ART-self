@@ -63,12 +63,7 @@ function App() {
   return (
     <div className="app">
       <Loader show={loading} />
-      {
-        ((location.pathname === '/' || location.pathname === '/info') && !loading) && <>
-          <Header />
-          {/* <Filters /> */}
-        </>
-      }
+      <Header />
       <Modal title='Alert!' variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
       <Routes>
         <Route element={<Main />} path='/' />
@@ -76,7 +71,7 @@ function App() {
         <Route element={<Info />} path='/info' />
         <Route path='picture/:id' element={<CardPage />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

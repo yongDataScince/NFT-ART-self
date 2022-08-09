@@ -16,13 +16,15 @@ export const MainInfo = styled.div`
 
 export const InfoBlock = styled.div<Props>`
   width: 100%;
-  transition: all 0.2s;
+  transition: all 0.5s;
   border-bottom: 1px solid #CCCCCC;
   height: 100%;
-  /* overflow-y: hidden; */
+  margin-bottom: 60px;
+
   ${({ opened }) => css`
+    overflow-y: ${!opened ? 'hidden' : 'visible'};;
     border-color: ${!opened ? '#CCCCCC' : '#000000'};
-    max-height: ${!opened ? '60px' : '120%'};
+    max-height: ${!opened ? '60px' : '2500px'};
   `}
 `
 

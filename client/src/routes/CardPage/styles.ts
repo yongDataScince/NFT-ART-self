@@ -14,15 +14,69 @@ export const CardPage = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   overflow: auto;
-  padding: 16px 5px;
+  padding: 120px 16px;
+`
+
+export const TagsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  align-items: flex-start;
+  margin-bottom: 60px;
+`
+
+export const TagsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: calc(100% - 30px);
+`
+
+export const Tag = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 30px;
+  font-weight: 200;
+  line-height: 31px;
+  position: relative;
+  letter-spacing: -0.02em;
+  color: #FFF; //#58575B
+  padding-left: 5px;
+  text-transform: lowercase;
+  &::before {
+    content: "#";
+    color: #58575B;
+  }
+`
+
+export const TagsTitle = styled.p`
+  margin: 0;
+  width: 100%;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 200;
+  font-size: 30px;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #CCCCCC;
 `
 
 export const CardImage = styled.img<Props>`
   width: 100%;
   height: 100%;
+  border: 1px solid #FFFFFF;
   ${({ width, height }) => css`
     max-width: ${width}px;
     min-width: ${width}px;
@@ -33,16 +87,38 @@ export const CardImage = styled.img<Props>`
 `
 
 export const CardTitle = styled.p`
-  margin: 20px 0 0;
   padding: 0;
+  margin: 0;
   padding-bottom: 4px;
   font-family: 'Helvetica Neue';
-  font-size: 20px;
-  width: 70%;
+  font-style: normal;
   font-weight: 300;
-  letter-spacing: -0.02em;
+  font-size: 40px;
+  line-height: 100%;
+  width: 100%;
   color: #FFFFFF;
   border-bottom: 1px solid #FFFFFF;
+  width: 100%;
+  margin-top: 16px;
+  span {
+    font-weight: 100;
+  }
+`
+
+export const Authors = styled.p`
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 100%;
+  color: #FFFFFF;
+  width: 100%;
+  margin: 0;
+  margin-top: 8px;
+  border-bottom: 1px solid #FFFFFF;
+  span {
+    font-weight: 100;
+  }
 `
 
 export const CardInfo = styled.div`
@@ -52,16 +128,14 @@ export const CardInfo = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 0 15%;
-  margin-top: 16px;
   margin-bottom: 20px;
+  margin-top: 60px;
 `
 
 export const CardButtonGroup = styled.div`
   display: flex;
-  width: 70%;
+  width: 100%;
   height: auto;
-  margin-top: auto;
 `
 
 export const CardInfoTitle = styled.p`
@@ -72,42 +146,50 @@ export const CardInfoTitle = styled.p`
   padding: 0;
   padding-bottom: 2px;
   font-family: 'Helvetica Neue';
-  font-size: 16px;
+  font-size: 25px;
   width: 100%;
-  font-weight: 300;
-  letter-spacing: -0.02em;
+  font-weight: 200;
+  line-height: 150%;
   color: #FFFFFF;
-  border-bottom: 1px solid #FFFFFF;
+  border-bottom: 1px solid #CCCCCC;
 `
 
 export const CardInfoText = styled.p`
-  margin: 10px 0 0 0;
+  margin: 0;
   padding: 0;
+  width: 90%;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
-  font-size: 12px;
-  line-height: 100%;
+  font-size: 20px;
+  line-height: 120%;
   letter-spacing: -0.03em;
   color: #A3A0A0;
+  margin-bottom: 20px;
+  text-align: left;
+  margin-top: 13px;
 `
 
 export const CardButton = styled.button`
-  padding: 12px;
+  padding: 20px 12px;
   border: 1px solid #fff;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 60px;
   width: 100%;
   font-family: 'Helvetica Neue';
-  font-size: 16px;
+  font-style: normal;
   font-weight: 300;
-  letter-spacing: -0.02em;
+  font-size: 23px;
+  line-height: 100%;
   color: #FFFFFF;
   background: #000;
   border-bottom: 1px solid #FFFFFF;
   cursor: pointer;
+  text-align: left;
   transition: all 0.2s;
+  position: relative;
   &:focus {
     outline: none;
   }
@@ -124,6 +206,15 @@ export const CardButton = styled.button`
   }
   &:nth-child(2) {
     margin-left: 5px;
+  }
+  &::before {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #1FE01B;
+    border-radius: 50%;
+    content: "";
+    left: 20px;
   }
 `
 
@@ -191,4 +282,45 @@ export const ChoiseBlockBtn = styled.button<PropBtn>`
       border: 1px solid #CCC;
     }
   `}
+`
+
+export const ImageCollection = styled.img`
+  width: 100%;
+  height: auto;
+  border: 1px solid #FFF;
+`
+
+export const ImageGroup = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #FFF;
+  margin-top: 10px;
+  p {
+    font-family: 'Helvetica Neue';
+    font-size: 25px;
+    line-height: 150%;
+    margin: 0;
+    padding: 0;
+    font-weight: 200;
+    color: #FFFFFF;
+  }
+`
+
+export const Price = styled.p`
+  font-family: 'Helvetica Neue';
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: -0.02em;
+  font-weight: 200;
+  color: #FFFFFF;
+  margin: 18px 0;
+  padding: 0;
+  span {
+    color: #888789;
+    margin: 0;
+    padding: 0;
+  }
 `

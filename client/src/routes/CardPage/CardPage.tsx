@@ -5,6 +5,9 @@ import { setLoader, tokenInfo, buyToken, listToken } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import { ethers } from "ethers";
+import picData from '../../assets/data/pictures.json'
+import collData from '../../assets/data/collections.json'
+
 
 export const CardPage: React.FC = () => {
   const { id } = useParams();
@@ -12,9 +15,9 @@ export const CardPage: React.FC = () => {
   const { contract, currToken, loading, signerAddress, haveEth } = useAppSelector((state) => state.web3)
   const [nwidth, setNwidth] = useState<number>(0);
   const [nheight, setNheight] = useState<number>(0);
-  const [currImgSrc, setCurrImgSrc] = useState<string>('');
   const [newPrice, setNewPrice] = useState<string>('')
   const [validate, setValidate] = useState<boolean>(false)
+  const [tags, _] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
 
   const ref = useRef<HTMLDivElement | null>(null)
 
@@ -40,12 +43,13 @@ export const CardPage: React.FC = () => {
   }
 
   const resizeImage = useCallback(() => {
-    const maxWidth = (ref.current?.offsetWidth || 0) - ((ref.current?.offsetWidth || 0) * 0.3)
-    const maxHeight = (ref.current?.offsetHeight || 0) - 10
+    const maxWidth = (ref.current?.offsetWidth || 0) - 34
+    const maxHeight = (ref.current?.clientHeight || 0)
 
     let image = new Image()
-    image.src = currImgSrc;
     
+    image.src = require(`../../assets/images/${id}.png`);
+
     image.onloadstart = () => {
       dispatch(setLoader(true))
     }
@@ -53,53 +57,62 @@ export const CardPage: React.FC = () => {
     (image as any).onloadend = () => {
       dispatch(setLoader(false))
     }
-    if (image.naturalWidth === 0 || image.naturalHeight === 0) {
-      setCurrImgSrc(require('./placeholder.png'))
-    } else {
-      const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+  
+    const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+    setNheight(image.naturalHeight * ratio)
+    setNwidth(image.naturalWidth * ratio)
 
-      setNheight(image.naturalHeight * ratio)
-      setNwidth(image.naturalWidth * ratio)
-    }
-  }, [currImgSrc, dispatch, ref])
+  }, [dispatch, id])
 
   useEffect(() => {
-
     if (contract) {
       dispatch(tokenInfo(Number(id)))
     }
   }, [id, dispatch, contract])
 
-  useEffect(() => {
-    if (currToken?.image !== 'placeholder' && currToken?.image) {
-      setCurrImgSrc(currToken.image)
-    } else {
-      setCurrImgSrc(require('./placeholder.png'))
-    }
-  }, [currToken])
 
   useEffect(() => {
-    if(ref && currToken?.image) {
-      resizeImage()
-    }
+    resizeImage()
     window.addEventListener('resize', resizeImage);
     return () => window.removeEventListener('resize', resizeImage);
-  }, [nheight, nwidth, ref, currToken, dispatch, resizeImage, currImgSrc])
+  }, [nheight, nwidth, ref, currToken, dispatch, resizeImage])
 
   return (
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
-      <Styled.CardImage src={currImgSrc} width={nwidth} height={nheight} />
-      <Styled.CardTitle>{currToken?.name}</Styled.CardTitle>
+      <Styled.TagsContainer>
+        <Styled.TagsTitle>Tags</Styled.TagsTitle>
+        <Styled.TagsList>
+          {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
+        </Styled.TagsList>
+      </Styled.TagsContainer>
+      <Styled.CardImage src={require(`../../assets/images/${id}.png`)} width={nwidth} height={nheight} />
+      <Styled.CardTitle><span>#000{id}</span> ‘{(picData as any)[id || 1].name}’</Styled.CardTitle>
+      <Styled.Authors><span>By</span> {(picData as any)[id || 1].authors.reduce((accu: any, elem: any) => {
+            return accu === null ? [elem] : [...accu, <span> & </span> , elem]
+        }, null)}</Styled.Authors>
+
       <Styled.CardInfo>
-        <Styled.CardInfoTitle>Owner: {currToken?.owner}</Styled.CardInfoTitle>
-        <Styled.CardInfoTitle>Price: {ethers.utils.formatEther(currToken?.price || '0')} BNB</Styled.CardInfoTitle>
         <Styled.CardInfoTitle>
           Description:
         </Styled.CardInfoTitle>
         <Styled.CardInfoText>
-          {currToken?.description}
+          {(picData as any)[id || 1].description}
         </Styled.CardInfoText>
+
+        <Styled.CardInfoTitle>
+          Collection:
+        </Styled.CardInfoTitle>
+
+        <Styled.ImageGroup>
+          <Styled.ImageCollection src={
+            require(`../../assets/images/collection_${collData.find(({ address }) => address === (picData as any)[id || 1].collectionAddress)?.id}.png`)
+          }/>
+          <p>{collData.find(({ address }) => address === (picData as any)[id || 1].collectionAddress)?.name}</p>
+        </Styled.ImageGroup>
+        <Styled.Price>
+          <span>Price: </span>{(picData as any)[id || 1].price} BNB
+        </Styled.Price>
       </Styled.CardInfo>
 
       {(currToken?.owner === signerAddress && haveEth) && (
