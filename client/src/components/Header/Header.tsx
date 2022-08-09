@@ -26,7 +26,21 @@ export const Header: React.FC = () => {
       <Styled.MenuSwiper open={open} ref={ref}>
         <Styled.MenuSwiperTitle>Menu</Styled.MenuSwiperTitle>
         <Styled.MenuSwiperLinks>
-          <Styled.MenuSwiperLink active={haveEth} onClick={() => haveEth && navigate('/cabinet')}>cabinet</Styled.MenuSwiperLink>
+          <Styled.MenuSwiperLink active onClick={() => {
+            navigate('/')
+            setOpen(false)
+          }}>main</Styled.MenuSwiperLink>
+          <Styled.MenuSwiperLink active={haveEth} onClick={() =>{
+            if(haveEth) {
+              navigate('/cabinet')
+              setOpen(false)
+            }
+          }}>cabinet</Styled.MenuSwiperLink>
+          <Styled.MenuSwiperLink active onClick={() => {
+            navigate('/info')
+            setOpen(false)
+          }}>info</Styled.MenuSwiperLink>
+
         </Styled.MenuSwiperLinks>
       </Styled.MenuSwiper>
     </Styled.HeaderBar>

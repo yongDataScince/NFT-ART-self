@@ -106,8 +106,9 @@ export const Info: React.FC = () => {
               <ChevronIcon />
               {block.title}
             </Styled.InfoTitle>
-            <Styled.InfoBlockDescription opened={block.opened} delay={( 0.02 ) / 1.007}>{block.description}</Styled.InfoBlockDescription>
-
+            {
+              block.description && <Styled.InfoBlockDescription opened={block.opened} delay={( 0.02 ) / 1.007}>{block.description}</Styled.InfoBlockDescription>
+            }
             {
               block.subBlocks.map((sub, idx) => (
                 <Styled.InfoDescriptionBlock key={sub.id} opened={block.opened} delay={(idx * 0.2) / 1.007}>
