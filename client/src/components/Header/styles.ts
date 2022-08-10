@@ -26,6 +26,10 @@ export const HeaderButton = styled.button`
   &:first-child {
     margin-right: 24px;
   }
+
+  &:last-child {
+    margin-left: 20px;
+  }
 `
 
 export const MenuSwiper = styled.div<Props>`

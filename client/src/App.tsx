@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Filters from './components/Filters';
 import Header from './components/Header'
 import Modal from './components/UI/modal';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes,  } from 'react-router-dom'
 import Main from './routes/Main'
 import CardPage from './routes/CardPage'
 import { initContract } from './store/reducer';
 import { useAppDispatch, useAppSelector } from './store';
 import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
-import Footer from './components/Footer';
 import Info from './routes/Info';
-
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [variant, setVariant] = useState<'error' | 'warning' | 'default'>('default');
   const [linkSrc, setLinkSrc] = useState<string>('');
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-  const { collections, loading } = useAppSelector((state) => state.web3)
-  const location = useLocation()
+  const { loading } = useAppSelector((state) => state.web3)
 
   function isMobileDevice() {
     return 'ontouchstart' in window || 'onmsgesturechange' in window;
@@ -64,7 +59,7 @@ function App() {
   return (
     <div className="app">
       <Loader show={loading} />
-      <Header />
+      <Header os={getMobileOS()} />
       <Modal title='Alert!' variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
       <Routes>
         <Route element={<Main />} path='/' />
