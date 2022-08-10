@@ -231,7 +231,6 @@ export const contractSlice = createSlice({
       state.provider = payload.provider
       state.signer = payload.signer
       state.collections = payload.colls as any
-      state.totalSupply = payload.totalSupply
       state.loading = false
       state.signerAddress = payload.signerAddress
       state.haveEth = payload.haveEth
