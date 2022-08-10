@@ -21,7 +21,7 @@ export const Header: React.FC = () => {
       <Styled.HeaderButton>
         <HomeIcon />
       </Styled.HeaderButton>
-      <Styled.HeaderTitle>Artform</Styled.HeaderTitle>
+      <Styled.HeaderTitle onClick={() => navigate('/')}>Artform</Styled.HeaderTitle>
 
       <Styled.MenuSwiper open={open} ref={ref}>
         <Styled.MenuSwiperTitle>Menu</Styled.MenuSwiperTitle>

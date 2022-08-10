@@ -2,11 +2,33 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import * as ethers from 'ethers'
 import ABI from './abi.json'
 import axios from 'axios'
+import collections from '../assets/data/collections.json'
+import authors from '../assets/data/authors.json'
 import * as _ from 'lodash'
+
+interface Author {
+  id?: number,
+  name?: string,
+  avatar?: string,
+  address?: string,
+  collections?: number[],
+  social?: any,
+  description?: any
+}
+
+export interface ICollection {
+  id: number,
+  contract: ethers.Contract,
+  address: string,
+  name: string,
+  totalSupply: number,
+  symbol: string,
+  authors: Author[]
+}
 
 interface ContractState {
   provider?: ethers.providers.Provider,
-  contract?: ethers.Contract,
+  collections?: ICollection[],
   signer?: ethers.providers.JsonRpcSigner,
   loading: boolean,
   tokens?: any[],
@@ -16,27 +38,51 @@ interface ContractState {
   haveEth?: boolean;
 }
 
+export const getAuthorByAddress = (address: string): Author | undefined => {
+  return authors.find((a) => a.address === address)
+}
+
 export const initContract = createAsyncThunk(
   'web3/initContract',
-  async ({ haveEth }: { haveEth: boolean }) => {    
+  async ({ haveEth }: { haveEth: boolean }) => {  
     if (haveEth) {
       await (window as any).ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${Number(97).toString(16)}` }],
       })
+        
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = await provider.getSigner();
       const signerAddress = await signer?.getAddress()
-      const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, signer)
-      const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+
+      const colls: ICollection[] = [];
+
+      for await (const collection of collections) {
+        const contract = new ethers.Contract(collection.address, ABI, signer)
+        const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+        const name = await contract?.name()
+        const symbol = await contract?.symbol()
+        const authors = (await contract?.getAuthors())?.map(getAuthorByAddress)
+        console.log(authors);
+        colls.push({
+          id: collection.id,
+          name,
+          symbol,
+          address: collection.address,
+          contract: contract,
+          totalSupply,
+          authors
+        })
+      }
+      
+      
       
       return {
         provider,
         signer,
         signerAddress,
-        contract,
-        totalSupply,
+        colls,
         haveEth
       }
     } else {
@@ -56,15 +102,17 @@ export const initContract = createAsyncThunk(
 export const tokenInfo = createAsyncThunk(
   'web3/tokenInfo',
   async (
-    tokenId: number,
+    { tokenId, collectionId }: { tokenId: number, collectionId: number },
     { getState }: any
   ) => {
     const { web3 }: any = getState()
-    const uri = await web3?.contract?.tokenURI(tokenId);
+    const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+
+    const uri = await collection?.tokenURI(tokenId);
     const { data } = await axios.get(uri?.replace("ipfs://", uri))
-    const tokenPrice = (await web3?.contract?.getTokenPrice(tokenId))?.toString()
-    const tokenOwner = await web3?.contract?.ownerOf(tokenId)
-    const tokenStatus = (await web3?.contract?.getLotState(tokenId)).toNumber()
+    const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
+    const tokenOwner = await collection?.ownerOf(tokenId)
+    const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
   
     return {
       ...data,
@@ -163,7 +211,7 @@ export const contractSlice = createSlice({
     builder.addCase(initContract.fulfilled, (state, { payload }) => {
       state.provider = payload.provider
       state.signer = payload.signer
-      state.contract = payload.contract as any
+      state.collections = payload.colls as any
       state.totalSupply = payload.totalSupply
       state.loading = false
       state.signerAddress = payload.signerAddress
@@ -174,6 +222,7 @@ export const contractSlice = createSlice({
       console.log('`tokenInfo` error:', error);
       state.loading = false;
       state.currToken = {
+        status: 'not minted',
         image: 'placeholder'
       }
     });

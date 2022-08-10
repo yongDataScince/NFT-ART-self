@@ -19,7 +19,7 @@ function App() {
   const [linkSrc, setLinkSrc] = useState<string>('');
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { contract, loading } = useAppSelector((state) => state.web3)
+  const { collections, loading } = useAppSelector((state) => state.web3)
   const location = useLocation()
 
   function isMobileDevice() {
@@ -37,28 +37,28 @@ function App() {
     return "Other"
   }
 
-  // useEffect(() => {
-  //   if (isMobileDevice()) {
-  //     // window.open('https://metamask.app.link/dapp/nft-art');
-  //   }
-  //   if ((window as any).ethereum) {
-  //     dispatch(initContract({ haveEth: true })) 
-  //   } else {
-  //     dispatch(initContract({ haveEth: false })) 
-  //     if (isMobileDevice()) {
-  //       if (getMobileOS() === 'iOS') {
-  //         setLinkSrc('https://apps.apple.com/ru/app/metamask-blockchain-wallet/id1438144202')
-  //       } else {
-  //         setLinkSrc('https://play.google.com/store/apps/details?id=io.metamask&hl=ru&gl=US')
-  //       }
-  //       setVariant('warning')
-  //       setErrorMessage("please install Metamask on your device: " + getMobileOS())
-  //     } else {
-  //       setVariant('error')
-  //       setErrorMessage("please install Metamask on your device")
-  //     }
-  //   }
-  // }, [dispatch])
+  useEffect(() => {
+    if (isMobileDevice()) {
+      // window.open('https://metamask.app.link/dapp/nft-art');
+    }
+    if ((window as any).ethereum) {
+      dispatch(initContract({ haveEth: true })) 
+    } else {
+      dispatch(initContract({ haveEth: false })) 
+      if (isMobileDevice()) {
+        if (getMobileOS() === 'iOS') {
+          setLinkSrc('https://apps.apple.com/ru/app/metamask-blockchain-wallet/id1438144202')
+        } else {
+          setLinkSrc('https://play.google.com/store/apps/details?id=io.metamask&hl=ru&gl=US')
+        }
+        setVariant('warning')
+        setErrorMessage("please install Metamask on your device: " + getMobileOS())
+      } else {
+        setVariant('error')
+        setErrorMessage("please install Metamask on your device")
+      }
+    }
+  }, [dispatch])
 
   return (
     <div className="app">
@@ -69,7 +69,7 @@ function App() {
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />
         <Route element={<Info />} path='/info' />
-        <Route path='picture/:id' element={<CardPage />} />
+        <Route path='/collection/:collection/picture/:pictureid' element={<CardPage />} />
       </Routes>
       {/* <Footer /> */}
     </div>

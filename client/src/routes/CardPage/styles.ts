@@ -204,7 +204,17 @@ export const CardButton = styled.button`
   &:disabled {
     border-bottom: 1px solid #CCCCCC;
     color: #CCCCCC;
+    opacity: 0.4;
     cursor: not-allowed;
+    &::before {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #E01B1B;
+      border-radius: 50%;
+      content: "";
+      left: 20px;
+    }
   }
   &:nth-child(2) {
     margin-left: 5px;

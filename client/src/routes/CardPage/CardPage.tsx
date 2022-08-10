@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { setLoader, tokenInfo, buyToken, listToken } from "../../store/reducer";
+import { setLoader, tokenInfo, buyToken, listToken, ICollection } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import picData from '../../assets/data/pictures.json'
-import collData from '../../assets/data/collections.json'
 import authData from '../../assets/data/authors.json'
 import CopyIcon from "../../components/UI/icons/CopyIcon";
 import InstagramIcon from "../../components/UI/icons/InstagramIcon";
@@ -33,16 +32,23 @@ interface Author {
 }
 
 export const CardPage: React.FC = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const { pictureid, collection } = useMemo(() => {
+    console.log(params);
+    return {
+      pictureid: params?.pictureid || -1,
+      collection: params?.collection || -1
+    }
+  }, [params])
   const dispatch = useAppDispatch()
-  const { contract, currToken, loading, signerAddress, haveEth } = useAppSelector((state) => state.web3)
+  const { collections, currToken, loading, signerAddress, haveEth } = useAppSelector((state) => state.web3)
   const [nwidth, setNwidth] = useState<number>(0);
   const [nheight, setNheight] = useState<number>(0);
   const [newPrice, setNewPrice] = useState<string>('')
   const [validate, setValidate] = useState<boolean>(false)
   const [picture, setPicture] = useState<Picture | undefined>()
-  const [authors, setAuthors] = useState<Author[]>([])
   const [tags, _] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
+  const [currCollection, setCurrCollection] = useState<ICollection>()
   const navigate = useNavigate()
   const ref = useRef<HTMLDivElement | null>(null)
 
@@ -60,17 +66,23 @@ export const CardPage: React.FC = () => {
   }
 
   const buy = () => {
-    dispatch(buyToken(Number(id))) // buyToken(uint256)
-    dispatch(tokenInfo(Number(id)))
+    dispatch(buyToken(Number(pictureid))) // buyToken(uint256)
+    dispatch(tokenInfo({
+      collectionId: Number(collection || -1),
+      tokenId: Number(collection || -1),
+    }))
   }
 
   const list = () => {
     dispatch(listToken({
-      tokenId: Number(id),
+      tokenId: Number(pictureid),
       newPrice,
       validate
     }))
-    dispatch(tokenInfo(Number(id)))
+    dispatch(tokenInfo({
+      collectionId: Number(collection || -1),
+      tokenId: Number(collection || -1),
+    }))
   }
 
   const resizeImage = useCallback(() => {
@@ -79,7 +91,7 @@ export const CardPage: React.FC = () => {
 
     let image = new Image()
     
-    image.src = require(`../../assets/images/${id}.png`);
+    image.src = require(`../../assets/images/${pictureid}.png`);
 
     image.onloadstart = () => {
       dispatch(setLoader(true))
@@ -93,14 +105,16 @@ export const CardPage: React.FC = () => {
     setNheight(image.naturalHeight * ratio)
     setNwidth(image.naturalWidth * ratio)
 
-  }, [dispatch, id])
+  }, [dispatch, pictureid])
 
   useEffect(() => {
-    if (contract) {
-      dispatch(tokenInfo(Number(id)))
+    if ((collections?.length || 0) > 0) {
+      dispatch(tokenInfo({
+        tokenId: Number(pictureid),
+        collectionId: Number(collection)
+      }))
     }
-  }, [id, dispatch, contract])
-
+  }, [pictureid, dispatch, collections?.length, collection])
 
   useEffect(() => {
     resizeImage()
@@ -109,33 +123,17 @@ export const CardPage: React.FC = () => {
   }, [nheight, nwidth, ref, currToken, dispatch, resizeImage])
 
   useEffect(() => {
-    if (id) {
-      const pic = picData.find((pic) => pic.tokenId === Number(id))
-      let auths: Author[] = [];
-      if ((pic?.authors?.length || 0) > 1) {
-        auths = pic?.authors.map((authorId) => {
-          const author = authData.find((author) => author.id === authorId)
-          console.log(author);
-          return {
-            ...author,
-            avatar: author?.avatar ? require(`../../assets/images/${author.avatar}`) : './placeholder.png'
-          }
-        }) || []
-      } else {
-        const author = authData.find((author) => author.id === pic?.authors[0])
-        auths = [
-          {...author, avatar: author ? require(`../../assets/images/${author.avatar}`) : './placeholder.png'}
-        ]
-      }
-
+    if (pictureid && collection) {
+      setCurrCollection(collections?.find((c) => c.id === collection))
+      const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
+      
       if (!pic) {
         navigate('/')
       } else {
         setPicture(pic)
-        setAuthors(auths || [])
       }
     }
-  }, [id, navigate])
+  }, [pictureid, navigate, collection, collections])
 
   return (
     <Styled.CardPage ref={ref}>
@@ -146,11 +144,11 @@ export const CardPage: React.FC = () => {
           {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
         </Styled.TagsList>
       </Styled.TagsContainer>
-      <Styled.CardImage src={require(`../../assets/images/${id}.png`)} width={nwidth} height={nheight} />
-      <Styled.CardTitle><span>#000{id}</span> ‘{picture?.name}’</Styled.CardTitle>
+      <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
+      <Styled.CardTitle><span>#000{pictureid}</span> ‘{picture?.name}’</Styled.CardTitle>
       <Styled.Authors>
         <span>By</span> {
-          authors.reduce((accu: any, elem: any) => {
+          currCollection?.authors.reduce((accu: any, elem: any) => {
             return accu === null ? [elem?.name] : [...accu, <span> & </span> , elem?.name]
           }, null)
         }
@@ -170,13 +168,17 @@ export const CardPage: React.FC = () => {
 
         <Styled.ImageGroup>
           <Styled.ImageCollection src={
-            require(`../../assets/images/collection_${collData.find(({ address }) => address === picture?.collectionAddress)?.id || 1}.png`)
+            require(`../../assets/images/collection_${currCollection?.id || 1}.png`)
           }/>
-          <p>{collData.find(({ address }) => address === picture?.collectionAddress)?.name}</p>
+          <p>{currCollection?.name}</p>
         </Styled.ImageGroup>
-        <Styled.Price>
-          <span>Price: </span>10 BNB
-        </Styled.Price>
+        {
+          currToken?.status !== 'not minted' && <>
+            <Styled.Price>
+              <span>Price: </span>10 BNB
+            </Styled.Price>
+          </>
+        }
       </Styled.CardInfo>
 
       {(currToken?.owner === signerAddress && haveEth) && (
@@ -197,19 +199,19 @@ export const CardPage: React.FC = () => {
               List Token
             </Styled.CardButton>
           ) : (
-            <Styled.CardButton onClick={() => buy()} disabled={currToken?.status === 'not listed' || !haveEth}>
+            <Styled.CardButton onClick={() => buy()} disabled={currToken?.status === 'not listed' || !haveEth || currToken?.status === 'not minted'}>
               Buy Token
             </Styled.CardButton>
           )
         }
       </Styled.CardButtonGroup>
       {
-        authors.map((author) => (
+        currCollection?.authors.map((author) => (
           <Styled.AuthorBlock key={author.id}>
             <Styled.AuthorImage src={author?.avatar} />
             <Styled.AuthorName>{author.name}</Styled.AuthorName>
             <Styled.AuthorAddress>
-              <CopyIcon viewBox='0 0 60 30' color="#999999" /> {author.address?.slice(0, 6)}...{author.address?.slice(37, 42)}
+              <CopyIcon viewBox='0 0 60 30' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>
             {
               Object.keys(author.description).map((key) => (

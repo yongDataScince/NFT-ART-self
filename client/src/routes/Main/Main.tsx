@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import _ from "lodash";
+import _, { times } from "lodash";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageCarousel } from "../../components/UI/ImageCarousel";
@@ -11,12 +11,12 @@ import * as Styled from './styles'
 
 export const Main: React.FC = () => {
   const navigate = useNavigate()
-  const { loading, tokens, contract } = useAppSelector((state) => state.web3)
+  const { loading, tokens, collections } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
 
   useEffect(() => {    
     // dispatch(getTokens(contract))
-  }, [contract, dispatch])
+  }, [collections, dispatch])
 
   return (
     <Styled.MainBody>
@@ -31,9 +31,15 @@ export const Main: React.FC = () => {
           </Styled.MainHeaderSubTitile>
         </Styled.MainHeaderWrapper>
       </Styled.MainHeader>
-      <ImageCarousel title="Collection 1 / Ivan Shalmin [12]" images={[1, 2, 3, 4]} />
-      <ImageCarousel title="Collection 2 / Shysha [10]" images={[5, 6, 7, 8, 9]} />
-
+      {
+        collections?.map((collection) => (
+          <ImageCarousel
+            collectionId={collection.id}
+            title={`${collection.name} / ${collection.name} [${collection.totalSupply}]`}
+            images={times(collection.totalSupply).map((i) => i + 1)}
+          />
+        ))
+      }
     </Styled.MainBody>
   )
 }

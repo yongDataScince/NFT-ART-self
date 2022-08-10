@@ -7,10 +7,11 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   images: number[],
+  collectionId: number,
   title: string
 }
 
-export const ImageCarousel: React.FC<Props> = ({ images, title }) => {
+export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, title }) => {
       <Styled.CarouselTitleWrapper>
         <Styled.CarouselTitle>{title}</Styled.CarouselTitle>
       </Styled.CarouselTitleWrapper>
-      <Styled.CarouselCard onClick={() => navigate(`/picture/${images[currentImage - 1]}`)}>
+      <Styled.CarouselCard onClick={() => navigate(`collection/${collectionId}/picture/${images[currentImage - 1]}`)}>
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
