@@ -89,11 +89,34 @@ export const initContract = createAsyncThunk(
       const provider = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
       const contract = new ethers.Contract('0x3FD0E2d4174e33ECf9B617F31238de46aD6737ac', ABI, provider)
       const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+      const colls: ICollection[] = [];
+
+      for await (const collection of collections) {
+        const contract = new ethers.Contract(collection.address, ABI, provider)
+        const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+        const name = await contract?.name()
+        const symbol = await contract?.symbol()
+        const authors = (await contract?.getAuthors())?.map(getAuthorByAddress)
+        console.log(authors);
+        colls.push({
+          id: collection.id,
+          name,
+          symbol,
+          address: collection.address,
+          contract: contract,
+          totalSupply,
+          authors
+        })
+      }
+      
+      
+      
       return {
         provider,
-        contract,
-        haveEth,
-        totalSupply
+        signer,
+        signerAddress,
+        colls,
+        haveEth
       }
     }
   }
