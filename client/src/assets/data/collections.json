@@ -1,14 +1,7 @@
 [
   {
     "address": "0x3fd0e2d4174e33ecf9b617f31238de46ad6737ac",
-    "id": 1
-  },
-  {
-    "address": "0x3fd0e2d4174e33ecf9b617f31238de46ad6737ac",
-    "id": 2
-  },
-  {
-    "address": "0x3fd0e2d4174e33ecf9b617f31238de46ad6737ac",
-    "id": 3
+    "id": 1,
+    "authors": ["0x79D0BfE592B77acc9287eB914ee14F56f77a432C", "0x79D0BfE592B77acc9287eB914ee14F56f77a432B"]
   }
 ]

@@ -1,24 +1,33 @@
 import _ from "lodash"
-import picturesData from '../../../assets/data/pictures.json';
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ChevronIcon from "../icons/ChevronIcon"
 import * as Styled from './styles'
 import { useNavigate } from "react-router-dom";
+import { ICollection } from "../../../store/reducer";
+import { useAppSelector } from "../../../store";
+import picData from '../../../assets/data/pictures.json'
 
 interface Props {
   images: number[],
   collectionId: number,
   title: string
 }
-
+const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
+  const { collections } = useAppSelector((s) => s.web3)
+  const [currCollection, setCurrCollection] = useState<ICollection>()
   const navigate = useNavigate();
 
   const choiseImage = (id: number) => {
     setCurrentImage(id)
   }
+
+  useEffect(() => {
+    const c = collections?.find((c) => c.id === collectionId)
+    setCurrCollection(c)
+  }, [collectionId, collections])
 
   return (
     <Styled.CarouselMain>
@@ -29,10 +38,10 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) 
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#000{currentImage}</Styled.NumberSpan> {(picturesData as any)[String(currentImage)]?.authors?.join('/')}
+            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> {currCollection?.authors.map((a) => a.name)?.join('/')}
           </Styled.CarouselFooterTitle>
-          <Styled.CarouselFooterInfo status={(picturesData as any)[String(currentImage)]?.status}>
-            <Styled.GraySpan>{(picturesData as any)[String(currentImage)]?.status}</Styled.GraySpan> {(picturesData as any)[String(currentImage)]?.price} BNB
+          <Styled.CarouselFooterInfo status={(picData as any)[String(currentImage)]?.status}>
+            <Styled.GraySpan>{(picData as any)[String(currentImage)]?.status}</Styled.GraySpan> {(picData as any)[String(currentImage)]?.price} BNB
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>

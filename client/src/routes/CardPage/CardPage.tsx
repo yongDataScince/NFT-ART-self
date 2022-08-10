@@ -5,7 +5,6 @@ import { setLoader, tokenInfo, buyToken, listToken, ICollection } from "../../st
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import picData from '../../assets/data/pictures.json'
-import authData from '../../assets/data/authors.json'
 import CopyIcon from "../../components/UI/icons/CopyIcon";
 import InstagramIcon from "../../components/UI/icons/InstagramIcon";
 import Facebook from "../../components/UI/icons/Facebook";
@@ -30,6 +29,8 @@ interface Author {
   social?: any,
   description?: any
 }
+
+const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
 export const CardPage: React.FC = () => {
   const params = useParams();
@@ -124,7 +125,8 @@ export const CardPage: React.FC = () => {
 
   useEffect(() => {
     if (pictureid && collection) {
-      setCurrCollection(collections?.find((c) => c.id === collection))
+      setCurrCollection(collections?.find((c) => c.id === Number(collection)))
+      console.log('currCollection: ', collections?.find((c) => c.id === Number(collection)));
       const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
       
       if (!pic) {
@@ -145,7 +147,8 @@ export const CardPage: React.FC = () => {
         </Styled.TagsList>
       </Styled.TagsContainer>
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
-      <Styled.CardTitle><span>#000{pictureid}</span> ‘{picture?.name}’</Styled.CardTitle>
+      <Styled.CardTitle>
+        <span>#{zeroPad(Number(pictureid), 4)}</span>‘{picture?.name}’</Styled.CardTitle>
       <Styled.Authors>
         <span>By</span> {
           currCollection?.authors.reduce((accu: any, elem: any) => {
@@ -159,7 +162,7 @@ export const CardPage: React.FC = () => {
           Description:
         </Styled.CardInfoTitle>
         <Styled.CardInfoText>
-          {picture?.description}
+          {picture?.description?.join(" - ")}
         </Styled.CardInfoText>
 
         <Styled.CardInfoTitle>
@@ -208,7 +211,7 @@ export const CardPage: React.FC = () => {
       {
         currCollection?.authors.map((author) => (
           <Styled.AuthorBlock key={author.id}>
-            <Styled.AuthorImage src={author?.avatar} />
+            <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
             <Styled.AuthorName>{author.name}</Styled.AuthorName>
             <Styled.AuthorAddress>
               <CopyIcon viewBox='0 0 60 30' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
@@ -232,7 +235,9 @@ export const CardPage: React.FC = () => {
             }
             <Styled.SocialBlock>
               {
-                Object.keys(author.social).map((key) => (socialIcons as any)[key])
+                Object.keys(author.social).map((key) => (
+                  <a href={`${author.social[key]}`}>{(socialIcons as any)[key]}</a>
+                ))
               }
             </Styled.SocialBlock>
           </Styled.AuthorBlock>

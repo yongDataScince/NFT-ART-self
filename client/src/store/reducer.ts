@@ -82,8 +82,10 @@ export const initContract = createAsyncThunk(
         const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        const authors = (await contract?.getAuthors())?.map(getAuthorByAddress)
-        console.log(authors);
+        const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
+            (await contract?.getAuthors())?.map(getAuthorByAddress)
+              :
+            (collection as any).authors.map(getAuthorByAddress)
         colls.push({
           id: collection.id,
           name,
@@ -94,9 +96,7 @@ export const initContract = createAsyncThunk(
           authors
         })
       }
-      
-      
-      
+
       return {
         provider,
         signer,

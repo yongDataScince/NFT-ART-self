@@ -1,17 +1,12 @@
-import { ethers } from "ethers";
-import _, { times } from "lodash";
+import { times } from "lodash";
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { ImageCarousel } from "../../components/UI/ImageCarousel";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { getTokens } from "../../store/reducer";
-
 import * as Styled from './styles'
 
 export const Main: React.FC = () => {
-  const navigate = useNavigate()
-  const { loading, tokens, collections } = useAppSelector((state) => state.web3)
+  const { loading, collections } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
 
   useEffect(() => {    

@@ -113,7 +113,7 @@ export const CarouselFooterTitle = styled.p`
   font-style: normal;
   font-weight: 300;
   font-size: 30px;
-  line-height: 20px;
+  line-height: 23px;
   color: #FFFFFF;
   margin: 0;
   padding: 0;
@@ -121,7 +121,8 @@ export const CarouselFooterTitle = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
+
 `
 
 export const PagButton = styled.button`

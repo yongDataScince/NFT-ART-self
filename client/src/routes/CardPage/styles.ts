@@ -92,7 +92,7 @@ export const CardTitle = styled.p`
   padding-bottom: 4px;
   font-family: 'Helvetica Neue';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 200;
   font-size: 40px;
   line-height: 100%;
   width: 100%;
