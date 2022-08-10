@@ -46,11 +46,30 @@ export const initContract = createAsyncThunk(
   'web3/initContract',
   async ({ haveEth }: { haveEth: boolean }) => {  
     if (haveEth) {
-      await (window as any).ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: `0x${Number(97).toString(16)}` }],
-      })
-        
+      if ((window as any).networkVersion !== 97) {
+        try {
+          await (window as any).request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${Number(97).toString(16)}` }]
+          });
+        } catch (err: any) {
+            // This error code indicates that the chain has not been added to MetaMask
+          if (err.code === 4902) {
+            await (window as any).request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'Polygon Mainnet',
+                  chainId: `0x${Number(97).toString(16)}`,
+                  nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+                  rpcUrls: ['https://data-seed-prebsc-2-s2.binance.org:8545/']
+                }
+              ]
+            });
+          }
+        }
+      }
+
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = await provider.getSigner();
