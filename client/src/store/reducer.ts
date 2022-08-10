@@ -106,9 +106,7 @@ export const initContract = createAsyncThunk(
           authors
         })
       }
-      
-      
-      
+
       return {
         provider,
         colls,

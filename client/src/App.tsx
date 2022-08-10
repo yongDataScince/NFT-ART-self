@@ -39,7 +39,7 @@ function App() {
 
   useEffect(() => {
     if (isMobileDevice()) {
-      // window.open('https://metamask.app.link/dapp/nft-art');
+      window.open('https://metamask.app.link/dapp/da376751.nft-art-preview.pages.dev/');
     }
     if ((window as any).ethereum) {
       dispatch(initContract({ haveEth: true })) 
