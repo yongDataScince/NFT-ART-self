@@ -23,7 +23,7 @@ export const InfoBlock = styled.div<Props>`
   margin-bottom: 40px;
   ${({ delay, opened }) => css`
     transition-delay: ${delay}s;
-    max-height: ${opened ? '150%' : '60px'};
+    max-height: ${opened ? 'auto' : '60px'};
     border-color: ${opened ? '#000' : '#FFF'};
   `}
 `

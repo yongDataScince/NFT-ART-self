@@ -380,9 +380,10 @@ export const AuthorAddress = styled.p`
   padding: 0;
   margin-top: 16px;
   margin-bottom: 8px;
+  transition: all 0.1s cubic-bezier(0.165, 0.84, 0.44, 1);
 
   &:active {
-    color: #CCCCCC;
+    color: #666666;
   }
 `
 
