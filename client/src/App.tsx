@@ -4,7 +4,7 @@ import Modal from './components/UI/modal';
 import { Route, Routes,  } from 'react-router-dom'
 import Main from './routes/Main'
 import CardPage from './routes/CardPage'
-import { initContract } from './store/reducer';
+import { initContract, setLoader } from './store/reducer';
 import { useAppDispatch, useAppSelector } from './store';
 import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
@@ -50,6 +50,10 @@ function App() {
         setErrorMessage("please install Metamask on your device")
       }
     }
+    (window as any).ethereum?.on("accountsChanged", () => {
+      dispatch(setLoader(true))
+      dispatch(initContract({ haveEth: true }))
+    });
   }, [dispatch])
 
   return (

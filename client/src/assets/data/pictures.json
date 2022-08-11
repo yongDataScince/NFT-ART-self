@@ -3,97 +3,67 @@
     "tokenId": 1,
     "authors": [1, 2],
     "name": "Hearth",
-    "status": "Available",
     "collectionAddress": "1",
     "description": ["Warmth", "44 sec", "4K UHD"]
   },
   {
     "tokenId": 2,
-    "image": "./2.png",
     "price": "1.5",
     "name": "Angel",
-    "status": "Not available",
     "collectionAddress": "1",
     "description": ["A fall from grace", "29 sec", "4K UHD"]
   },
   {
     "tokenId": 3,
-    "image": "./3.png",
-    "price": "5.5",
     "name": "Race",
-    "status": "Not available",
     "collectionAddress": "1",
     "description": ["High speed in slow motion", "54 sec", "4K UHD"]
   },
   {
     "tokenId": 4,
-    "image": "./4.png",
-    "price": "0.5",
     "name": "Moonlight",
-    "status": "Not available",
     "collectionAddress": "1",
     "description": ["Overcoming obstacles", "30 sec", "4K UHD"]
   },
   {
     "tokenId": 5,
-    "image": "./5.png",
-    "price": "1.89",
     "name": "The ship is sailing",
-    "status": "Not available",
     "collectionAddress": "2",
     "description": ["Wait and see", "59 sec", "4K UHD"]
   },
   {
     "tokenId": 6,
-    "image": "./6.png",
-    "price": "8.1",
     "name": "Ghoul",
-    "status": "Available",
     "collectionAddress": "1",
     "description": ["What lies beneath", "34 sec", "4K UHD"]
   },
   {
     "tokenId": 7,
-    "image": "./7.png",
-    "price": "3.8",
     "name": "Demons",
-    "status": "Not available",
     "collectionAddress": "2",
     "description": ["Miscommunication", "43 sec", "4K UHD"]
   },
   {
     "tokenId": 8,
-    "image": "./8.png",
-    "price": "25.12",
     "name": "Contact",
-    "status": "Available",
     "collectionAddress": "1",
     "description": ["Nightfall absorbs the sun", "31 sec", "4K UHD"]
   },
   {
     "tokenId": 9,
-    "image": "./9.png",
-    "price": "1000.12",
     "name": "Dusk",
-    "status": "Available",
     "collectionAddress": "2",
     "description": ["A sunny morning with a hint of horror creeping in", "40 sec", "4K UHD"]
   },
   {
     "tokenId": 10,
-    "image": "./10.png",
-    "price": "1000.12",
     "name": "6 Am",
-    "status": "Available",
     "collectionAddress": "2",
     "description": ["Flowers in a cool summer breeze", "36 sec", "4K UHD"]
   },
   {
     "tokenId": 11,
-    "image": "./11.png",
-    "price": "1000.12",
     "name": "Roses",
-    "status": "Available",
     "collectionAddress": "2",
     "description": ["A liquid sunset", "35 sec", "4K UHD"]
   }

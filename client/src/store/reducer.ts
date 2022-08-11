@@ -4,6 +4,7 @@ import ABI from './abi.json'
 import axios from 'axios'
 import collections from '../assets/data/collections.json'
 import authors from '../assets/data/authors.json'
+import pictures from '../assets/data/pictures.json'
 import * as _ from 'lodash'
 
 interface Author {
@@ -36,6 +37,7 @@ interface ContractState {
   totalSupply?: number,
   signerAddress?: string;
   haveEth?: boolean;
+  signerBalance?: number
 }
 
 export const getAuthorByAddress = (address: string): Author | undefined => {
@@ -73,12 +75,12 @@ export const initContract = createAsyncThunk(
       await provider.send("eth_requestAccounts", []);
       const signer = await provider.getSigner();
       const signerAddress = await signer?.getAddress()
-
+      const signerBalance = Number(ethers.utils.formatEther(await provider.getBalance(signerAddress)))
       const colls: ICollection[] = [];
 
       for await (const collection of collections) {
         const contract = new ethers.Contract(collection.address, ABI, signer)
-        const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+        const totalSupply = pictures.length
         const name = await contract?.name()
         const symbol = await contract?.symbol()
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
@@ -98,6 +100,7 @@ export const initContract = createAsyncThunk(
 
       return {
         provider,
+        signerBalance,
         signer,
         signerAddress,
         colls,
@@ -109,14 +112,13 @@ export const initContract = createAsyncThunk(
 
       for await (const collection of collections) {
         const contract = new ethers.Contract(collection.address, ABI, provider)
-        const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
+        const totalSupply = pictures.length
         const name = await contract?.name()
         const symbol = await contract?.symbol()
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
                 (await contract?.getAuthors())?.map(getAuthorByAddress)
                   :
                 (collection as any).authors.map(getAuthorByAddress)
-        console.log('authors: ', authors);
         colls.push({
           id: collection.id,
           name,
@@ -151,7 +153,7 @@ export const tokenInfo = createAsyncThunk(
     const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
     const tokenOwner = await collection?.ownerOf(tokenId)
     const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
-  
+
     return {
       ...data,
       price: tokenPrice,
@@ -161,53 +163,18 @@ export const tokenInfo = createAsyncThunk(
   }
 );
 
-export const getTokens = createAsyncThunk(
-  'web3/tokens',
-  async (contract?: ethers.Contract) => {
-    const maxSupply = (await contract?.maxSupply())?.toNumber() || 0
-    const tokens = []
-    console.log(contract);
-    const baseUri = await contract?.baseTokenURI();
-  
-    if (baseUri) {
-      for await (const id of _.times(maxSupply)) {
-        let uri;
-        console.log('base Uri:', baseUri?.replace("ipfs://", baseUri) + (id + 1));
-        try {
-          uri = await contract?.tokenURI(id + 1);
-        } catch (error) {
-          uri = baseUri?.replace("ipfs://", baseUri) + (id + 1)
-        }
-        if(uri) {
-          let data;
-          try {
-            const res = await axios.get(uri?.replace("ipfs://", uri))
-            data = res.data;
-          } catch (error) {
-            data = {}
-          }
-          const price = (await contract?.getTokenPrice(id + 1))?.toString()
-          tokens.push({
-            ...data,
-            id: id + 1,
-            price,
-          })
-        }
-      }
-    }
-
-    return tokens
-  }
-)
-
 export const buyToken = createAsyncThunk(
   'web3/buyToken',
- async (tokenId: number, {
+ async ({ tokenId, collectionId }:{
+  tokenId: number,
+  collectionId: number
+ }, {
   getState
  }) => {
   const { web3 }: any = getState()
-  const tokenPrice = (await web3?.contract?.getTokenPrice(tokenId))
-  const tx = await web3?.contract?.buyToken(tokenId, { value: tokenPrice })
+  const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+  const tokenPrice = (await collection?.getTokenPrice(tokenId))
+  const tx = await collection?.buyToken(tokenId, { value: tokenPrice })
   await tx.wait()
  }
 )
@@ -217,12 +184,14 @@ export const listToken = createAsyncThunk(
  async ({
   tokenId,
   newPrice,
-  validate
- }: {tokenId: number, newPrice: string, validate: boolean}, {
+  validate,
+  collectionId
+ }: {tokenId: number, newPrice: string, validate: boolean, collectionId: number}, {
   getState
  }) => {
   const { web3 }: any = getState()
-  const tx = await web3?.contract?.listToken(tokenId, ethers.utils.parseEther(newPrice), validate)
+  const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+  const tx = await collection?.listToken(tokenId, ethers.utils.parseEther(newPrice), validate)
   await tx.wait()
  }
 )
@@ -251,6 +220,7 @@ export const contractSlice = createSlice({
       state.signer = payload.signer
       state.collections = payload.colls as any
       state.loading = false
+      state.signerBalance = payload.signerBalance
       state.signerAddress = payload.signerAddress
       state.haveEth = payload.haveEth
     });
@@ -271,20 +241,6 @@ export const contractSlice = createSlice({
       state.loading = false;
       state.currToken = payload
     });
-
-    builder.addCase(getTokens.pending, (state) => {
-      state.loading = true;
-    })
-
-    builder.addCase(getTokens.rejected, (state, { error }) => {
-      state.loading = false
-      console.log(`getTokens error: `, error);
-    })
-
-    builder.addCase(getTokens.fulfilled, (state, { payload }) => {
-      state.loading = false;  
-      state.tokens = payload
-    })
 
     builder.addCase(buyToken.pending, (state) => {
       state.loading = true

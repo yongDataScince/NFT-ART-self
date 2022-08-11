@@ -67,7 +67,7 @@ export const PageItem = styled.div<Props>`
 export const CarouselPagination = styled.div`
   margin-left: auto;
   display: flex;
-  width: 30%;
+  width: auto;
   align-items: center;
   justify-content: center;
   button:first-child {

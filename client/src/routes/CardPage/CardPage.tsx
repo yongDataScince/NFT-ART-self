@@ -10,7 +10,7 @@ import InstagramIcon from "../../components/UI/icons/InstagramIcon";
 import Facebook from "../../components/UI/icons/Facebook";
 import TweeterIcon from "../../components/UI/icons/TweeterIcon";
 import WebIcon from "../../components/UI/icons/WebIcon";
-import { times } from "lodash";
+import { ethers } from "ethers";
 
 interface Picture {
   tokenId?: number,
@@ -32,7 +32,7 @@ export const CardPage: React.FC = () => {
     }
   }, [params])
   const dispatch = useAppDispatch()
-  const { collections, currToken, loading, signerAddress, haveEth } = useAppSelector((state) => state.web3)
+  const { collections, currToken, loading, signerAddress, haveEth, signerBalance } = useAppSelector((state) => state.web3)
   const [nwidth, setNwidth] = useState<number>(0);
   const [nheight, setNheight] = useState<number>(0);
   const [newPrice, setNewPrice] = useState<string>('')
@@ -57,7 +57,10 @@ export const CardPage: React.FC = () => {
   }
 
   const buy = () => {
-    dispatch(buyToken(Number(pictureid))) // buyToken(uint256)
+    dispatch(buyToken({
+      tokenId: Number(pictureid),
+      collectionId: Number(collection)
+    }))
     dispatch(tokenInfo({
       collectionId: Number(collection || -1),
       tokenId: Number(collection || -1),
@@ -68,7 +71,8 @@ export const CardPage: React.FC = () => {
     dispatch(listToken({
       tokenId: Number(pictureid),
       newPrice,
-      validate
+      validate,
+      collectionId: Number(collection)
     }))
     dispatch(tokenInfo({
       collectionId: Number(collection || -1),
@@ -165,9 +169,9 @@ export const CardPage: React.FC = () => {
           <p>{currCollection?.name}</p>
         </Styled.ImageGroup>
         {
-          currToken?.status !== 'not minted' && <>
+          (currToken?.status !== 'not minted' && !!currToken?.price) && <>
             <Styled.Price>
-              <span>Price: </span>10 BNB
+              <span>Price: </span> { ethers.utils.formatEther(currToken?.price) }
             </Styled.Price>
           </>
         }
@@ -191,7 +195,13 @@ export const CardPage: React.FC = () => {
               List Token
             </Styled.CardButton>
           ) : (
-            <Styled.CardButton onClick={() => buy()} disabled={currToken?.status === 'not listed' || !haveEth || currToken?.status === 'not minted'}>
+            <Styled.CardButton onClick={() => buy()} 
+              disabled={
+                currToken?.status === 'not listed' ||
+                !haveEth                           ||
+                currToken?.status === 'not minted' ||
+                (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price))
+              }>
               Buy Token
             </Styled.CardButton>
           )
