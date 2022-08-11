@@ -381,7 +381,7 @@ export const AuthorAddress = styled.p`
   margin-top: 16px;
   margin-bottom: 8px;
   transition: all 0.1s cubic-bezier(0.165, 0.84, 0.44, 1);
-
+  cursor: pointer;
   &:active {
     color: #666666;
   }
