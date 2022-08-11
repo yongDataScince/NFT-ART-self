@@ -380,6 +380,10 @@ export const AuthorAddress = styled.p`
   padding: 0;
   margin-top: 16px;
   margin-bottom: 8px;
+
+  &:active {
+    color: #CCCCCC;
+  }
 `
 
 export const AuthorDescriptionBlock = styled.div`

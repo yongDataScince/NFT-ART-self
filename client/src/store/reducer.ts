@@ -46,27 +46,26 @@ export const initContract = createAsyncThunk(
   'web3/initContract',
   async ({ haveEth }: { haveEth: boolean }) => {  
     if (haveEth) {
-      if ((window as any).networkVersion !== 97) {
-        try {
-          await (window as any).request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${Number(97).toString(16)}` }]
+      try {
+        await (window as any).ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: `0x${Number(97).toString(16)}` }]
+        });
+      } catch (err: any) {
+        console.log(err);
+        if (err.code === 4902) {
+          console.log('init');
+          await (window as any).ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainName: 'binance test',
+                chainId: `0x${Number(97).toString(16)}`,
+                nativeCurrency: { name: 'BNB', decimals: 18, symbol: 'BNB' },
+                rpcUrls: ['https://data-seed-prebsc-2-s2.binance.org:8545/']
+              }
+            ]
           });
-        } catch (err: any) {
-            // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902) {
-            await (window as any).request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainName: 'Polygon Mainnet',
-                  chainId: `0x${Number(97).toString(16)}`,
-                  nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
-                  rpcUrls: ['https://data-seed-prebsc-2-s2.binance.org:8545/']
-                }
-              ]
-            });
-          }
         }
       }
 
@@ -113,8 +112,11 @@ export const initContract = createAsyncThunk(
         const totalSupply = (await contract?.totalSupply())?.toNumber() || 0
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        const authors = (await contract?.getAuthors())?.map(getAuthorByAddress)
-        console.log(authors);
+        const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
+                (await contract?.getAuthors())?.map(getAuthorByAddress)
+                  :
+                (collection as any).authors.map(getAuthorByAddress)
+        console.log('authors: ', authors);
         colls.push({
           id: collection.id,
           name,
@@ -254,7 +256,6 @@ export const contractSlice = createSlice({
     });
 
     builder.addCase(tokenInfo.rejected, (state, { error }) => {
-      console.log('`tokenInfo` error:', error);
       state.loading = false;
       state.currToken = {
         status: 'not minted',

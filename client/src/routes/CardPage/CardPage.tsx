@@ -10,6 +10,7 @@ import InstagramIcon from "../../components/UI/icons/InstagramIcon";
 import Facebook from "../../components/UI/icons/Facebook";
 import TweeterIcon from "../../components/UI/icons/TweeterIcon";
 import WebIcon from "../../components/UI/icons/WebIcon";
+import { times } from "lodash";
 
 interface Picture {
   tokenId?: number,
@@ -20,22 +21,11 @@ interface Picture {
   description?: any[],
 }
 
-interface Author {
-  id?: number,
-  name?: string,
-  avatar?: string,
-  address?: string,
-  collections?: number[],
-  social?: any,
-  description?: any
-}
-
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
 export const CardPage: React.FC = () => {
   const params = useParams();
   const { pictureid, collection } = useMemo(() => {
-    console.log(params);
     return {
       pictureid: params?.pictureid || -1,
       collection: params?.collection || -1
@@ -48,7 +38,7 @@ export const CardPage: React.FC = () => {
   const [newPrice, setNewPrice] = useState<string>('')
   const [validate, setValidate] = useState<boolean>(false)
   const [picture, setPicture] = useState<Picture | undefined>()
-  const [tags, _] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
+  const [tags] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
   const [currCollection, setCurrCollection] = useState<ICollection>()
   const navigate = useNavigate()
   const ref = useRef<HTMLDivElement | null>(null)
@@ -109,12 +99,10 @@ export const CardPage: React.FC = () => {
   }, [dispatch, pictureid])
 
   useEffect(() => {
-    if ((collections?.length || 0) > 0) {
-      dispatch(tokenInfo({
-        tokenId: Number(pictureid),
-        collectionId: Number(collection)
-      }))
-    }
+    dispatch(tokenInfo({
+      tokenId: Number(pictureid),
+      collectionId: Number(collection)
+    }))
   }, [pictureid, dispatch, collections?.length, collection])
 
   useEffect(() => {
@@ -126,9 +114,7 @@ export const CardPage: React.FC = () => {
   useEffect(() => {
     if (pictureid && collection) {
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
-      console.log('currCollection: ', collections?.find((c) => c.id === Number(collection)));
       const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
-      
       if (!pic) {
         navigate('/')
       } else {
@@ -141,7 +127,7 @@ export const CardPage: React.FC = () => {
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
       <Styled.TagsContainer>
-        <Styled.TagsTitle>Tags</Styled.TagsTitle>
+        <Styled.TagsTitle>Tags {currCollection?.authors.length}</Styled.TagsTitle>
         <Styled.TagsList>
           {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
         </Styled.TagsList>
@@ -213,7 +199,7 @@ export const CardPage: React.FC = () => {
           <Styled.AuthorBlock key={author.id}>
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
             <Styled.AuthorName>{author.name}</Styled.AuthorName>
-            <Styled.AuthorAddress>
+            <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
               <CopyIcon viewBox='0 0 60 30' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>
             {
@@ -236,7 +222,7 @@ export const CardPage: React.FC = () => {
             <Styled.SocialBlock>
               {
                 Object.keys(author.social).map((key) => (
-                  <a href={`${author.social[key]}`}>{(socialIcons as any)[key]}</a>
+                  <a href={`${author.social[key]}`} key={key}>{(socialIcons as any)[key]}</a>
                 ))
               }
             </Styled.SocialBlock>
