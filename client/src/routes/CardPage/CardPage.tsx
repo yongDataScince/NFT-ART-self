@@ -127,14 +127,14 @@ export const CardPage: React.FC = () => {
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
       <Styled.TagsContainer>
-        <Styled.TagsTitle>Tags {currCollection?.authors.length}</Styled.TagsTitle>
+        <Styled.TagsTitle>Tags</Styled.TagsTitle>
         <Styled.TagsList>
           {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
         </Styled.TagsList>
       </Styled.TagsContainer>
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.CardTitle>
-        <span>#{zeroPad(Number(pictureid), 4)}</span>‘{picture?.name}’</Styled.CardTitle>
+        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’</Styled.CardTitle>
       <Styled.Authors>
         <span>By</span> {
           currCollection?.authors.reduce((accu: any, elem: any) => {
@@ -148,7 +148,10 @@ export const CardPage: React.FC = () => {
           Description:
         </Styled.CardInfoTitle>
         <Styled.CardInfoText>
-          {picture?.description?.join(" - ")}
+          {picture?.description?.reduce((accu: any, elem: any) => {
+            return accu === null ? [elem] : [...accu, <br /> , elem]
+          }, null)
+        }
         </Styled.CardInfoText>
 
         <Styled.CardInfoTitle>
