@@ -1,5 +1,4 @@
 import * as Styled from './styles';
-import HomeIcon from '../UI/icons/HomeIcon'
 import { useNavigate } from 'react-router-dom';
 import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
@@ -9,10 +8,7 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
 
   return (
     <Styled.HeaderBar>
-      <Styled.HeaderButton>
-        <HomeIcon />
-      </Styled.HeaderButton>
-      <Styled.HeaderButton>
+      <Styled.HeaderButton onClick={() => navigate('/settings')}>
         <SettingsIcon />
       </Styled.HeaderButton>
       {(os === 'iOS' || os === 'Android') && (

@@ -10,6 +10,7 @@ import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
 import Footer from './components/Footer';
+import { SettingsPage } from './routes/SettingsPage';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -67,6 +68,8 @@ function App() {
         <Route element={<Cabinet />} path='/cabinet' />
         <Route element={<Info />} path='/info' />
         <Route path='/collection/:collection/picture/:pictureid' element={<CardPage />} />
+        <Route path='/settings' element={<SettingsPage />} />
+
       </Routes>
     </div>
   );
