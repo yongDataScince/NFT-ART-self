@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from './store';
 import Loader from './components/UI/loader';
 import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
+import Footer from './components/Footer';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -67,7 +68,6 @@ function App() {
         <Route element={<Info />} path='/info' />
         <Route path='/collection/:collection/picture/:pictureid' element={<CardPage />} />
       </Routes>
-      {/* <Footer /> */}
     </div>
   );
 }

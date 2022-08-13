@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const MainHeader = styled.div`
   width: 100%;
   height: auto;
-  padding: 250px 70px 350px 60px;
+  padding: 160px 53px 160px 32px;
   box-sizing: border-box;
 `
 
@@ -19,9 +19,9 @@ export const MainHeaderTitle = styled.p`
   padding: 0;
   font-family: 'Helvetica Neue';
   font-style: normal;
-  font-weight: 200;
-  font-size: 52px;
-  line-height: 52px;
+  font-weight: 100;
+  font-size: 40px;
+  line-height: 100%;
   color: #FFFFFF;
   margin-bottom: 12px;
   white-space: wrap;
@@ -33,8 +33,8 @@ export const MainHeaderSubTitile = styled.p`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 300;
-  font-size: 52px;
-  line-height: 78px;
+  font-size: 40px;
+  line-height: 40px;
   color: #FFFFFF;
 `
 

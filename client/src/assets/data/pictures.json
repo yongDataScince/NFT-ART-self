@@ -4,67 +4,114 @@
     "authors": [1, 2],
     "name": "Hearth",
     "collectionAddress": "1",
-    "description": ["Warmth", "44 sec", "4K UHD"]
+    "description": {
+      "text": "Warmth",
+      "Duratiom": "44 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 2,
     "price": "1.5",
     "name": "Angel",
     "collectionAddress": "1",
-    "description": ["A fall from grace", "29 sec", "4K UHD"]
+    "description": {
+      "text": "A fall from grace",
+      "Duratiom": "29 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 3,
     "name": "Race",
     "collectionAddress": "1",
-    "description": ["High speed in slow motion", "54 sec", "4K UHD"]
+    "description":  {
+      "text": "High speed in slow motion",
+      "Duratiom": "54 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 4,
     "name": "Moonlight",
     "collectionAddress": "1",
-    "description": ["Overcoming obstacles", "30 sec", "4K UHD"]
+    "description": {
+      "text": "Overcoming obstacles",
+      "Duratiom": "30 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 5,
     "name": "The ship is sailing",
     "collectionAddress": "2",
-    "description": ["Wait and see", "59 sec", "4K UHD"]
+    "description": {
+      "text": "Wait and see",
+      "Duratiom": "59 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 6,
     "name": "Ghoul",
     "collectionAddress": "1",
-    "description": ["What lies beneath", "34 sec", "4K UHD"]
+
+    "description": {
+      "text": "What lies beneathe",
+      "Duratiom": "34 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 7,
     "name": "Demons",
     "collectionAddress": "2",
-    "description": ["Miscommunication", "43 sec", "4K UHD"]
+
+    "description": {
+      "text": "Miscommunication",
+      "Duratiom": "43 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 8,
     "name": "Contact",
     "collectionAddress": "1",
-    "description": ["Nightfall absorbs the sun", "31 sec", "4K UHD"]
+
+    "description": {
+      "text": "Nightfall absorbs the sun",
+      "Duratiom": "31 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 9,
     "name": "Dusk",
     "collectionAddress": "2",
-    "description": ["A sunny morning with a hint of horror creeping in", "40 sec", "4K UHD"]
+    "description": {
+      "text": "A sunny morning with a hint of horror creeping in",
+      "Duratiom": "40 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 10,
     "name": "6 Am",
     "collectionAddress": "2",
-    "description": ["Flowers in a cool summer breeze", "36 sec", "4K UHD"]
+    "description": {
+      "text": "Flowers in a cool summer breeze",
+      "Duratiom": "36 sec",
+      "Format":  "4K UHD"
+    }
   },
   {
     "tokenId": 11,
     "name": "Roses",
     "collectionAddress": "2",
-    "description": ["A liquid sunset", "35 sec", "4K UHD"]
+    "description": {
+      "text": "A liquid sunset",
+      "Duratiom": "35 sec",
+      "Format":  "4K UHD"
+    }
   }
 ]

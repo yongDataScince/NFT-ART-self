@@ -10,10 +10,11 @@ import picData from '../../../assets/data/pictures.json'
 interface Props {
   images: number[],
   collectionId: number,
+  collectionName: string,
   title: string
 }
 const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
-export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) => {
+export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
   const { collections } = useAppSelector((s) => s.web3)
@@ -32,13 +33,14 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) 
   return (
     <Styled.CarouselMain>
       <Styled.CarouselTitleWrapper>
+        <Styled.CollectionName>{currCollection?.authors.map((a) => a.name)?.join(' / ')}</Styled.CollectionName>
         <Styled.CarouselTitle>{title}</Styled.CarouselTitle>
       </Styled.CarouselTitleWrapper>
       <Styled.CarouselCard onClick={() => navigate(`collection/${collectionId}/picture/${images[currentImage - 1]}`)}>
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> {currCollection?.authors.map((a) => a.name)?.join('/')}
+            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> {currCollection?.authors.map((a) => a.name)?.join(' / ')}
           </Styled.CarouselFooterTitle>
           <Styled.CarouselFooterInfo status={(picData as any)[String(currentImage)]?.status}>
             <Styled.GraySpan>{(picData as any)[String(currentImage)]?.status}</Styled.GraySpan> {(picData as any)[String(currentImage)]?.price} BNB
@@ -53,7 +55,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title }) 
             }}>
             <ChevronIcon />
           </Styled.PagButton>
-          
+
           <Styled.PagesContainer>
             {_.times(images.length).slice(window - 3, window).map((id) => (
               <Styled.PageItem key={id} onClick={() => choiseImage(id + 1)} choised={currentImage === id + 1}>

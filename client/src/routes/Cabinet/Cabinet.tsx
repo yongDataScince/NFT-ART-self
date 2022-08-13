@@ -6,6 +6,7 @@ import { useAppSelector } from '../../store'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import * as Styled from './styles'
 import { useNavigate } from 'react-router-dom'
+import Footer from '../../components/Footer'
 
 export const Cabinet: React.FC = () => {
   const { signerAddress, haveEth } = useAppSelector((state) => state.web3)
@@ -60,6 +61,7 @@ export const Cabinet: React.FC = () => {
           horizontal: 'center'
         }}
       />
+      <Footer />
     </Styled.CabinetMain>
   )
 }

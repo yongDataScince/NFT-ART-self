@@ -1,5 +1,6 @@
 import { times } from "lodash";
 import React, { useEffect } from "react";
+import Footer from "../../components/Footer";
 import { ImageCarousel } from "../../components/UI/ImageCarousel";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
@@ -30,11 +31,13 @@ export const Main: React.FC = () => {
         collections?.map((collection) => (
           <ImageCarousel
             collectionId={collection.id}
-            title={`${collection.name} / ${collection.name} [${collection.totalSupply}]`}
+            collectionName={`${collection.name}`}
+            title={`${collection.name} [${collection.totalSupply}]`}
             images={times(collection.totalSupply).map((i) => i + 1)}
           />
         ))
       }
+      <Footer />
     </Styled.MainBody>
   )
 }

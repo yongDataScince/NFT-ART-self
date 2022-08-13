@@ -24,13 +24,23 @@ export const CarouselTitleWrapper = styled.div`
   margin-bottom: 24px;
 `
 
+export const CollectionName = styled.p`
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 100;
+  font-size: 24px;
+  line-height: 100%;
+  color: #FFFFFF;
+  margin: 0;
+`
+
 export const CarouselTitle = styled.p`
   font-family: 'Helvetica Neue';
   font-style: normal;
   margin: 0;
   padding: 0;
-  font-weight: 200;
-  font-size: 31.25px;
+  font-weight: 300;
+  font-size: 24px;
   line-height: 31px;
   color: #FFFFFF;
   width: auto;
@@ -81,7 +91,7 @@ export const CarouselPagination = styled.div`
 export const CarouselCard = styled.div`
   width: 100%;
   cursor: pointer;
-  min-height: 564px;
+  min-height: 424px;
   height: auto;
   border: 1px solid #FFF;
   padding-bottom: 20px;
@@ -92,7 +102,7 @@ export const CardImage = styled.div<{ src: string }>`
   height: calc(100% - 110px);
   background-image: url(${({ src }) => src});
   background-size: cover;
-  min-height: 450px;
+  min-height: 350px;
 `
 
 export const CarouselFooter = styled.div`

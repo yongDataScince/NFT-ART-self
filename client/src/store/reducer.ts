@@ -156,6 +156,7 @@ export const tokenInfo = createAsyncThunk(
 
     return {
       ...data,
+      uri,
       price: tokenPrice,
       owner: tokenOwner,
       status: tokenStatus === 0 ? 'not listed' : 'listed'

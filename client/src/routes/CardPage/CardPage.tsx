@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { setLoader, tokenInfo, buyToken, listToken, ICollection } from "../../store/reducer";
+import { tokenInfo, buyToken, listToken, ICollection } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import picData from '../../assets/data/pictures.json'
@@ -11,6 +11,7 @@ import Facebook from "../../components/UI/icons/Facebook";
 import TweeterIcon from "../../components/UI/icons/TweeterIcon";
 import WebIcon from "../../components/UI/icons/WebIcon";
 import { ethers } from "ethers";
+import Footer from "../../components/Footer";
 
 interface Picture {
   tokenId?: number,
@@ -18,7 +19,7 @@ interface Picture {
   name?: string,
   status?: string,
   collectionAddress?: string,
-  description?: any[],
+  description?: any,
 }
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
@@ -45,8 +46,8 @@ export const CardPage: React.FC = () => {
 
   const socialIcons = useMemo(() => ({
     "instagram": <InstagramIcon color="#888789" width="28" height="28" viewBox="0 0 28 28" />,
-    "facebook": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
-    "twitter": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
+    "facebook": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
+    "twitter": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
     "site": <WebIcon color="#888789" width="44" height="44" viewBox="0 0 44 44" />
   }), [])
 
@@ -85,22 +86,13 @@ export const CardPage: React.FC = () => {
     const maxHeight = (ref.current?.clientHeight || 0)
 
     let image = new Image()
-    
     image.src = require(`../../assets/images/${pictureid}.png`);
 
-    image.onloadstart = () => {
-      dispatch(setLoader(true))
-    }
-
-    (image as any).onloadend = () => {
-      dispatch(setLoader(false))
-    }
-  
     const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
     setNheight(image.naturalHeight * ratio)
     setNwidth(image.naturalWidth * ratio)
 
-  }, [dispatch, pictureid])
+  }, [pictureid])
 
   useEffect(() => {
     dispatch(tokenInfo({
@@ -127,18 +119,16 @@ export const CardPage: React.FC = () => {
     }
   }, [pictureid, navigate, collection, collections])
 
+  console.log(picture);
+  if (!picture || loading) {
+    return <Loader show={loading} />
+  }
+
   return (
     <Styled.CardPage ref={ref}>
-      <Loader show={loading} />
-      <Styled.TagsContainer>
-        <Styled.TagsTitle>Tags</Styled.TagsTitle>
-        <Styled.TagsList>
-          {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
-        </Styled.TagsList>
-      </Styled.TagsContainer>
-      <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.CardTitle>
-        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’</Styled.CardTitle>
+        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’
+      </Styled.CardTitle>
       <Styled.Authors>
         <span>By</span> {
           currCollection?.authors.reduce((accu: any, elem: any) => {
@@ -146,48 +136,15 @@ export const CardPage: React.FC = () => {
           }, null)
         }
       </Styled.Authors>
-
-      <Styled.CardInfo>
-        <Styled.CardInfoTitle>
-          Description:
-        </Styled.CardInfoTitle>
-        <Styled.CardInfoText>
-          {picture?.description?.reduce((accu: any, elem: any) => {
-            return accu === null ? [elem] : [...accu, <br /> , elem]
-          }, null)
-        }
-        </Styled.CardInfoText>
-
-        <Styled.CardInfoTitle>
-          Collection:
-        </Styled.CardInfoTitle>
-
-        <Styled.ImageGroup>
-          <Styled.ImageCollection src={
-            require(`../../assets/images/collection_${currCollection?.id || 1}.png`)
-          }/>
-          <p>{currCollection?.name}</p>
-        </Styled.ImageGroup>
-        {
-          (currToken?.status !== 'not minted' && !!currToken?.price) && <>
-            <Styled.Price>
-              <span>Price: </span> { ethers.utils.formatEther(currToken?.price) }
-            </Styled.Price>
-          </>
-        }
-      </Styled.CardInfo>
-
-      {(currToken?.owner === signerAddress && haveEth) && (
-        <Styled.InputsGroup>
-          <Styled.CardInfoTitle>List token parameters:</Styled.CardInfoTitle>
-          <Styled.Input placeholder="price" value={newPrice} onChange={(e) => setPrice(e.target.value)} />
-          <Styled.ChoiseBlock>
-            <Styled.ChoiseBlockBtn onClick={() => setValidate(true)} choised={validate}>validate</Styled.ChoiseBlockBtn>
-            <Styled.ChoiseBlockBtn onClick={() => setValidate(false)} choised={!validate}>not validate</Styled.ChoiseBlockBtn>
-          </Styled.ChoiseBlock>
-        </Styled.InputsGroup>
-      )}
-
+      <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
+      <Styled.Line />
+      {
+        (currToken?.status !== 'not minted' && !!currToken?.price) && <>
+          <Styled.Price>
+            <span>Price: </span> { ethers.utils.formatEther(currToken?.price) }
+          </Styled.Price>
+        </>
+      }
       <Styled.CardButtonGroup>
         {
           currToken?.owner === signerAddress && haveEth ? (
@@ -207,13 +164,51 @@ export const CardPage: React.FC = () => {
           )
         }
       </Styled.CardButtonGroup>
+      <Styled.CardInfo>
+        <Styled.CardInfoTitle>
+          Description:
+        </Styled.CardInfoTitle>
+        <Styled.CardInfoText>
+          {
+            Object.keys(picture?.description || {}).map((key) => {
+              if (key === 'text') {
+                return <>{picture?.description[key]}<br /></>
+              } else {
+                return <>{key}: {picture?.description[key]}<br /></>
+              }
+            })
+          }
+        </Styled.CardInfoText>
+
+        <Styled.CardInfoTitle>
+          Collection: {currCollection?.name}
+        </Styled.CardInfoTitle>
+
+        <Styled.ImageGroup>
+          <Styled.ImageCollection src={
+            require(`../../assets/images/collection_${currCollection?.id || 1}.png`)
+          }/>
+        </Styled.ImageGroup>
+      </Styled.CardInfo>
+
+      {(currToken?.owner === signerAddress && haveEth) && (
+        <Styled.InputsGroup>
+          <Styled.CardInfoTitle>List token parameters:</Styled.CardInfoTitle>
+          <Styled.Input placeholder="price" value={newPrice} onChange={(e) => setPrice(e.target.value)} />
+          <Styled.ChoiseBlock>
+            <Styled.ChoiseBlockBtn onClick={() => setValidate(true)} choised={validate}>validate</Styled.ChoiseBlockBtn>
+            <Styled.ChoiseBlockBtn onClick={() => setValidate(false)} choised={!validate}>not validate</Styled.ChoiseBlockBtn>
+          </Styled.ChoiseBlock>
+        </Styled.InputsGroup>
+      )}
+
       {
         currCollection?.authors.map((author) => (
           <Styled.AuthorBlock key={author.id}>
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
             <Styled.AuthorName>{author.name}</Styled.AuthorName>
             <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
-              <CopyIcon viewBox='0 0 60 30' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
+              <CopyIcon viewBox='0 0 65 35' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>
             {
               Object.keys(author.description).map((key) => (
@@ -242,6 +237,13 @@ export const CardPage: React.FC = () => {
           </Styled.AuthorBlock>
         ))
       }
+      <Styled.TagsContainer>
+        <Styled.TagsList>
+          {tags.map((tag) => <Styled.Tag key={tag}>{tag}</Styled.Tag>)}
+        </Styled.TagsList>
+      </Styled.TagsContainer>
+
+      <Footer />
     </Styled.CardPage>
   )
 }
