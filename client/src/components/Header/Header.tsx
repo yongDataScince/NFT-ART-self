@@ -17,9 +17,6 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
   return (
     <Styled.HeaderBar>
       <Styled.HeaderButton>
-        <Styled.Burger fontSize='medium' onClick={() => setOpen(true)} />
-      </Styled.HeaderButton>
-      <Styled.HeaderButton>
         <HomeIcon />
       </Styled.HeaderButton>
       {(os === 'iOS' || os === 'Android') && (
@@ -28,27 +25,6 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
         </Styled.HeaderButton>
       )}
       <Styled.HeaderTitle onClick={() => navigate('/')}>Artform</Styled.HeaderTitle>
-
-      <Styled.MenuSwiper open={open} ref={ref}>
-        <Styled.MenuSwiperTitle>Menu</Styled.MenuSwiperTitle>
-        <Styled.MenuSwiperLinks>
-          <Styled.MenuSwiperLink active onClick={() => {
-            navigate('/')
-            setOpen(false)
-          }}>main</Styled.MenuSwiperLink>
-          <Styled.MenuSwiperLink active={haveEth} onClick={() =>{
-            if(haveEth) {
-              navigate('/cabinet')
-              setOpen(false)
-            }
-          }}>cabinet</Styled.MenuSwiperLink>
-          <Styled.MenuSwiperLink active onClick={() => {
-            navigate('/info')
-            setOpen(false)
-          }}>info</Styled.MenuSwiperLink>
-
-        </Styled.MenuSwiperLinks>
-      </Styled.MenuSwiper>
     </Styled.HeaderBar>
   )
 }

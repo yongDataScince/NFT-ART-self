@@ -49,11 +49,14 @@ export const Code = styled.p`
 export const MainBody = styled.div`
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
   padding: 16px 16px 140px 16px;
-  box-sizing: border-box;
-  overflow-y: scroll;
 `
 
 export const MainWrapper = styled.div`
