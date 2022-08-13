@@ -1,15 +1,10 @@
 import * as Styled from './styles';
 import HomeIcon from '../UI/icons/HomeIcon'
-import { useRef, useState } from 'react';
-import useOnClickOutside from '../../hooks/useClickOutside'
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../store';
 import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
 
 export const Header: React.FC<{ os: string }> = ({ os }) => {
-  const ref = useRef<null | HTMLDivElement>(null)
-  const { haveEth } = useAppSelector((state) => state.web3)
   const navigate = useNavigate()
 
   return (

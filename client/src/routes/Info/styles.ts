@@ -18,13 +18,13 @@ export const MainInfo = styled.div`
 export const InfoBlock = styled.div<Props>`
   width: 100%;
   transition: all 0.5s;
-  border-bottom: 1px solid #CCCCCC;
   height: auto;
   margin-bottom: 40px;
   ${({ delay, opened }) => css`
     transition-delay: ${delay}s;
     max-height: ${opened ? 'auto' : '60px'};
     border-color: ${opened ? '#000' : '#FFF'};
+    border-bottom: ${opened ? '1px solid #CCCCCC' : 'none' };
   `}
 `
 
@@ -32,13 +32,14 @@ export const InfoTitle = styled.p<Props>`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 200;
-  font-size: 52px;
+  font-size: 32px;
   line-height: 100%;
   color: #FFFFFF;
   margin: 0;
   padding: 0;
   margin-bottom: 8px;
   position: relative;
+  border-bottom: 1px solid #CCC;
 
   ${({ opened }) => css`
     svg {
@@ -56,7 +57,7 @@ export const InfoBlockDescription = styled.p<Props>`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 100;
-  font-size: 30px;
+  font-size: 25px;
   line-height: 120%;
   color: #FFFFFF;
   padding: 0;
@@ -84,11 +85,11 @@ export const InfoDescriptionBlock = styled.div<Props>`
 
 export const InfoDescriptionBlockTitle = styled.p`
   font-family: 'Helvetica Neue';
-  font-size: 25px;
+  font-size: 20px;
   color: #FFFFFF;
   font-weight: 300;
   border-bottom: 1px solid #CCCCCC;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 `
 
 export const InfoDescriptionBlockText = styled.p`
@@ -97,7 +98,7 @@ export const InfoDescriptionBlockText = styled.p`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 120%;
   letter-spacing: -0.03em;
   color: #A3A0A0;

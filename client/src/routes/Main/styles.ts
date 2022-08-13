@@ -10,8 +10,19 @@ export const MainHeader = styled.div`
 export const MainHeaderWrapper = styled.div`
   width: 100%;
   height: 100%;
-  border-left: 1px solid #CCCCCC;
+  position: relative;
   padding-left: 12px;
+
+  &::before {
+    position: absolute;
+    content: "";
+    height: 95%;
+    width: 1px;
+    background: #CCC;
+    top: 50%;
+    left: -8px;
+    transform: translateY(-50%);
+  }
 `
 
 export const MainHeaderTitle = styled.p`
@@ -20,11 +31,12 @@ export const MainHeaderTitle = styled.p`
   font-family: 'Helvetica Neue';
   font-style: normal;
   font-weight: 100;
-  font-size: 40px;
+  font-size: 36px;
   line-height: 100%;
+  letter-spacing: -0.02em;
   color: #FFFFFF;
-  margin-bottom: 12px;
   white-space: wrap;
+  margin-bottom: 6px;
 `
 
 export const MainHeaderSubTitile = styled.p`
