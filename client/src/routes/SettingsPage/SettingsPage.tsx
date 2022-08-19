@@ -4,6 +4,10 @@ import * as Styled from './styles'
 export const SettingsPage: React.FC = () => {
   return (
     <Styled.SettingsMain>
+      <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
+      <Styled.SettinsBlock>
+        Set mint fee percentage
+      </Styled.SettinsBlock>
       <Styled.SettingsPageTitle>Upload new art</Styled.SettingsPageTitle>
       <Styled.SettinsBlock>
         <Styled.SettinsBlockTitle>1. Collection choose / create</Styled.SettinsBlockTitle>
