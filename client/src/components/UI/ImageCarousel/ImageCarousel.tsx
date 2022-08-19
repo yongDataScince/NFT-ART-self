@@ -5,7 +5,6 @@ import * as Styled from './styles'
 import { useNavigate } from "react-router-dom";
 import { ICollection, tokenInfos } from "../../../store/reducer";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import picData from '../../../assets/data/pictures.json'
 import { BigNumber, ethers } from "ethers";
 
 interface Props {

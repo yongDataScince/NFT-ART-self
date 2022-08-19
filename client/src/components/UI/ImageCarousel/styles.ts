@@ -50,8 +50,8 @@ export const CarouselTitle = styled.p`
 `
 
 export const PageItem = styled.div<Props>`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
   ${({ choised }) => css`
     border: 1px solid ${choised ? '#FFF' : '#888789'};
