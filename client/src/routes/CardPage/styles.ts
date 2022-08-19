@@ -20,6 +20,7 @@ export const CardPage = styled.div`
   justify-content: flex-start;
   overflow-y: auto;
   padding: 120px 16px;
+  scroll-behavior: smooth;
 `
 
 export const TagsContainer = styled.div`
@@ -136,6 +137,16 @@ export const Authors = styled.p`
   margin-bottom: 8px;
   span {
     font-weight: 100;
+  }
+  a {
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 100;
+    font-size: 20px;
+    line-height: 100%;
+    font-weight: 320;
+    color: #FFFFFF;
+    text-decoration: none;
   }
 `
 
@@ -362,6 +373,15 @@ export const AuthorBlock = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
+`
+
+export const AuthorAnchor = styled.div`
+  position: absolute;
+  left: 0;
+  top: 1.5%;
+  width: 0;
+  height: 0;
 `
 
 export const AuthorImage = styled.img`

@@ -51,6 +51,13 @@ export const CardPage: React.FC = () => {
     "site": <WebIcon color="#888789" width="44" height="44" viewBox="0 0 44 44" />
   }), [])
 
+  useEffect(() => {
+    console.log(currToken?.status === 'not listed',
+    !haveEth                           ,
+    currToken?.status === 'not minted' ,
+    (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price || 0)));
+  }, [currToken?.price, currToken?.status, haveEth, signerBalance])
+
   const setPrice = (value: string) => {
     if(value.match(/^([0-9]{1,})?(\.)?([0-9]{1,})?$/) !== null) {
       setNewPrice(value)
@@ -132,7 +139,7 @@ export const CardPage: React.FC = () => {
       <Styled.Authors>
         <span>By</span> {
           currCollection?.authors.reduce((accu: any, elem: any) => {
-            return accu === null ? [elem?.name] : [...accu, <span> & </span> , elem?.name]
+            return accu === null ? [<a href={`#${elem?.address}`}>{elem?.name}</a>] : [...accu, <span> & </span> , <a href={`#${elem?.address}`}>{elem?.name}</a>]
           }, null)
         }
       </Styled.Authors>
@@ -205,8 +212,9 @@ export const CardPage: React.FC = () => {
       {
         currCollection?.authors.map((author) => (
           <Styled.AuthorBlock key={author.id}>
+            <Styled.AuthorAnchor id={author.address} />
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
-            <Styled.AuthorName>{author.name}</Styled.AuthorName>
+            <Styled.AuthorName onClick={() => navigate(`/author/${author?.address}`)}>{author.name}</Styled.AuthorName>
             <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
               <CopyIcon viewBox='0 0 65 35' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>

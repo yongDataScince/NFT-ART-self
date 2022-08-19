@@ -11,6 +11,7 @@ import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
 import Footer from './components/Footer';
 import { SettingsPage } from './routes/SettingsPage';
+import { Author } from './routes/Author';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -69,7 +70,7 @@ function App() {
         <Route element={<Info />} path='/info' />
         <Route path='/collection/:collection/picture/:pictureid' element={<CardPage />} />
         <Route path='/settings' element={<SettingsPage />} />
-
+        <Route path='/author/:authorAddress' element={<Author />} />
       </Routes>
     </div>
   );

@@ -7,7 +7,7 @@ import authors from '../assets/data/authors.json'
 import pictures from '../assets/data/pictures.json'
 import * as _ from 'lodash'
 
-interface Author {
+export interface Author {
   id?: number,
   name?: string,
   avatar?: string,
