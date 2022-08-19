@@ -1,18 +1,13 @@
 import { times } from "lodash";
-import React, { useEffect } from "react";
+import React from "react";
 import Footer from "../../components/Footer";
 import { ImageCarousel } from "../../components/UI/ImageCarousel";
 import Loader from "../../components/UI/loader";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppSelector } from "../../store";
 import * as Styled from './styles'
 
 export const Main: React.FC = () => {
   const { loading, collections } = useAppSelector((state) => state.web3)
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {    
-    // dispatch(getTokens(contract))
-  }, [collections, dispatch])
 
   return (
     <Styled.MainBody>
@@ -20,10 +15,10 @@ export const Main: React.FC = () => {
       <Styled.MainHeader>
         <Styled.MainHeaderWrapper>
           <Styled.MainHeaderTitle>
-            On the blockchain, art can take on any form.
+            On the blockchain, art can take on any form. Neuform - where digital meets physical
           </Styled.MainHeaderTitle>
           <Styled.MainHeaderSubTitile>
-            Artform
+            neuform.art 
           </Styled.MainHeaderSubTitile>
         </Styled.MainHeaderWrapper>
       </Styled.MainHeader>

@@ -46,17 +46,10 @@ export const CardPage: React.FC = () => {
 
   const socialIcons = useMemo(() => ({
     "instagram": <InstagramIcon color="#888789" width="28" height="28" viewBox="0 0 28 28" />,
-    "facebook": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
-    "twitter": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
+    "facebook": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
+    "twitter": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
     "site": <WebIcon color="#888789" width="44" height="44" viewBox="0 0 44 44" />
   }), [])
-
-  useEffect(() => {
-    console.log(currToken?.status === 'not listed',
-    !haveEth                           ,
-    currToken?.status === 'not minted' ,
-    (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price || 0)));
-  }, [currToken?.price, currToken?.status, haveEth, signerBalance])
 
   const setPrice = (value: string) => {
     if(value.match(/^([0-9]{1,})?(\.)?([0-9]{1,})?$/) !== null) {
@@ -146,13 +139,13 @@ export const CardPage: React.FC = () => {
       <Styled.CardTitle>
         <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’
       </Styled.CardTitle>
-      <Styled.Authors>
+      {/* <Styled.Authors>
         <span>By</span> {
           currCollection?.authors.reduce((accu: any, elem: any) => {
             return accu === null ? [<a href={`#${elem?.address}`}>{elem?.name}</a>] : [...accu, <span> & </span> , <a href={`#${elem?.address}`}>{elem?.name}</a>]
           }, null)
         }
-      </Styled.Authors>
+      </Styled.Authors> */}
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.Line />
       {

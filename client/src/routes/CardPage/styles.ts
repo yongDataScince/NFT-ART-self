@@ -116,6 +116,7 @@ export const CardTitle = styled.p`
   width: 100%;
   margin-top: 16px;
   font-weight: 400;
+  margin-bottom: 10px;
   span {
     font-weight: 100;
   }
@@ -434,6 +435,7 @@ export const AuthorDescriptionBlock = styled.div`
 
 export const AuthorDescriptionTitle = styled.p`
   font-family: 'Helvetica Neue';
+  text-transform: capitalize;
   font-size: 20px;
   line-height: 150%;
   font-weight: 200;

@@ -147,8 +147,9 @@ export const PagButton = styled.button`
   }
 `
 
-export const CarouselFooterInfo = styled.p<{ status?: 'Available' | 'Not available' }>`
+export const CarouselFooterInfo = styled.p<{ status?: 'available' | 'not available' }>`
   font-family: 'Helvetica Neue';
+  text-transform: capitalize;
   font-style: normal;
   font-weight: 400;
   font-size: 20px;
@@ -157,6 +158,10 @@ export const CarouselFooterInfo = styled.p<{ status?: 'Available' | 'Not availab
   padding: 0;
   position: relative;
   padding-left: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 90%;
 
   &::before {
     content: "";
@@ -166,7 +171,7 @@ export const CarouselFooterInfo = styled.p<{ status?: 'Available' | 'Not availab
     transform: translateY(-50%);
     width: 11px;
     height: 11px;
-    background-color: ${({ status }) => status === 'Available' ? '#1FE01B' : '#E01B1B'}; 
+    background-color: ${({ status }) => status === 'available' ? '#1FE01B' : '#E01B1B'}; 
     border-radius: 50%;
   }
 `

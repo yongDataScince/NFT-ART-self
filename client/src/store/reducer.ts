@@ -148,21 +148,59 @@ export const tokenInfo = createAsyncThunk(
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
 
-    const uri = await collection?.tokenURI(tokenId);
-    const { data } = await axios.get(uri?.replace("ipfs://", uri))
-    const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
-    const tokenOwner = await collection?.ownerOf(tokenId)
-    const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
-
-    return {
-      ...data,
-      uri,
-      price: tokenPrice,
-      owner: tokenOwner,
-      status: tokenStatus === 0 ? 'not listed' : 'listed'
+    try {
+      const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
+      const tokenOwner = await collection?.ownerOf(tokenId)
+      const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
+      return {
+        tokenPrice,
+        tokenOwner,
+        tokenStatus,
+        status: tokenStatus === 0 ? 'available' : 'not available'
+      }
+    } catch (e) {
+      return {
+        status: 'not minted'
+      }
     }
   }
 );
+
+export const tokenInfos = createAsyncThunk(
+  'web3/tokensInfo',
+  async (
+    { collectionId }: { collectionId: number },
+    { getState }: any
+  ) => {
+    const { web3 }: any = getState()
+    const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+
+    const tokens = []
+
+    for await (const pic of pictures) {
+      try {
+        const tokenPrice = (await collection?.getTokenPrice(pic.tokenId))?.toString()
+        const tokenOwner = await collection?.ownerOf(pic.tokenId)
+        const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
+        tokens.push({
+          name: pic.name,
+          id: pic.tokenId,
+          tokenPrice,
+          tokenOwner,
+          tokenStatus,
+          status: tokenStatus === 0 ? 'available' : 'not available'
+        })
+      } catch (e) {
+        tokens.push({
+          name: pic.name,
+          id: pic.tokenId,
+          status: 'not minted'
+        })
+      }
+    }
+    return tokens
+  }
+)
 
 export const buyToken = createAsyncThunk(
   'web3/buyToken',
@@ -292,6 +330,15 @@ export const contractSlice = createSlice({
 
     builder.addCase(mintToken.fulfilled, (state) => {
       state.loading = false
+    })
+    
+    builder.addCase(tokenInfos.pending, (state) => {
+      state.loading = true
+    })
+
+    builder.addCase(tokenInfos.fulfilled, (state, { payload }) => {
+      state.loading = false
+      state.tokens = payload
     })
   },
 })

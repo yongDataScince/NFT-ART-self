@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react"
 import ChevronIcon from "../icons/ChevronIcon"
 import * as Styled from './styles'
 import { useNavigate } from "react-router-dom";
-import { ICollection } from "../../../store/reducer";
-import { useAppSelector } from "../../../store";
+import { ICollection, tokenInfos } from "../../../store/reducer";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import picData from '../../../assets/data/pictures.json'
+import { BigNumber, ethers } from "ethers";
 
 interface Props {
   images: number[],
@@ -17,18 +18,27 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections } = useAppSelector((s) => s.web3)
+  const { collections, tokens } = useAppSelector((s) => s.web3)
   const [currCollection, setCurrCollection] = useState<ICollection>()
+
+  const dispatch = useAppDispatch()
   const navigate = useNavigate();
 
   const choiseImage = (id: number) => {
     setCurrentImage(id)
   }
 
+  const formatPrice = (price?: BigNumber) => {
+    const strPrice = ethers.utils.formatEther(price || "0");
+    return strPrice.length > 10 ? Number(strPrice).toExponential() : strPrice
+  }
+
   useEffect(() => {
     const c = collections?.find((c) => c.id === collectionId)
     setCurrCollection(c)
-  }, [collectionId, collections])
+    dispatch(tokenInfos({ collectionId }))
+  }, [collectionId, collections, dispatch])
+
 
   return (
     <Styled.CarouselMain>
@@ -40,10 +50,10 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> { (picData as any)[String(currentImage)]?.name }
+            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }
           </Styled.CarouselFooterTitle>
-          <Styled.CarouselFooterInfo status={(picData as any)[String(currentImage)]?.status}>
-            <Styled.GraySpan>{(picData as any)[String(currentImage)]?.status || "Not available"}</Styled.GraySpan>
+          <Styled.CarouselFooterInfo status={tokens?.[currentImage - 1]?.status}>
+            <Styled.GraySpan>{tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status !== 'not minted' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>
