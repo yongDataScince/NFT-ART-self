@@ -94,7 +94,6 @@ export const CarouselCard = styled.div`
   min-height: 424px;
   height: auto;
   border: 1px solid #FFF;
-  padding-bottom: 20px;
 `
 
 export const CardImage = styled.div<{ src: string }>`
@@ -107,10 +106,9 @@ export const CardImage = styled.div<{ src: string }>`
 
 export const CarouselFooter = styled.div`
   width: 100%;
-  height: 110px;
+  height: auto;
   padding: 24px;
   background: #000;
-  padding: 28px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -121,9 +119,10 @@ export const CarouselFooter = styled.div`
 export const CarouselFooterTitle = styled.p`
   font-family: 'Helvetica Neue';
   font-style: normal;
+  
   font-weight: 300;
-  font-size: 30px;
-  line-height: 23px;
+  font-size: 25px;
+  line-height: 70%;
   color: #FFFFFF;
   margin: 0;
   padding: 0;
@@ -153,7 +152,6 @@ export const CarouselFooterInfo = styled.p<{ status?: 'Available' | 'Not availab
   font-style: normal;
   font-weight: 400;
   font-size: 20px;
-  line-height: 30px;
   color: #FFFFFF;
   margin: 0;
   padding: 0;

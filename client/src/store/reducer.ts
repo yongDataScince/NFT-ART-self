@@ -80,7 +80,7 @@ export const initContract = createAsyncThunk(
 
       for await (const collection of collections) {
         const contract = new ethers.Contract(collection.address, ABI, signer)
-        const totalSupply = pictures.length
+        const totalSupply = pictures.length + 1
         const name = await contract?.name()
         const symbol = await contract?.symbol()
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
@@ -197,6 +197,18 @@ export const listToken = createAsyncThunk(
  }
 )
 
+export const mintToken = createAsyncThunk(
+  'web3/mint',
+ async ({ tokenId, collectionId }:{ tokenId: number, collectionId: number }, { getState }) => {
+  const { web3 }: any = getState()
+  const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+
+  await collection.mint([tokenId], {
+    value: await collection.mintPrices(1)
+  })
+ }
+)
+
 const initialState: ContractState = {
   loading: false
 }
@@ -266,6 +278,19 @@ export const contractSlice = createSlice({
     })
 
     builder.addCase(listToken.fulfilled, (state) => {
+      state.loading = false
+    })
+
+    builder.addCase(mintToken.pending, (state) => {
+      state.loading = true
+    })
+
+    builder.addCase(mintToken.rejected, (state, { error }) => {
+      state.loading = false
+      console.log(error);
+    })
+
+    builder.addCase(mintToken.fulfilled, (state) => {
       state.loading = false
     })
   },

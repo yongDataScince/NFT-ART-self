@@ -40,10 +40,10 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> {currCollection?.authors.map((a) => a.name)?.join(' / ')}
+            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> { (picData as any)[String(currentImage)]?.name }
           </Styled.CarouselFooterTitle>
           <Styled.CarouselFooterInfo status={(picData as any)[String(currentImage)]?.status}>
-            <Styled.GraySpan>{(picData as any)[String(currentImage)]?.status}</Styled.GraySpan> {(picData as any)[String(currentImage)]?.price} BNB
+            <Styled.GraySpan>{(picData as any)[String(currentImage)]?.status || "Not available"}</Styled.GraySpan>
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>

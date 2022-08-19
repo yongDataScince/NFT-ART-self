@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { tokenInfo, buyToken, listToken, ICollection } from "../../store/reducer";
+import { tokenInfo, buyToken, listToken, ICollection, mintToken } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import picData from '../../assets/data/pictures.json'
@@ -46,8 +46,8 @@ export const CardPage: React.FC = () => {
 
   const socialIcons = useMemo(() => ({
     "instagram": <InstagramIcon color="#888789" width="28" height="28" viewBox="0 0 28 28" />,
-    "facebook": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
-    "twitter": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
+    "facebook": <Facebook color="#888789" width="34" height="28" viewBox="0 0 34 28" />,
+    "twitter": <TweeterIcon color="#888789" width="17" height="28" viewBox="0 0 17 28" />,
     "site": <WebIcon color="#888789" width="44" height="44" viewBox="0 0 44 44" />
   }), [])
 
@@ -80,6 +80,17 @@ export const CardPage: React.FC = () => {
       tokenId: Number(pictureid),
       newPrice,
       validate,
+      collectionId: Number(collection)
+    }))
+    dispatch(tokenInfo({
+      collectionId: Number(collection || -1),
+      tokenId: Number(collection || -1),
+    }))
+  }
+
+  const mint = () => {
+    dispatch(mintToken({
+      tokenId: Number(pictureid),
       collectionId: Number(collection)
     }))
     dispatch(tokenInfo({
@@ -126,7 +137,6 @@ export const CardPage: React.FC = () => {
     }
   }, [pictureid, navigate, collection, collections])
 
-  console.log(picture);
   if (!picture || loading) {
     return <Loader show={loading} />
   }
@@ -159,15 +169,21 @@ export const CardPage: React.FC = () => {
               List Token
             </Styled.CardButton>
           ) : (
-            <Styled.CardButton onClick={() => buy()} 
-              disabled={
-                currToken?.status === 'not listed' ||
-                !haveEth                           ||
-                currToken?.status === 'not minted' ||
-                (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price))
-              }>
-              Buy Token
-            </Styled.CardButton>
+            <>
+            {currToken.status === 'not minted' ? (
+              <Styled.CardButton disabled={!haveEth} onClick={() => mint()}>Mint Token</Styled.CardButton>
+            ) : (
+              <Styled.CardButton onClick={() => buy()} 
+                disabled={
+                  currToken?.status === 'not listed' ||
+                  !haveEth                           ||
+                  currToken?.status === 'not minted' ||
+                  (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price))
+                }>
+                Buy Token
+              </Styled.CardButton>
+            )}
+            </>
           )
         }
       </Styled.CardButtonGroup>

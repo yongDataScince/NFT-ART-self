@@ -165,6 +165,7 @@ export const CardButtonGroup = styled.div`
   display: flex;
   width: 100%;
   height: auto;
+  margin-top: 10px;
 `
 
 export const CardInfoTitle = styled.p`
