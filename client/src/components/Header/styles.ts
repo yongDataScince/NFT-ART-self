@@ -22,13 +22,15 @@ export const HeaderButton = styled.button`
   padding: 0;
   margin: 0;
   border: none;
-  background-color: #000000 !important;
-  &:first-child {
-    margin-right: 24px;
-  }
-
-  &:last-child {
-    margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  &:nth-child(2) {
+    margin-left: 16px;
+    svg {
+      margin-bottom: 5px;
+    }
   }
 `
 
@@ -117,7 +119,7 @@ export const HeaderTitle = styled.p`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
-  font-size: 31.25px;
+  font-size: 28px;
   line-height: 100%;
   letter-spacing: -0.05em;
   color: #FFFFFF;

@@ -2,13 +2,47 @@ import { SvgIcon } from "@mui/material"
 
 const SettingsIcon = (props: any) => {
   return (
-    <SvgIcon {...props} viewBox="0 0 28 28">
-      <path d="M13.9863 0V28.181" stroke="white" strokeWidth="1.5" strokeMiterlimit="10"/>
-      <path d="M27.9701 14.0903H0" stroke="white" strokeWidth="1.5" strokeMiterlimit="10"/>
-      <path d="M23.8846 4.13379L4.10352 24.0484" stroke="white" strokeWidth="1.5" strokeMiterlimit="10"/>
-      <path d="M23.8846 24.0484L4.10352 4.13379" stroke="white" strokeWidth="1.5" strokeMiterlimit="10"/>
-      <circle cx="14.0872" cy="14.0902" r="8.89389" fill="black" stroke="white" strokeWidth="1.5"/>
-      <circle cx="14" cy="14" r="4.25" fill="black" stroke="white" strokeWidth="1.5"/>
+    <SvgIcon {...props}>
+      <g>
+        <g>
+          <rect x="11.38" y="19.2" className="st0" width="1.25" height="4.8" fill={props.color}/>
+        </g>
+        <g>
+          <rect x="11.38" y="0" className="st0" width="1.25" height="4.79" fill={props.color}/>
+        </g>
+        <g>
+          <rect x="0" y="11.38" className="st0" width="4.8" height="1.25" fill={props.color}/>
+        </g>
+        <g>
+          <rect x="19.21" y="11.38" className="st0" width="4.79" height="1.25" fill={props.color}/>
+        </g>
+        <g>
+          
+            <rect x="3.3" y="18.23" transform="matrix(0.6865 -0.7271 0.7271 0.6865 -11.9747 9.936)" className="st0" width="4.47" height="1.25" fill={props.color}/>
+        </g>
+        <g>
+          
+            <rect x="16.26" y="4.52" transform="matrix(0.6869 -0.7268 0.7268 0.6869 2.0516 15.0523)" className="st0" width="4.47" height="1.25" fill={props.color}/>
+        </g>
+        <g>
+          <rect x="4.91" y="2.91" transform="matrix(0.727 -0.6866 0.6866 0.727 -2.0196 5.2001)" className="st0" width="1.25" height="4.46" fill={props.color}/>
+        </g>
+        <g>
+          
+            <rect x="17.86" y="16.61" transform="matrix(0.7269 -0.6868 0.6868 0.7269 -7.8954 17.8472)" className="st0" width="1.25" height="4.48" fill={props.color}/>
+        </g>
+      </g>
+      <g>
+        <path className="st0" d="M12,4.79c1.91,0,3.66,0.75,4.95,1.98C18.34,8.08,19.2,9.94,19.2,12s-0.87,3.92-2.26,5.22
+          c-1.29,1.23-3.03,1.98-4.94,1.98c-1.92,0-3.66-0.75-4.93-1.97C5.66,15.93,4.8,14.07,4.8,12s0.86-3.93,2.26-5.24
+          C8.33,5.53,10.07,4.79,12,4.79 M12,15.44c0.91,0,1.75-0.36,2.37-0.95c0.66-0.62,1.07-1.51,1.07-2.49s-0.41-1.87-1.06-2.5
+          C13.76,8.91,12.91,8.55,12,8.55c-0.93,0-1.75,0.35-2.37,0.94C8.96,10.12,8.56,11.01,8.56,12s0.41,1.88,1.08,2.5
+          C10.25,15.08,11.08,15.44,12,15.44 M12,3.54c-2.2,0-4.26,0.82-5.81,2.32C4.49,7.45,3.55,9.63,3.55,12c0,2.34,0.97,4.58,2.67,6.15
+          c1.54,1.48,3.6,2.3,5.78,2.3c2.17,0,4.23-0.83,5.8-2.33c1.68-1.57,2.65-3.81,2.65-6.12c0-2.32-0.96-4.56-2.64-6.14
+          C16.24,4.37,14.18,3.54,12,3.54L12,3.54z M12,14.19c-0.56,0-1.09-0.21-1.5-0.6c-0.45-0.42-0.69-0.98-0.69-1.59
+          c0-0.62,0.24-1.19,0.68-1.6c0.41-0.39,0.94-0.6,1.51-0.6c0.56,0,1.11,0.22,1.52,0.61c0.42,0.41,0.67,0.99,0.67,1.59
+          s-0.25,1.18-0.68,1.58C13.1,13.97,12.57,14.19,12,14.19L12,14.19z" fill={props.color}/>
+      </g>
     </SvgIcon>
   )
 }

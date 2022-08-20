@@ -249,9 +249,20 @@ export const mintToken = createAsyncThunk(
  }
 )
 
+export const settingsCall = createAsyncThunk(
+  'web3/settingsCall',
+  async ({ method, contract, args }:{ method: string, contract: ethers.Contract, args: any[] }) => {
+    if (contract[method]) {
+      const tx = await contract[method](...args)
+      await tx.wait()
+    }
+  }
+)
+
 const initialState: ContractState = {
   loading: false
 }
+
 export const contractSlice = createSlice({
   name: 'web3',
   initialState,
@@ -277,7 +288,6 @@ export const contractSlice = createSlice({
       state.signerAddress = payload.signerAddress
       state.haveEth = payload.haveEth
     });
-
     builder.addCase(tokenInfo.rejected, (state, { error }) => {
       state.loading = false;
       state.currToken = {
@@ -285,64 +295,64 @@ export const contractSlice = createSlice({
         image: 'placeholder'
       }
     });
-
     builder.addCase(tokenInfo.pending, (state) => {
       state.loading = true
     });
-
     builder.addCase(tokenInfo.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.currToken = payload
     });
-
     builder.addCase(buyToken.pending, (state) => {
       state.loading = true
     })
-
     builder.addCase(buyToken.rejected, (state, {error}) => {
       state.loading = false
       console.log('buyToken', error.message);
     })
-    
     builder.addCase(buyToken.fulfilled, (state) => {
       state.loading = false
     })
-
     builder.addCase(listToken.pending, (state) => {
       state.loading = true
     })
-
     builder.addCase(listToken.rejected, (state, {error}) => {
       state.loading = false
       console.log('listToken', error.message);
     })
-
     builder.addCase(listToken.fulfilled, (state) => {
       state.loading = false
     })
-
     builder.addCase(mintToken.pending, (state) => {
       state.loading = true
       console.log("mintToken pending");
     })
-
     builder.addCase(mintToken.rejected, (state, { error }) => {
       state.loading = false
       console.log(error);
     })
-
     builder.addCase(mintToken.fulfilled, (state) => {
       state.loading = false
       console.log("mintToken fulfilled");
-    })
-    
+    }) 
     builder.addCase(tokenInfos.pending, (state) => {
       state.loading = true
     })
-
     builder.addCase(tokenInfos.fulfilled, (state, { payload }) => {
       state.loading = false
       state.tokens = payload
+    })
+
+    builder.addCase(settingsCall.pending, (state) => {
+      state.loading = true
+    })
+    
+    builder.addCase(settingsCall.rejected, (state, { error }) => {
+      state.loading = false
+      console.log(error);
+    })
+
+    builder.addCase(settingsCall.fulfilled, (state) => {
+      state.loading = false
     })
   },
 })
