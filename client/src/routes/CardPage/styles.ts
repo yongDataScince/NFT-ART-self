@@ -260,12 +260,15 @@ export const CardButton = styled.button`
 `
 
 export const InputsGroup = styled.div`
-  width: 70%;
+  width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 5px 0;
+  padding: 0;
+  button {
+    margin: 0 !important;
+  }
 `
 
 export const Input = styled.input`

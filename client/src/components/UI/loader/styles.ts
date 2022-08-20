@@ -33,8 +33,8 @@ export const LoaderWrapper = styled.div<Props>`
 `
 
 export const LoaderBox = styled.div`
-  width: 38px;
-  height: 38px;
+  width: 78px;
+  height: 16px;
   display: grid;
   grid-gap: 15px;
   grid-template-columns: 16px 16px 16px;

@@ -6,6 +6,110 @@ export const SettingsMain = styled.div`
   overflow-y: auto;
 `
 
+export const Address = styled.p`
+  width: 100%;
+  font-family: 'Helvetica Neue';
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  font-weight: 300;
+  margin: 0;
+  border-bottom: 1px solid #FFF;
+  margin-bottom: 32px;
+
+  svg {
+    margin-right: 6px;
+  }
+`
+
+export const SettingsPh = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-size: 28px;
+  line-height: 100%;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  width: 100%;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #999;
+  font-weight: 200;
+  margin-bottom: 50px;
+`
+
+export const SettingsPictures = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+`
+
+export const Picture = styled.div`
+  width: 100%;
+  height: 100%;
+  max-height: 430px;
+  border: 1px solid #FFF;
+  margin-bottom: 16px;
+`
+
+export const PictureFooter = styled.div`
+  width: 100%;
+  height: auto;
+  padding: 16px 14px;
+  background: #000;
+`
+
+export const PictureStatus = styled.p<{ status?: 'available' | 'not available' }>`
+  margin: 0;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: -0.02em;
+  color: #888789;
+  position: relative;
+  padding-left: 16px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: ${({ status }) => status === 'available' ? '#1FE01B' : '#E01B1B'}; 
+    border-radius: 50%;
+  }
+`
+
+export const PictureTitle = styled.p`
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 100%;
+  margin: 0;
+  color: #FFFFFF;
+
+  span {
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 100;
+    font-size: 25px;
+    line-height: 150%;
+    font-weight: 200;
+    color: #CCCC;
+  }
+`
+
+export const PictureImage = styled.img`
+  width: 100%;
+  height: 320px;
+`
+
 export const SettingsPageTitle = styled.p`
   margin: 0;
   padding: 0;

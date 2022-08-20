@@ -35,11 +35,24 @@ interface ContractState {
   totalSupply?: number,
   signerAddress?: string;
   haveEth?: boolean;
-  signerBalance?: number
+  signerBalance?: number;
+  userPictures?: any[];
 }
 
 export const getAuthorByAddress = (address: string): Author | undefined => {
   return authors.find((a) => a.address === address)
+}
+
+export const getPictureById = (tokenId: number) => {
+  const tokenInfo = pictures.find((pic) => pic.tokenId === tokenId)
+  const tokenCollectionId = collections.find((coll) => coll.address === tokenInfo?.collectionAddress)?.id
+  if (tokenInfo) {
+    return {
+      ...tokenInfo,
+      collectionId: tokenCollectionId,
+      path: require(`../assets/images/${tokenInfo.tokenId}.png`)
+    }
+  }
 }
 
 export const initContract = createAsyncThunk(
@@ -259,6 +272,30 @@ export const settingsCall = createAsyncThunk(
   }
 )
 
+export const userTokens = createAsyncThunk(
+  'web3/user-tokens',
+  async (signer: ethers.providers.JsonRpcSigner) => {
+    const collectionAddresses = collections.map((c) => c.address)
+    const userTokens = []
+    const signerAddress = await signer.getAddress()
+
+    for await (const address of collectionAddresses) {
+      const Collection = new ethers.Contract(address, ABI, signer)
+      const coll = await Collection.attach(address)
+      const tokensSupply = (await coll.totalSupply()).toNumber()
+      console.log('tokensSupply: ', tokensSupply);
+      for (let id = 1; id < tokensSupply + 1; id++) {
+        const tokenOwner = await coll.ownerOf(id)
+        if (tokenOwner === signerAddress) {
+          userTokens.push(getPictureById(id)) 
+        }
+      }
+    }
+
+    return userTokens.filter((user) => !!user)
+  }
+)
+
 const initialState: ContractState = {
   loading: false
 }
@@ -272,6 +309,15 @@ export const contractSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(userTokens.pending, (state) => {
+      state.loading = true
+    })
+
+    builder.addCase(userTokens.fulfilled, (state, { payload }) => {
+      state.userPictures = payload;
+      state.loading = false
+    })
+
     builder.addCase(initContract.rejected, (state, { error }) => {
       console.error('`initContract` error:', error);
       state.loading = false

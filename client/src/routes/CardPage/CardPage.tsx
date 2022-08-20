@@ -133,12 +133,14 @@ export const CardPage: React.FC = () => {
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
+      navigate('/settings')
     })
     currCollection?.contract.on("BuyToken", () => {
       dispatch(tokenInfo({
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
+      navigate('/settings')
     })
     return () => {
       currCollection?.contract.removeAllListeners("ListToken");
@@ -161,9 +163,12 @@ export const CardPage: React.FC = () => {
       <Styled.CardButtonGroup>
         {
           currToken?.tokenOwner === signerAddress && haveEth ? (
-            <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
-              List Token
-            </Styled.CardButton>
+            <Styled.InputsGroup>
+              <Styled.Input placeholder="token price" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
+              <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
+                List Token
+              </Styled.CardButton>
+            </Styled.InputsGroup>
           ) : (
             <>
             {currToken?.status === 'not minted' ? (

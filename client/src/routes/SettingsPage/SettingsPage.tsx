@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CopyIcon from "../../components/UI/icons/CopyIcon";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { settingsCall } from "../../store/reducer";
+import { settingsCall, userTokens } from "../../store/reducer";
 import * as Styled from './styles'
+
+const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
 
 export const SettingsPage: React.FC = () => {
   const [isOwner, setIsOwner] = useState<boolean>(false)
-  const { collections, signerAddress, loading, haveEth } = useAppSelector((state) => state.web3)
+  const { collections, signerAddress, signer, userPictures, tokens, loading, haveEth } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -94,7 +97,8 @@ export const SettingsPage: React.FC = () => {
     collections?.[0].contract.owner().then((data: string) => {
       setIsOwner(signerAddress === data)
     })
-  }, [collections, signerAddress])
+    dispatch(userTokens(signer as any))
+  }, [collections, dispatch, signer, signerAddress])
 
 
   useEffect(() => {
@@ -104,6 +108,32 @@ export const SettingsPage: React.FC = () => {
   return (
     <Styled.SettingsMain>
       <Loader show={loading} />
+      <Styled.Address>
+        <CopyIcon color="#888789" />
+        {signerAddress?.slice(0, 5)}...{signerAddress?.slice(37, 42)}
+      </Styled.Address>
+
+      <Styled.SettingsPh>
+        My purchased art [{userPictures?.length}]
+      </Styled.SettingsPh>
+
+      <Styled.SettingsPictures>
+        {
+          userPictures?.map((pic) => (
+            <Styled.Picture key={pic.tokenId} onClick={() => navigate(`/collection/${pic.collectionId}/picture/${pic.tokenId}`)}>
+              <Styled.PictureImage src={pic.path} />
+              <Styled.PictureFooter>
+                <Styled.PictureTitle>
+                 <span>#{zeroPad(pic.tokenId)}</span> {pic.name}
+                </Styled.PictureTitle>
+                <Styled.PictureStatus status={tokens?.[pic.tokenId]?.status}>
+                  {tokens?.[pic.tokenId]?.status}
+                </Styled.PictureStatus>
+              </Styled.PictureFooter>
+            </Styled.Picture>
+          ))
+        }
+      </Styled.SettingsPictures>
       {
         isOwner && 
         <>
