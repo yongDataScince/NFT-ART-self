@@ -5,7 +5,7 @@ export const Loader: React.FC<{show?: boolean}> = ({ show }) => {
   return (
     <Styled.LoaderWrapper show={show}>
       <Styled.LoaderBox>
-        {_.times(9).map((id) => <Styled.LoaderItem key={id} delay={id} />)}
+        {_.times(3).map((id) => <Styled.LoaderItem key={id} delay={id} />)}
       </Styled.LoaderBox>
     </Styled.LoaderWrapper>
   )

@@ -17,13 +17,15 @@ const hideShow = keyframes`
 export const LoaderWrapper = styled.div<Props>`
   width: 100%;
   height: 100%;
-  background: #000;
+  background: #00000080;
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
   transition: all 0.3s;
   z-index: 1000;
+  top: 0;
+  left: 0;
   ${({ show }) => css`
     opacity: ${Number(show)};
     visibility: ${ show ? 'visible' : 'hidden'};
@@ -34,9 +36,9 @@ export const LoaderBox = styled.div`
   width: 38px;
   height: 38px;
   display: grid;
-  grid-gap: 4px;
-  grid-template-columns: 10px 10px 10px;
-  grid-template-rows: 10px 10px 10px;
+  grid-gap: 15px;
+  grid-template-columns: 16px 16px 16px;
+  grid-template-rows: 16px
 `
 
 export const LoaderItem = styled.div<Props>`
@@ -44,5 +46,6 @@ export const LoaderItem = styled.div<Props>`
   height: 100%;
   background: #fff;
   animation: ${hideShow} 0.9s infinite;
+  border-radius: 50%;
   animation-delay: ${({ delay }) => (delay || 0) * 0.1}s;
 `

@@ -1,14 +1,90 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../../store";
 import * as Styled from './styles'
 
 export const SettingsPage: React.FC = () => {
+  const [isOwner, setIsOwner] = useState<boolean>(false)
+  const { collections, signerAddress } = useAppSelector((state) => state.web3)
+
+  useEffect(() => {
+    collections?.[0].contract.owner().then((data: string) => {
+      setIsOwner(signerAddress === data)
+    })
+  }, [collections, signerAddress])
+
   return (
     <Styled.SettingsMain>
-      <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
-      <Styled.SettinsBlock>
-        Set mint fee percentage
-      </Styled.SettinsBlock>
-      <Styled.SettingsPageTitle>Upload new art</Styled.SettingsPageTitle>
+      {
+        isOwner && 
+        <>
+          <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Add addmin</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="new admin address" />
+            <Styled.SettingsButton>Add</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Remove addmin</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="remove admin address" />
+            <Styled.SettingsButton>Remove</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Add to presale</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="addresses" />
+            <Styled.SettingsButton>Add</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Add validator</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="new validator address" />
+            <Styled.SettingsButton>Add</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Remove validator</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="validator address" />
+            <Styled.SettingsButton>Remove</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change author royalty</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="royalty" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change minter royalty</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="number of transactions" />
+            <Styled.SettingsInput placeholder="royalty" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change fee address</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="new fee address" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change platform address</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="new address" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change mint price</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="prices" />
+            <Styled.SettingsInput placeholder="ids" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change presale mint price</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="prices" />
+            <Styled.SettingsInput placeholder="ids" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Set authors royalty distribution</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="addresses" />
+            <Styled.SettingsInput placeholder="rates" />
+            <Styled.SettingsButton>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+        </>
+      }
+      {/* <Styled.SettingsPageTitle>Upload new art</Styled.SettingsPageTitle>
       <Styled.SettinsBlock>
         <Styled.SettinsBlockTitle>1. Collection choose / create</Styled.SettinsBlockTitle>
         <Styled.SettingsInput placeholder="type new collection name or choose from dropdown" />
@@ -56,7 +132,7 @@ export const SettingsPage: React.FC = () => {
           <Styled.SettingsDropDownItem>Item 4 Item</Styled.SettingsDropDownItem>
         </Styled.SettingsDropDown>
         
-      </Styled.SettinsBlock>
+      </Styled.SettinsBlock> */}
     </Styled.SettingsMain>
   )
 }

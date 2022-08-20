@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import * as ethers from 'ethers'
 import ABI from './abi.json'
-import axios from 'axios'
 import collections from '../assets/data/collections.json'
 import authors from '../assets/data/authors.json'
 import pictures from '../assets/data/pictures.json'
-import * as _ from 'lodash'
 
 export interface Author {
   id?: number,
@@ -153,14 +151,16 @@ export const tokenInfo = createAsyncThunk(
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       return {
-        tokenPrice,
+        tokenPrice: tokenPrice || "0",
         tokenOwner,
         tokenStatus,
         status: tokenStatus === 0 ? 'available' : 'not available'
       }
     } catch (e) {
+      const tokenPrice = await collection.mintPrices(tokenId)
       return {
-        status: 'not minted'
+        status: 'not minted',
+        tokenPrice: tokenPrice || "0"
       }
     }
   }
@@ -237,13 +237,15 @@ export const listToken = createAsyncThunk(
 
 export const mintToken = createAsyncThunk(
   'web3/mint',
- async ({ tokenId, collectionId }:{ tokenId: number, collectionId: number }, { getState }) => {
+  async ({ tokenId, collectionId }:{ tokenId: number, collectionId: number }, { getState }) => {
   const { web3 }: any = getState()
   const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
 
-  await collection.mint([tokenId], {
-    value: await collection.mintPrices(1)
+  const tx = await collection.mint([tokenId], {
+    value: await collection.mintPrices(tokenId)
   })
+
+  await tx.wait()
  }
 )
 
@@ -321,6 +323,7 @@ export const contractSlice = createSlice({
 
     builder.addCase(mintToken.pending, (state) => {
       state.loading = true
+      console.log("mintToken pending");
     })
 
     builder.addCase(mintToken.rejected, (state, { error }) => {
@@ -330,6 +333,7 @@ export const contractSlice = createSlice({
 
     builder.addCase(mintToken.fulfilled, (state) => {
       state.loading = false
+      console.log("mintToken fulfilled");
     })
     
     builder.addCase(tokenInfos.pending, (state) => {

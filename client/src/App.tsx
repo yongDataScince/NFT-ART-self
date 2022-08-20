@@ -5,11 +5,9 @@ import { Route, Routes,  } from 'react-router-dom'
 import Main from './routes/Main'
 import CardPage from './routes/CardPage'
 import { initContract, setLoader } from './store/reducer';
-import { useAppDispatch, useAppSelector } from './store';
-import Loader from './components/UI/loader';
+import { useAppDispatch } from './store';
 import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
-import Footer from './components/Footer';
 import { SettingsPage } from './routes/SettingsPage';
 import { Author } from './routes/Author';
 
@@ -18,7 +16,6 @@ function App() {
   const [variant, setVariant] = useState<'error' | 'warning' | 'default'>('default');
   const [linkSrc, setLinkSrc] = useState<string>('');
   const dispatch = useAppDispatch()
-  const { loading } = useAppSelector((state) => state.web3)
 
   function isMobileDevice() {
     return 'ontouchstart' in window || 'onmsgesturechange' in window;
@@ -61,7 +58,6 @@ function App() {
 
   return (
     <div className="app">
-      <Loader show={loading} />
       <Header os={getMobileOS()} />
       <Modal title='Alert!' variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
       <Routes>

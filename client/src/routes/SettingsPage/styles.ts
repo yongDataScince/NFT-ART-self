@@ -10,7 +10,7 @@ export const SettingsPageTitle = styled.p`
   margin: 0;
   padding: 0;
   font-family: 'Helvetica Neue';
-  font-size: 32px;
+  font-size: 28px;
   line-height: 100%;
   letter-spacing: -0.01em;
   color: #FFFFFF;
@@ -103,10 +103,10 @@ export const SettingsDropDownItem = styled.p`
 export const SettingsButton = styled.button`
   border: 1px solid #555;
   background: #000;
-  padding: 4px 18px;
+  padding: 4px 16px;
   font-family: 'Helvetica Neue';
-  font-size: 18px;
-  line-height: 30px;
+  font-size: 16px;
+  line-height: 25px;
   font-weight: 200;
   text-align: left;
   color: #FFFFFF;

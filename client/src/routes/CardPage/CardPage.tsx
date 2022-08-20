@@ -62,10 +62,6 @@ export const CardPage: React.FC = () => {
       tokenId: Number(pictureid),
       collectionId: Number(collection)
     }))
-    dispatch(tokenInfo({
-      collectionId: Number(collection || -1),
-      tokenId: Number(collection || -1),
-    }))
   }
 
   const list = () => {
@@ -75,20 +71,12 @@ export const CardPage: React.FC = () => {
       validate,
       collectionId: Number(collection)
     }))
-    dispatch(tokenInfo({
-      collectionId: Number(collection || -1),
-      tokenId: Number(collection || -1),
-    }))
   }
 
   const mint = () => {
     dispatch(mintToken({
       tokenId: Number(pictureid),
       collectionId: Number(collection)
-    }))
-    dispatch(tokenInfo({
-      collectionId: Number(collection || -1),
-      tokenId: Number(collection || -1),
     }))
   }
 
@@ -102,8 +90,11 @@ export const CardPage: React.FC = () => {
     const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
     setNheight(image.naturalHeight * ratio)
     setNwidth(image.naturalWidth * ratio)
-
   }, [pictureid])
+
+  useEffect(() => {
+    console.log(currToken);
+  }, [currToken])
 
   useEffect(() => {
     dispatch(tokenInfo({
@@ -130,48 +121,59 @@ export const CardPage: React.FC = () => {
     }
   }, [pictureid, navigate, collection, collections])
 
-  if (!picture || loading) {
-    return <Loader show={loading} />
-  }
+  useEffect(() => {
+    currCollection?.contract.on("ListToken", () => {
+      dispatch(tokenInfo({
+        tokenId: Number(pictureid),
+        collectionId: Number(collection)
+      }))
+    })
+    currCollection?.contract.on("PublicSaleMint", () => {
+      dispatch(tokenInfo({
+        tokenId: Number(pictureid),
+        collectionId: Number(collection)
+      }))
+    })
+    currCollection?.contract.on("BuyToken", () => {
+      dispatch(tokenInfo({
+        tokenId: Number(pictureid),
+        collectionId: Number(collection)
+      }))
+    })
+    return () => {
+      currCollection?.contract.removeAllListeners("ListToken");
+      currCollection?.contract.removeAllListeners("PublicSaleMint");
+      currCollection?.contract.removeAllListeners("BuyToken");
+    };
+  }, [collection, currCollection, dispatch, pictureid])
 
   return (
     <Styled.CardPage ref={ref}>
+      <Loader show={loading} />
       <Styled.CardTitle>
         <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’
       </Styled.CardTitle>
-      {/* <Styled.Authors>
-        <span>By</span> {
-          currCollection?.authors.reduce((accu: any, elem: any) => {
-            return accu === null ? [<a href={`#${elem?.address}`}>{elem?.name}</a>] : [...accu, <span> & </span> , <a href={`#${elem?.address}`}>{elem?.name}</a>]
-          }, null)
-        }
-      </Styled.Authors> */}
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.Line />
-      {
-        (currToken?.status !== 'not minted' && !!currToken?.price) && <>
-          <Styled.Price>
-            <span>Price: </span> { ethers.utils.formatEther(currToken?.price) }
-          </Styled.Price>
-        </>
-      }
+      <Styled.Price>
+        <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") }
+      </Styled.Price>
       <Styled.CardButtonGroup>
         {
-          currToken?.owner === signerAddress && haveEth ? (
+          currToken?.tokenOwner === signerAddress && haveEth ? (
             <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
               List Token
             </Styled.CardButton>
           ) : (
             <>
-            {currToken.status === 'not minted' ? (
+            {currToken?.status === 'not minted' ? (
               <Styled.CardButton disabled={!haveEth} onClick={() => mint()}>Mint Token</Styled.CardButton>
             ) : (
               <Styled.CardButton onClick={() => buy()} 
                 disabled={
-                  currToken?.status === 'not listed' ||
+                  currToken?.status === 'not available' ||
                   !haveEth                           ||
-                  currToken?.status === 'not minted' ||
-                  (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.price))
+                  (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
                 Buy Token
               </Styled.CardButton>
