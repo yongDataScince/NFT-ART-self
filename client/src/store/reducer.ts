@@ -167,7 +167,7 @@ export const tokenInfo = createAsyncThunk(
         tokenPrice: tokenPrice || "0",
         tokenOwner,
         tokenStatus,
-        status: tokenStatus === 0 ? 'available' : 'not available'
+        status: tokenStatus === 3 ? 'available' : 'not available'
       }
     } catch (e) {
       const tokenPrice = await collection.mintPrices(tokenId)

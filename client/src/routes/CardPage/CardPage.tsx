@@ -180,7 +180,7 @@ export const CardPage: React.FC = () => {
                   !haveEth                           ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
-                Buy Token {currToken?.status}
+                Buy Token
               </Styled.CardButton>
             )}
             </>
