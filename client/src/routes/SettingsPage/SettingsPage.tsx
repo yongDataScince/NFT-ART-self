@@ -10,6 +10,8 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 
 export const SettingsPage: React.FC = () => {
   const [isOwner, setIsOwner] = useState<boolean>(false)
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
+
   const { collections, signerAddress, signer, userPictures, tokens, loading, haveEth } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -96,6 +98,12 @@ export const SettingsPage: React.FC = () => {
   useEffect(() => {
     collections?.[0].contract.owner().then((data: string) => {
       setIsOwner(signerAddress === data)
+    })
+    collections?.[0].contract.isAdmin(signerAddress).then((data: boolean) => {
+      setIsAdmin(data)
+    })
+    collections?.[0].contract.isValidator(signerAddress).then((data: boolean) => {
+      setIsAdmin(data)
     })
     dispatch(userTokens(signer as any))
   }, [collections, dispatch, signer, signerAddress])

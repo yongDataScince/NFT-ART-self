@@ -163,6 +163,7 @@ export const tokenInfo = createAsyncThunk(
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
+      console.log(tokenStatus);
       return {
         tokenPrice: tokenPrice || "0",
         tokenOwner,

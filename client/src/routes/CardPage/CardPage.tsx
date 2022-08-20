@@ -37,7 +37,7 @@ export const CardPage: React.FC = () => {
   const [nwidth, setNwidth] = useState<number>(0);
   const [nheight, setNheight] = useState<number>(0);
   const [newPrice, setNewPrice] = useState<string>('')
-  const [validate, setValidate] = useState<boolean>(false)
+  const [validate, setValidate] = useState<boolean>(true)
   const [picture, setPicture] = useState<Picture | undefined>()
   const [tags] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
   const [currCollection, setCurrCollection] = useState<ICollection>()
@@ -177,7 +177,7 @@ export const CardPage: React.FC = () => {
               <Styled.CardButton onClick={() => buy()} 
                 disabled={
                   currToken?.status === 'not available' ||
-                  !haveEth                           ||
+                  !haveEth                              ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
                 Buy Token
