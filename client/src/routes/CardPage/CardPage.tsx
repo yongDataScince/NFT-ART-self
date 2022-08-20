@@ -147,7 +147,7 @@ export const CardPage: React.FC = () => {
       currCollection?.contract.removeAllListeners("PublicSaleMint");
       currCollection?.contract.removeAllListeners("BuyToken");
     };
-  }, [collection, currCollection, dispatch, pictureid])
+  }, [collection, currCollection, dispatch, navigate, pictureid])
 
   return (
     <Styled.CardPage ref={ref}>
@@ -180,7 +180,7 @@ export const CardPage: React.FC = () => {
                   !haveEth                           ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
-                Buy Token
+                Buy Token {currToken?.status}
               </Styled.CardButton>
             )}
             </>

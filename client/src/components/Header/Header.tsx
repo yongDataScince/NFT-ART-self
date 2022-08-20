@@ -19,7 +19,7 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
         )
       }
       {(os === 'iOS' || os === 'Android') && (
-        <Styled.HeaderButton onClick={() => window.open('https://metamask.app.link/dapp/da376751.nft-art-preview.pages.dev/')}>
+        <Styled.HeaderButton onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
       )}
