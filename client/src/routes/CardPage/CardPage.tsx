@@ -110,8 +110,9 @@ export const CardPage: React.FC = () => {
 
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
       const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
+      console.log(picData);
       if (!pic) {
-        navigate('/')
+        // navigate('/')
       } else {
         setPicture(pic)
       }
@@ -158,7 +159,7 @@ export const CardPage: React.FC = () => {
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.Line />
       <Styled.Price>
-        <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") }
+        <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") } MATIC
       </Styled.Price>
       <Styled.CardButtonGroup>
         {
@@ -233,7 +234,7 @@ export const CardPage: React.FC = () => {
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
             <Styled.AuthorName onClick={() => navigate(`/author/${author?.address}`)}>{author?.name}</Styled.AuthorName>
             <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
-              <CopyIcon viewBox='0 0 65 35' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
+              <CopyIcon viewBox='0 0 20 20' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>
             {
               Object.keys(author?.description).map((key) => (

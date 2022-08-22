@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
 import { useAppSelector } from '../../store';
-import { useEffect } from 'react';
 
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()

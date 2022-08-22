@@ -46,7 +46,7 @@ export const getAuthorByAddress = (address: string): Author | undefined => {
 export const getPictureById = (tokenId: number) => {
   const tokenInfo = pictures?.find((pic) => pic.tokenId === tokenId)
   const tokenCollectionId = collections.find((coll) => coll.address === tokenInfo?.collectionAddress)?.id
-  console.log(collections, tokenInfo?.collectionAddress);
+
   if (tokenInfo) {
     return {
       ...tokenInfo,
@@ -117,7 +117,7 @@ export const initContract = createAsyncThunk(
         const totalSupply = pictures.length + 1
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        console.log("getAuthors", await contract?.getAuthors());
+
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
             (await contract?.getAuthors())?.map(getAuthorByAddress)
               :
@@ -183,17 +183,13 @@ export const tokenInfo = createAsyncThunk(
   ) => {
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
-    console.log("tokenId: ", tokenId);
-    console.log("web3: ", web3);
 
     try {
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
-      console.log("status: ", tokenStatus);
-      console.log("tokenPrevOwner: ", tokenPrevOwner);
-
+      
       return {
         tokenPrice: tokenPrice || "0",
         tokenOwner,
@@ -315,22 +311,20 @@ export const userTokens = createAsyncThunk(
       const Collection = new ethers.Contract(address, ABI, signer)
       const coll = await Collection.attach(address)
       const maxSupply = (await coll.maxSupply()).toNumber()
-      console.log("collection: ", address);
-      console.log("maxSupply: ", maxSupply);
+
       for (let id = 1; id < maxSupply + 1; id++) {
         let owner: string;
         try {
-          owner = await coll.tokensPreviousOwner(id)
           owner = await coll.ownerOf(id)
+          if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000') {
+            owner = await coll.tokensPreviousOwner(id)
+          }
         } catch (error) {
           owner = ''
         }
 
         if (owner === signerAddress) {
           const info = getPictureById(id)
-          console.log("info1: ", await tokenById(id, coll));
-          console.log("info2: ", info);
-
           userTokens.push({
             ...await tokenById(id, coll),
             ...info
@@ -365,9 +359,7 @@ export const contractSlice = createSlice({
       console.log(error);
     })
 
-    builder.addCase(userTokens.fulfilled, (state, { payload }) => {
-      console.log("Us pay: ", payload);
-      
+    builder.addCase(userTokens.fulfilled, (state, { payload }) => {      
       state.userPictures = payload;
       state.loading = false
     })
@@ -391,7 +383,6 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.rejected, (state, { error }) => {
       state.loading = false;
-      console.log("error: ",error);
       state.currToken = {
         status: 'not minted',
         image: 'placeholder'

@@ -9,48 +9,46 @@ import * as Styled from './styles'
 const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
 
 export const SettingsPage: React.FC = () => {
-  const [isOwner, setIsOwner] = useState<boolean>(false)
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
-
   const { collections, signerAddress, signer, userPictures, tokens, loading, haveEth } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
+  const [isOwner, setIsOwner] = useState<boolean>(false)
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
+  const [isValidator, setIsValidator] = useState<boolean>(false)
+  const [royaltyDistribution, setRoyaltyDistribution] = useState<string>('')
+  const [fiatRate, setFiatRate] = useState<string>('')
+  const [verifyToken, setVerifyToken] = useState<string>('')
+
   const [newAdmin, setNewAdmin] = useState<string>('')
   const [oldAdmin, setOldAdmin] = useState<string>('')
-
   const [newValidator, setNewValidator] = useState<string>('')
   const [oldValidator, setOldValidator] = useState<string>('')
-
   const [addressesStr, setAddressesStr] = useState<string>('')
   const [addresses, setAddresses] = useState<string[]>([])
-
   const [baseUri, setBaseUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<string>('')
   const [maxPresaleMaxSupply, setPresaleMaxSupply] = useState<string>('')
-
+  const [preSaleMaxMint, setPreSaleMaxMint] = useState<string>('')
+  const [preSalePerMaxMint, setPreSalePerMaxMint] = useState<string>('')
+  const [minterAuthority, setMinterAuthority] = useState<string>('')
+  const [authorRoyalty, setAuthorRoyalty] = useState<string>('')
   const [idsStr, setIdsStr] = useState<any>({
     presale: '',
     sale: ''
   })
-
   const [ids, setIds] = useState<any>({
     presale: [],
     sale: []
   })
-
   const [pricesStr, setPricesStr] = useState<any>({
     presale: '',
     sale: ''
   })
-
   const [prices, setPrices] = useState<any>({
     presale: [],
     sale: []
   })
-
-  const [preSaleMaxMint, setPreSaleMaxMint] = useState<string>('')
-  const [preSalePerMaxMint, setPreSalePerMaxMint] = useState<string>('')
 
   const parseAddresses = (value: string) => {
     setAddressesStr(value)
@@ -99,15 +97,14 @@ export const SettingsPage: React.FC = () => {
     collections?.[0].contract.owner().then((data: string) => {
       setIsOwner(signerAddress === data)
     })
-    collections?.[0].contract.isAdmin(signerAddress).then((data: boolean) => {
-      setIsAdmin(data)
-    })
-    collections?.[0].contract.isValidator(signerAddress).then((data: boolean) => {
-      setIsAdmin(data)
-    })
+    collections?.[0].contract.isAdmin(signerAddress).then(setIsAdmin)
+    collections?.[0].contract.isValidator(signerAddress).then(setIsValidator)
     dispatch(userTokens(signer as any))
   }, [collections, dispatch, signer, signerAddress])
 
+  useEffect(() => {
+    console.log("userPictures: ", userPictures);
+  }, [userPictures])
 
   useEffect(() => {
     if(!haveEth) navigate('/')
@@ -145,7 +142,7 @@ export const SettingsPage: React.FC = () => {
       {
         isOwner && 
         <>
-          <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
+          <Styled.SettingsPageTitle>Owner</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Add addmin</Styled.SettinsBlockTitle>
             <Styled.SettingsInput placeholder="new admin address" value={newAdmin} onChange={(e) => setNewAdmin(e.target.value)} />
@@ -226,55 +223,43 @@ export const SettingsPage: React.FC = () => {
           </Styled.SettinsBlock>
         </>
       }
-      {/* <Styled.SettingsPageTitle>Upload new art</Styled.SettingsPageTitle>
-      <Styled.SettinsBlock>
-        <Styled.SettinsBlockTitle>1. Collection choose / create</Styled.SettinsBlockTitle>
-        <Styled.SettingsInput placeholder="type new collection name or choose from dropdown" />
-        <Styled.SettingsDropDown>
-          <Styled.SettingsDropDownItem>Item 1 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 2 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 3 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 4 Item</Styled.SettingsDropDownItem>
-        </Styled.SettingsDropDown>
-        <Styled.SettingsButton>Add</Styled.SettingsButton>
-      </Styled.SettinsBlock>
-      <Styled.SettinsBlock>
-        <Styled.SettinsBlockTitle>2. Collection thumbnail</Styled.SettinsBlockTitle>
-        <Styled.SettingsUploadBlock>
-          <Styled.UploadPlus htmlFor="upload-collection">+</Styled.UploadPlus>
-          <Styled.SettingsUploadText>
-            Tip: drag & drop or upload from device. <span>Your image must be 75dpi  & no more than 1000px x1000px</span>
-          </Styled.SettingsUploadText>
-          <Styled.SettingsUpload type="file" id="upload-collection" />
-        </Styled.SettingsUploadBlock>
-        <Styled.SettingsButton>Upload</Styled.SettingsButton>
-      </Styled.SettinsBlock>
-      <Styled.SettinsBlock>
-        <Styled.SettinsBlockTitle>3. Art</Styled.SettinsBlockTitle>
-        <Styled.SettingsUploadBlock>
-          <Styled.UploadPlus htmlFor="upload-collection">+</Styled.UploadPlus>
-          <Styled.SettingsUploadText>
-          This is the file that your collector will be able to download. A smaller version will be automatically created and used for display purposes. 
-          <span>Your image must be 75dpi & NO LESS than 1000px x1000px. Video should be no more than 250 mb.</span>
-          </Styled.SettingsUploadText>
-          <Styled.SettingsUpload type="file" id="upload-collection" />
-        </Styled.SettingsUploadBlock>
-        <Styled.SettingsButton>Upload</Styled.SettingsButton>
-
-        <Styled.UploadInputBig placeholder="type art description here" />
-        <Styled.SettingsButton>Add</Styled.SettingsButton>
-      </Styled.SettinsBlock>
-      <Styled.SettinsBlock>
-        <Styled.SettinsBlockTitle>4. Tags</Styled.SettinsBlockTitle>
-        <Styled.SettingsInput placeholder="type new collection name or choose from dropdown" />
-        <Styled.SettingsDropDown>
-          <Styled.SettingsDropDownItem>Item 1 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 2 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 3 Item</Styled.SettingsDropDownItem>
-          <Styled.SettingsDropDownItem>Item 4 Item</Styled.SettingsDropDownItem>
-        </Styled.SettingsDropDown>
-        
-      </Styled.SettinsBlock> */}
+      {
+        (isAdmin || isOwner) &&
+        <>
+          <Styled.SettingsPageTitle>Admin</Styled.SettingsPageTitle>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change minter royalty</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="royalty" value={minterAuthority} onChange={(e) => setMinterAuthority(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('changeMinterRoyalty', [minterAuthority])}>Change</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change author royalty</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="royalty" value={authorRoyalty} onChange={(e) => setAuthorRoyalty(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('changeAuthorRoyalty', [authorRoyalty])}>Change</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Set author royalty distribution</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="royalty" value={royaltyDistribution} onChange={(e) => setRoyaltyDistribution(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [royaltyDistribution])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Set fiat rate</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="fiat rate" value={fiatRate} onChange={(e) => setFiatRate(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [fiatRate])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+        </>
+      }
+      {
+        (isValidator || isOwner) && 
+        <>
+          <Styled.SettingsPageTitle>Validator</Styled.SettingsPageTitle>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Verify</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="token id" value={verifyToken} onChange={(e) => setVerifyToken(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('verify', [verifyToken])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+        </>
+      }
     </Styled.SettingsMain>
   )
 }
