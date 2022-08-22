@@ -21,7 +21,7 @@ export const Size: React.FC<Props> = ({ sizes, onChoise }) => {
           onClick={() => onChoise(size.id)}
           key={size.id}
           choised={size.choised}>
-            {size.name}
+            {size?.name}
           </Styled.SizeCard>
         )}
       </Styled.SizeList>

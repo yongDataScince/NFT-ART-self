@@ -132,10 +132,10 @@ export const SettingsPage: React.FC = () => {
               <Styled.PictureImage src={pic.path} />
               <Styled.PictureFooter>
                 <Styled.PictureTitle>
-                 <span>#{zeroPad(pic.tokenId)}</span> {pic.name}
+                 <span>#{zeroPad(pic.tokenId)}</span> {pic?.name}
                 </Styled.PictureTitle>
-                <Styled.PictureStatus status={tokens?.[pic.tokenId]?.status}>
-                  {tokens?.[pic.tokenId]?.status}
+                <Styled.PictureStatus status={tokens?.[pic.tokenId - 1]?.status}>
+                  {tokens?.[pic.tokenId - 1]?.status}
                 </Styled.PictureStatus>
               </Styled.PictureFooter>
             </Styled.Picture>

@@ -98,7 +98,7 @@ export const PictureTitle = styled.p`
     font-family: 'Helvetica Neue';
     font-style: normal;
     font-weight: 100;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 150%;
     font-weight: 200;
     color: #CCCC;

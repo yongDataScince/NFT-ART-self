@@ -34,6 +34,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
 
   useEffect(() => {
     const c = collections?.find((c) => c.id === collectionId)
+    console.log(collections);
     setCurrCollection(c)
     dispatch(tokenInfos({ collectionId }))
   }, [collectionId, collections, dispatch])
@@ -42,7 +43,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
   return (
     <Styled.CarouselMain>
       <Styled.CarouselTitleWrapper>
-        <Styled.CollectionName>{currCollection?.authors.map((a) => a.name)?.join(' / ')}</Styled.CollectionName>
+        <Styled.CollectionName>{currCollection?.authors.map((a) => a?.name)?.join(' / ')}</Styled.CollectionName>
         <Styled.CarouselTitle>{title}</Styled.CarouselTitle>
       </Styled.CarouselTitleWrapper>
       <Styled.CarouselCard onClick={() => navigate(`collection/${collectionId}/picture/${images[currentImage - 1]}`)}>

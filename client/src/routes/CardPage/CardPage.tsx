@@ -93,10 +93,6 @@ export const CardPage: React.FC = () => {
   }, [pictureid])
 
   useEffect(() => {
-    console.log(currToken);
-  }, [currToken])
-
-  useEffect(() => {
     dispatch(tokenInfo({
       tokenId: Number(pictureid),
       collectionId: Number(collection)
@@ -111,6 +107,7 @@ export const CardPage: React.FC = () => {
 
   useEffect(() => {
     if (pictureid && collection) {
+
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
       const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
       if (!pic) {
@@ -133,6 +130,7 @@ export const CardPage: React.FC = () => {
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
+      console.log('mint');
       navigate('/settings')
     })
     currCollection?.contract.on("BuyToken", () => {
@@ -177,6 +175,7 @@ export const CardPage: React.FC = () => {
               <Styled.CardButton onClick={() => buy()} 
                 disabled={
                   currToken?.status === 'not available' ||
+                  currToken?.tokenPrevOwner === signerAddress ||
                   !haveEth                              ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
@@ -228,20 +227,20 @@ export const CardPage: React.FC = () => {
       {
         currCollection?.authors.map((author) => (
           <Styled.AuthorBlock key={author.id}>
-            <Styled.AuthorAnchor id={author.address} />
+            <Styled.AuthorAnchor id={author?.address} />
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
-            <Styled.AuthorName onClick={() => navigate(`/author/${author?.address}`)}>{author.name}</Styled.AuthorName>
+            <Styled.AuthorName onClick={() => navigate(`/author/${author?.address}`)}>{author?.name}</Styled.AuthorName>
             <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
               <CopyIcon viewBox='0 0 65 35' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>
             {
-              Object.keys(author.description).map((key) => (
+              Object.keys(author?.description).map((key) => (
                 <Styled.AuthorDescriptionBlock key={key}>
                   <Styled.AuthorDescriptionTitle>{key}</Styled.AuthorDescriptionTitle>
                   <Styled.AuthorDescriptionText>
                     <Styled.AuthorDescriptionPar>
                       {
-                        author.description[key].reduce((accu: any, elem: any) => {
+                        author?.description[key].reduce((accu: any, elem: any) => {
                           return accu === null ? [elem] : [...accu, <><br/><br/></> , elem]
                         }, null)}
                       <br />
@@ -253,8 +252,8 @@ export const CardPage: React.FC = () => {
             }
             <Styled.SocialBlock>
               {
-                Object.keys(author.social).map((key) => (
-                  <a href={`${author.social[key]}`} key={key}>{(socialIcons as any)[key]}</a>
+                Object.keys(author?.social).map((key) => (
+                  <a href={`${author?.social?.[key]}`} key={key}>{(socialIcons as any)[key]}</a>
                 ))
               }
             </Styled.SocialBlock>

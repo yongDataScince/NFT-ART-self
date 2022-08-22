@@ -40,12 +40,13 @@ interface ContractState {
 }
 
 export const getAuthorByAddress = (address: string): Author | undefined => {
-  return authors.find((a) => a.address === address)
+  return authors?.find((a) => a.address === address)
 }
 
 export const getPictureById = (tokenId: number) => {
-  const tokenInfo = pictures.find((pic) => pic.tokenId === tokenId)
+  const tokenInfo = pictures?.find((pic) => pic.tokenId === tokenId)
   const tokenCollectionId = collections.find((coll) => coll.address === tokenInfo?.collectionAddress)?.id
+  console.log(collections, tokenInfo?.collectionAddress);
   if (tokenInfo) {
     return {
       ...tokenInfo,
@@ -55,6 +56,28 @@ export const getPictureById = (tokenId: number) => {
   }
 }
 
+export const tokenById = async ( tokenId: number, contract: ethers.Contract ) => {
+  try {
+    const tokenPrice = (await contract.getTokenPrice(tokenId))?.toString()
+    const tokenOwner = await contract.ownerOf(tokenId)
+    const tokenStatus = (await contract.getLotState(tokenId)).toNumber()
+
+    return {
+      tokenPrice: tokenPrice || "0",
+      tokenOwner,
+      tokenStatus,
+      status: tokenStatus === 3 ? 'available' : 'not available'
+    }
+  } catch (e) {
+    const tokenPrice = await contract.mintPrices(tokenId)
+    return {
+      status: 'not minted',
+      tokenPrice: tokenPrice || "0"
+    }
+  }
+
+}
+
 export const initContract = createAsyncThunk(
   'web3/initContract',
   async ({ haveEth }: { haveEth: boolean }) => {  
@@ -62,7 +85,7 @@ export const initContract = createAsyncThunk(
       try {
         await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${Number(97).toString(16)}` }]
+          params: [{ chainId: `0x${Number(80001).toString(16)}` }]
         });
       } catch (err: any) {
         console.log(err);
@@ -73,9 +96,9 @@ export const initContract = createAsyncThunk(
             params: [
               {
                 chainName: 'binance test',
-                chainId: `0x${Number(97).toString(16)}`,
-                nativeCurrency: { name: 'BNB', decimals: 18, symbol: 'BNB' },
-                rpcUrls: ['https://data-seed-prebsc-2-s2.binance.org:8545/']
+                chainId: `0x${Number(80001).toString(16)}`,
+                nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+                rpcUrls: ['https://rpc-mumbai.maticvigil.com']
               }
             ]
           });
@@ -94,6 +117,7 @@ export const initContract = createAsyncThunk(
         const totalSupply = pictures.length + 1
         const name = await contract?.name()
         const symbol = await contract?.symbol()
+        console.log("getAuthors", await contract?.getAuthors());
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
             (await contract?.getAuthors())?.map(getAuthorByAddress)
               :
@@ -118,7 +142,7 @@ export const initContract = createAsyncThunk(
         haveEth
       }
     } else {
-      const provider = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com')
       const colls: ICollection[] = [];
 
       for await (const collection of collections) {
@@ -126,6 +150,7 @@ export const initContract = createAsyncThunk(
         const totalSupply = pictures.length
         const name = await contract?.name()
         const symbol = await contract?.symbol()
+        console.log("getAuthors: ", await contract?.getAuthors());
         const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
                 (await contract?.getAuthors())?.map(getAuthorByAddress)
                   :
@@ -157,17 +182,18 @@ export const tokenInfo = createAsyncThunk(
     { getState }: any
   ) => {
     const { web3 }: any = getState()
-    const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+    const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
 
     try {
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
-      console.log(tokenStatus);
+      const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
       return {
         tokenPrice: tokenPrice || "0",
         tokenOwner,
         tokenStatus,
+        tokenPrevOwner,
         status: tokenStatus === 3 ? 'available' : 'not available'
       }
     } catch (e) {
@@ -187,7 +213,7 @@ export const tokenInfos = createAsyncThunk(
     { getState }: any
   ) => {
     const { web3 }: any = getState()
-    const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+    const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
 
     const tokens = []
 
@@ -197,17 +223,17 @@ export const tokenInfos = createAsyncThunk(
         const tokenOwner = await collection?.ownerOf(pic.tokenId)
         const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
         tokens.push({
-          name: pic.name,
-          id: pic.tokenId,
+          name: pic?.name,
+          id: pic?.tokenId,
           tokenPrice,
           tokenOwner,
           tokenStatus,
-          status: tokenStatus === 0 ? 'available' : 'not available'
+          status: tokenStatus === 3 ? 'available' : 'not available'
         })
       } catch (e) {
         tokens.push({
-          name: pic.name,
-          id: pic.tokenId,
+          name: pic?.name,
+          id: pic?.tokenId,
           status: 'not minted'
         })
       }
@@ -225,7 +251,7 @@ export const buyToken = createAsyncThunk(
   getState
  }) => {
   const { web3 }: any = getState()
-  const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+  const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
   const tokenPrice = (await collection?.getTokenPrice(tokenId))
   const tx = await collection?.buyToken(tokenId, { value: tokenPrice })
   await tx.wait()
@@ -243,7 +269,7 @@ export const listToken = createAsyncThunk(
   getState
  }) => {
   const { web3 }: any = getState()
-  const { contract: collection } = await web3?.collections.find((collection: any) => collection.id === collectionId); 
+  const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
   const tx = await collection?.listToken(tokenId, ethers.utils.parseEther(newPrice), validate)
   await tx.wait()
  }
@@ -283,17 +309,31 @@ export const userTokens = createAsyncThunk(
     for await (const address of collectionAddresses) {
       const Collection = new ethers.Contract(address, ABI, signer)
       const coll = await Collection.attach(address)
-      const tokensSupply = (await coll.totalSupply()).toNumber()
-      console.log('tokensSupply: ', tokensSupply);
-      for (let id = 1; id < tokensSupply + 1; id++) {
-        const tokenOwner = await coll.ownerOf(id)
-        if (tokenOwner === signerAddress) {
-          userTokens.push(getPictureById(id)) 
+      const maxSupply = (await coll.maxSupply()).toNumber()
+      
+      for (let id = 1; id < maxSupply + 1; id++) {
+        let owner: string;
+        try {
+          owner = await coll.ownerOf(id)
+          owner = await coll.tokensPreviousOwner(id)
+        } catch (error) {
+          owner = ''
+        }
+
+        if (owner === signerAddress) {
+          const info = getPictureById(id)
+          console.log("info1: ", await tokenById(id, coll));
+          console.log("info2: ", info);
+
+          userTokens.push({
+            ...await tokenById(id, coll),
+            ...info
+          }) 
         }
       }
     }
 
-    return userTokens.filter((user) => !!user)
+    return userTokens
   }
 )
 
@@ -314,7 +354,14 @@ export const contractSlice = createSlice({
       state.loading = true
     })
 
+    builder.addCase(userTokens.rejected, (state, { error }) => {
+      state.loading = false
+      console.log(error);
+    })
+
     builder.addCase(userTokens.fulfilled, (state, { payload }) => {
+      console.log("Us pay: ", payload);
+      
       state.userPictures = payload;
       state.loading = false
     })
@@ -329,6 +376,7 @@ export const contractSlice = createSlice({
     builder.addCase(initContract.fulfilled, (state, { payload }) => {
       state.provider = payload.provider
       state.signer = payload.signer
+
       state.collections = payload.colls as any
       state.loading = false
       state.signerBalance = payload.signerBalance
@@ -337,6 +385,7 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.rejected, (state, { error }) => {
       state.loading = false;
+      console.log("error: ",error);
       state.currToken = {
         status: 'not minted',
         image: 'placeholder'

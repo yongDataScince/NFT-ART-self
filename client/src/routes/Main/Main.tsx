@@ -26,8 +26,8 @@ export const Main: React.FC = () => {
         collections?.map((collection) => (
           <ImageCarousel
             collectionId={collection.id}
-            collectionName={`${collection.name}`}
-            title={`${collection.name} [${collection.totalSupply}]`}
+            collectionName={`${collection?.name}`}
+            title={`${collection?.name} [${collection?.totalSupply}]`}
             images={times(collection.totalSupply).map((i) => i + 1)}
           />
         ))
