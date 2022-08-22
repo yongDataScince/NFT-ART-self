@@ -183,12 +183,17 @@ export const tokenInfo = createAsyncThunk(
   ) => {
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
+    console.log("tokenId: ", tokenId);
+    console.log("web3: ", web3);
 
     try {
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
+      console.log("status: ", tokenStatus);
+      console.log("tokenPrevOwner: ", tokenPrevOwner);
+
       return {
         tokenPrice: tokenPrice || "0",
         tokenOwner,
@@ -304,18 +309,19 @@ export const userTokens = createAsyncThunk(
   async (signer: ethers.providers.JsonRpcSigner) => {
     const collectionAddresses = collections.map((c) => c.address)
     const userTokens = []
-    const signerAddress = await signer.getAddress()
+    const signerAddress = await signer?.getAddress()
 
     for await (const address of collectionAddresses) {
       const Collection = new ethers.Contract(address, ABI, signer)
       const coll = await Collection.attach(address)
       const maxSupply = (await coll.maxSupply()).toNumber()
-      
+      console.log("collection: ", address);
+      console.log("maxSupply: ", maxSupply);
       for (let id = 1; id < maxSupply + 1; id++) {
         let owner: string;
         try {
-          owner = await coll.ownerOf(id)
           owner = await coll.tokensPreviousOwner(id)
+          owner = await coll.ownerOf(id)
         } catch (error) {
           owner = ''
         }

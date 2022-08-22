@@ -120,6 +120,7 @@ export const CardPage: React.FC = () => {
 
   useEffect(() => {
     currCollection?.contract.on("ListToken", () => {
+      console.log('list');
       dispatch(tokenInfo({
         tokenId: Number(pictureid),
         collectionId: Number(collection)
@@ -138,6 +139,7 @@ export const CardPage: React.FC = () => {
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
+      console.log('buy');
       navigate('/settings')
     })
     return () => {
