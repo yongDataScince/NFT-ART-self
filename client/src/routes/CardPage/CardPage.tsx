@@ -58,6 +58,7 @@ export const CardPage: React.FC = () => {
   }
 
   const buy = () => {
+    console.log("buy");
     dispatch(buyToken({
       tokenId: Number(pictureid),
       collectionId: Number(collection)
@@ -65,6 +66,7 @@ export const CardPage: React.FC = () => {
   }
 
   const revoke = () => {
+    console.log("revoke");
     dispatch(revokeToken({
       tokenId: Number(pictureid),
       collectionId: Number(collection)
@@ -166,15 +168,28 @@ export const CardPage: React.FC = () => {
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
       <Styled.CardTitle>
-        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{picture?.name}’
+        <span>#{zeroPad(Number(pictureid) - 1, 4)} </span>‘{picture?.name}’
       </Styled.CardTitle>
       <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
       <Styled.Line />
+      {currToken?.status === 'available' && 
+        <Styled.Price>
+          <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") } MATIC
+        </Styled.Price>
+      }
+      {
+        currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000' ? (
+          <Styled.Price>
+            <span>Owned by: </span> { currToken?.tokenOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
+          </Styled.Price>
+        ) : (
+          <Styled.Price>
+            <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
+          </Styled.Price>
+        )
+      }
       <Styled.Price>
-        <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") } MATIC
-      </Styled.Price>
-      <Styled.Price>
-        <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenPrevOwner?.slice(0, 5)}...${currToken?.tokenPrevOwner?.slice(37, 43)}` }
+
       </Styled.Price>
       <Styled.CardButtonGroup>
         {
@@ -190,12 +205,21 @@ export const CardPage: React.FC = () => {
             {currToken?.status === 'not minted' ? (
               <Styled.CardButton disabled={!haveEth} onClick={() => mint()}>Mint Token</Styled.CardButton>
             ) : (
-              <Styled.CardButton onClick={() => currToken?.tokenPrevOwner !== signerAddress ? buy() : revoke()}
+              <Styled.CardButton onClick={() => {
+                currToken?.tokenPrevOwner === '0x0000000000000000000000000000000000000000' ?
+                    currToken?.tokenOwner !== signerAddress ? buy() : revoke() :
+                    currToken?.tokenPrevOwner !== signerAddress ? buy() : revoke()
+              }}
                 disabled={
                   !haveEth                              ||
+                  currToken?.status === 'not available' ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
-                { currToken?.tokenPrevOwner !== signerAddress ? 'Buy Token' : 'Revoke Token' }
+                {
+                  currToken?.tokenPrevOwner === '0x0000000000000000000000000000000000000000' ?
+                    currToken?.tokenOwner !== signerAddress ? 'Buy Token' : 'Revoke Token' :
+                    currToken?.tokenPrevOwner !== signerAddress ? 'Buy Token' : 'Revoke Token'
+                }
               </Styled.CardButton>
             )}
             </>

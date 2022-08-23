@@ -189,7 +189,7 @@ export const tokenInfo = createAsyncThunk(
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
-      console.log(tokenOwner, tokenPrevOwner);
+      console.log(tokenStatus === 3 ? 'available' : 'not available');
       
       return {
         tokenPrice: tokenPrice || "0",
@@ -323,17 +323,32 @@ export const userTokens = createAsyncThunk(
     const userTokens = []
     const signerAddress = await signer?.getAddress()
 
+    // {
+    //   currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000' ? (
+    //     <Styled.Price>
+    //       <span>Owned by: </span> { currToken?.tokenOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
+    //     </Styled.Price>
+    //   ) : (
+    //     <Styled.Price>
+    //       <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
+    //     </Styled.Price>
+    //   )
+    // }
+
     for await (const address of collectionAddresses) {
       const Collection = new ethers.Contract(address, ABI, signer)
       const coll = await Collection.attach(address)
       const maxSupply = (await coll.maxSupply()).toNumber()
 
       for (let id = 1; id < maxSupply + 1; id++) {
-        let owner: string;
+        let owner: string = '';
+        const statusNum = (await coll.getLotState(id)).toNumber();
         try {
-          owner = await coll.ownerOf(id)
-          if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000' || await coll.tokensPreviousOwner(id) === coll.address) {
-            owner = await coll.tokensPreviousOwner(id)
+          if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000') {
+            owner = statusNum === 0 ? await coll.ownerOf(id) : await coll.tokensPreviousOwner(id)
+            console.log(statusNum, owner);
+          } else {
+            owner = await coll.ownerOf(id)
           }
         } catch (error) {
           owner = ''

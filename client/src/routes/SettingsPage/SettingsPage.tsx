@@ -1,16 +1,16 @@
-import { BigNumber, BigNumberish, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CopyIcon from "../../components/UI/icons/CopyIcon";
 import Loader from "../../components/UI/loader";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { setLoader, settingsCall, userTokens } from "../../store/reducer";
+import { settingsCall, userTokens } from "../../store/reducer";
 import * as Styled from './styles'
 
 const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
 
 export const SettingsPage: React.FC = () => {
-  const { collections, signerAddress, signer, userPictures, tokens, loading, haveEth } = useAppSelector((state) => state.web3)
+  const { collections, signerAddress, signer, userPictures, loading, haveEth } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
