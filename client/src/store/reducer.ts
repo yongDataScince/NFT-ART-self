@@ -66,7 +66,7 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
       tokenPrice: tokenPrice || "0",
       tokenOwner,
       tokenStatus,
-      status: tokenStatus === 3 ? 'available' : 'not available'
+      status: tokenStatus === 3 ? 'listed' : 'not listed'
     }
   } catch (e) {
     const tokenPrice = await contract.mintPrices(tokenId)
@@ -189,6 +189,7 @@ export const tokenInfo = createAsyncThunk(
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
+      console.log(tokenOwner, tokenPrevOwner);
       
       return {
         tokenPrice: tokenPrice || "0",
@@ -259,6 +260,21 @@ export const buyToken = createAsyncThunk(
  }
 )
 
+export const revokeToken = createAsyncThunk(
+  'web3/revoke',
+  async ({ tokenId, collectionId }:{
+    tokenId: number,
+    collectionId: number
+   }, {
+    getState
+   }) => {
+    const { web3 }: any = getState()
+    const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
+    const tx = await collection?.revokeToken(tokenId)
+    await tx.wait()
+   }
+)
+
 export const listToken = createAsyncThunk(
   'web3/listToken',
  async ({
@@ -316,7 +332,7 @@ export const userTokens = createAsyncThunk(
         let owner: string;
         try {
           owner = await coll.ownerOf(id)
-          if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000') {
+          if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000' || await coll.tokensPreviousOwner(id) === coll.address) {
             owner = await coll.tokensPreviousOwner(id)
           }
         } catch (error) {
@@ -325,6 +341,8 @@ export const userTokens = createAsyncThunk(
 
         if (owner === signerAddress) {
           const info = getPictureById(id)
+          console.log(await tokenById(id, coll));
+
           userTokens.push({
             ...await tokenById(id, coll),
             ...info
@@ -338,7 +356,8 @@ export const userTokens = createAsyncThunk(
 )
 
 const initialState: ContractState = {
-  loading: false
+  loading: false,
+  haveEth: true
 }
 
 export const contractSlice = createSlice({
@@ -350,6 +369,19 @@ export const contractSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(revokeToken.pending, (state) => {
+      state.loading = true
+    })
+
+    builder.addCase(revokeToken.rejected, (state, { error }) => {
+      state.loading = false
+      console.log(error);
+    })
+
+    builder.addCase(revokeToken.fulfilled, (state) => {
+      state.loading = false
+    })
+
     builder.addCase(userTokens.pending, (state) => {
       state.loading = true
     })
@@ -446,6 +478,7 @@ export const contractSlice = createSlice({
 
     builder.addCase(settingsCall.fulfilled, (state) => {
       state.loading = false
+      window.location.reload();
     })
   },
 })

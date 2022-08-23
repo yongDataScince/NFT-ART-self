@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { tokenInfo, buyToken, listToken, ICollection, mintToken } from "../../store/reducer";
+import { tokenInfo, buyToken, listToken, ICollection, mintToken, revokeToken } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
 import picData from '../../assets/data/pictures.json'
@@ -59,6 +59,13 @@ export const CardPage: React.FC = () => {
 
   const buy = () => {
     dispatch(buyToken({
+      tokenId: Number(pictureid),
+      collectionId: Number(collection)
+    }))
+  }
+
+  const revoke = () => {
+    dispatch(revokeToken({
       tokenId: Number(pictureid),
       collectionId: Number(collection)
     }))
@@ -132,7 +139,6 @@ export const CardPage: React.FC = () => {
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
-      console.log('mint');
       navigate('/settings')
     })
     currCollection?.contract.on("BuyToken", () => {
@@ -140,15 +146,21 @@ export const CardPage: React.FC = () => {
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
-      console.log('buy');
       navigate('/settings')
     })
+    currCollection?.contract.on("RevokeToken", () => {
+      dispatch(tokenInfo({
+        tokenId: Number(pictureid),
+        collectionId: Number(collection)
+      }))
+    })
     return () => {
-      currCollection?.contract.removeAllListeners("ListToken");
-      currCollection?.contract.removeAllListeners("PublicSaleMint");
       currCollection?.contract.removeAllListeners("BuyToken");
+      currCollection?.contract.removeAllListeners("ListToken");
+      currCollection?.contract.removeAllListeners("RevokeToken");
+      currCollection?.contract.removeAllListeners("PublicSaleMint");
     };
-  }, [collection, currCollection, dispatch, navigate, pictureid])
+  }, [collection, currCollection, currToken?.status, dispatch, navigate, pictureid])
 
   return (
     <Styled.CardPage ref={ref}>
@@ -160,6 +172,9 @@ export const CardPage: React.FC = () => {
       <Styled.Line />
       <Styled.Price>
         <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") } MATIC
+      </Styled.Price>
+      <Styled.Price>
+        <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenPrevOwner?.slice(0, 5)}...${currToken?.tokenPrevOwner?.slice(37, 43)}` }
       </Styled.Price>
       <Styled.CardButtonGroup>
         {
@@ -175,14 +190,12 @@ export const CardPage: React.FC = () => {
             {currToken?.status === 'not minted' ? (
               <Styled.CardButton disabled={!haveEth} onClick={() => mint()}>Mint Token</Styled.CardButton>
             ) : (
-              <Styled.CardButton onClick={() => buy()} 
+              <Styled.CardButton onClick={() => currToken?.tokenPrevOwner !== signerAddress ? buy() : revoke()}
                 disabled={
-                  currToken?.status === 'not available' ||
-                  currToken?.tokenPrevOwner === signerAddress ||
                   !haveEth                              ||
                   (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
                 }>
-                Buy Token
+                { currToken?.tokenPrevOwner !== signerAddress ? 'Buy Token' : 'Revoke Token' }
               </Styled.CardButton>
             )}
             </>

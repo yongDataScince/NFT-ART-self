@@ -50,7 +50,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         <Styled.CardImage src={require(`../../../assets/images/${currentImage}.png`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#{zeroPad(currentImage)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }
+            <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }
           </Styled.CarouselFooterTitle>
           <Styled.CarouselFooterInfo status={tokens?.[currentImage - 1]?.status}>
             <Styled.GraySpan>{tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status !== 'not minted' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}

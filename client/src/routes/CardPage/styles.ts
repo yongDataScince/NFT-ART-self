@@ -82,6 +82,7 @@ export const Line = styled.div`
   height: 1px;
   background: #CCC;
   display: block;
+  margin-bottom: 6px;
   border-bottom: 1px solid #CCC;
 `
 
@@ -361,7 +362,7 @@ export const Price = styled.p`
   letter-spacing: -0.02em;
   font-weight: 200;
   color: #FFFFFF;
-  margin: 11px 0;
+  margin: 5px 0;
   padding: 0;
   span {
     color: #888789;

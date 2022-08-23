@@ -23,6 +23,18 @@ export const Address = styled.p`
   }
 `
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  width: 100%;
+  height: auto;
+  button:first-child {
+    margin-right: 10px;
+  }
+  button:disabled {
+    color: #555;
+  }
+`
+
 export const SettingsPh = styled.p`
   margin: 0;
   padding: 0;
@@ -60,7 +72,7 @@ export const PictureFooter = styled.div`
   background: #000;
 `
 
-export const PictureStatus = styled.p<{ status?: 'available' | 'not available' }>`
+export const PictureStatus = styled.p<{ status?: 'listed' | 'not listed' }>`
   margin: 0;
   font-family: 'Helvetica Neue';
   font-style: normal;
@@ -80,7 +92,7 @@ export const PictureStatus = styled.p<{ status?: 'available' | 'not available' }
     transform: translateY(-50%);
     width: 8px;
     height: 8px;
-    background-color: ${({ status }) => status === 'available' ? '#1FE01B' : '#E01B1B'}; 
+    background-color: ${({ status }) => status === 'listed' ? '#1FE01B' : '#E01B1B'}; 
     border-radius: 50%;
   }
 `
