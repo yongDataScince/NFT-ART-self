@@ -323,18 +323,6 @@ export const userTokens = createAsyncThunk(
     const userTokens = []
     const signerAddress = await signer?.getAddress()
 
-    // {
-    //   currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000' ? (
-    //     <Styled.Price>
-    //       <span>Owned by: </span> { currToken?.tokenOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
-    //     </Styled.Price>
-    //   ) : (
-    //     <Styled.Price>
-    //       <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
-    //     </Styled.Price>
-    //   )
-    // }
-
     for await (const address of collectionAddresses) {
       const Collection = new ethers.Contract(address, ABI, signer)
       const coll = await Collection.attach(address)
@@ -346,7 +334,7 @@ export const userTokens = createAsyncThunk(
         try {
           if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000') {
             owner = statusNum === 0 ? await coll.ownerOf(id) : await coll.tokensPreviousOwner(id)
-            console.log(statusNum, owner);
+            console.log(statusNum, owner, getPictureById(id));
           } else {
             owner = await coll.ownerOf(id)
           }

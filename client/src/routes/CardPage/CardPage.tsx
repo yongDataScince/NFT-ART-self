@@ -129,26 +129,30 @@ export const CardPage: React.FC = () => {
   }, [pictureid, navigate, collection, collections])
 
   useEffect(() => {
+    if (currToken?.status === 'not minted') {
+      currCollection?.contract.on("PublicSaleMint", () => {
+        dispatch(tokenInfo({
+          tokenId: Number(pictureid),
+          collectionId: Number(collection)
+        }))
+        navigate('/settings')
+      })
+    }
+    if (currToken?.status === 'available') {
+      currCollection?.contract.on("BuyToken", () => {
+        dispatch(tokenInfo({
+          tokenId: Number(pictureid),
+          collectionId: Number(collection)
+        }))
+        navigate('/settings')
+      })
+    }
     currCollection?.contract.on("ListToken", () => {
       console.log('list');
       dispatch(tokenInfo({
         tokenId: Number(pictureid),
         collectionId: Number(collection)
       }))
-    })
-    currCollection?.contract.on("PublicSaleMint", () => {
-      dispatch(tokenInfo({
-        tokenId: Number(pictureid),
-        collectionId: Number(collection)
-      }))
-      navigate('/settings')
-    })
-    currCollection?.contract.on("BuyToken", () => {
-      dispatch(tokenInfo({
-        tokenId: Number(pictureid),
-        collectionId: Number(collection)
-      }))
-      navigate('/settings')
     })
     currCollection?.contract.on("RevokeToken", () => {
       dispatch(tokenInfo({
@@ -178,7 +182,7 @@ export const CardPage: React.FC = () => {
         </Styled.Price>
       }
       {
-        currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000' ? (
+        currToken?.status !== 'not minted' && ((currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000') ? (
           <Styled.Price>
             <span>Owned by: </span> { currToken?.tokenOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
           </Styled.Price>
@@ -186,7 +190,7 @@ export const CardPage: React.FC = () => {
           <Styled.Price>
             <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
           </Styled.Price>
-        )
+        ))
       }
       <Styled.Price>
 
