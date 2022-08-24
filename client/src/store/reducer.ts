@@ -81,7 +81,7 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
 
 export const initContract = createAsyncThunk(
   'web3/initContract',
-  async ({ haveEth }: { haveEth: boolean }) => {  
+  async ({ haveEth, netConnected = false }: { haveEth: boolean, netConnected?: boolean }) => {  
     if (haveEth) {
       let provider: ethers.providers.Web3Provider | undefined;
       try {
@@ -108,6 +108,9 @@ export const initContract = createAsyncThunk(
             console.log("cancel");
           }
         }
+      }
+      if (netConnected) {
+        provider = new ethers.providers.Web3Provider((window as any).ethereum);
       }
       if (provider) {
         await provider.send("eth_requestAccounts", []);

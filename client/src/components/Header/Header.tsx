@@ -2,7 +2,8 @@ import * as Styled from './styles';
 import { useNavigate } from 'react-router-dom';
 import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
-import { useAppSelector } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { initContract } from '../../store/reducer';
 
 const connectNetwork = async () => {
   await (window as any).ethereum.request({
@@ -21,7 +22,8 @@ const connectNetwork = async () => {
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
   const { haveEth, needChain } = useAppSelector((state) => state.web3)
-  console.log(needChain);
+  const dispatch = useAppDispatch()
+
   return (
     <Styled.HeaderBar>
       {
@@ -38,7 +40,7 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
         </Styled.HeaderButton>
       )}
       {(needChain && haveEth) && 
-        <Styled.HeaderButton onClick={() => connectNetwork()}>
+        <Styled.HeaderButton onClick={() => connectNetwork().then(() => dispatch(initContract({ haveEth: true, netConnected: true })))}>
           <CopyIcon viewBox='0 0 20 20' color="#fcba03" />
         </Styled.HeaderButton>
       }
