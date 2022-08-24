@@ -33,8 +33,8 @@ export const SettingsPage: React.FC = () => {
   const [addresses, setAddresses] = useState<string[]>([])
   const [baseUri, setBaseUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<string>('')
-  const [realMinterAuthority, setRealMinterAuthority] = useState<BigNumber>(BigNumber.from(0))
-  const [realAuthorAuthority, setRealAuthorAuthority] = useState<BigNumber>(BigNumber.from(0))
+  const [realMinterAuthority, setRealMinterAuthority] = useState<number>(0)
+  const [realAuthorAuthority, setRealAuthorAuthority] = useState<number>(0)
 
   const [maxPresaleMaxSupply, setPresaleMaxSupply] = useState<string>('')
   const [preSaleMaxMint, setPreSaleMaxMint] = useState<string>('')
@@ -105,9 +105,10 @@ export const SettingsPage: React.FC = () => {
         ...idsStr,
         [name]: value
       })
+
       setPrices({
         ...prices,
-        [name]: value.replace(' ', '').split(',').map((id) => ethers.utils.parseEther(String(id)))
+        [name]: value.replace(/\s/g, '').split(',').filter((val) => val.length > 0).map((id) => ethers.utils.parseEther(String(id).replace(" ", '')))
       })
     }
   }
@@ -170,7 +171,7 @@ export const SettingsPage: React.FC = () => {
         }
       </Styled.SettingsPictures>
       {
-        isOwner && 
+        true && 
         <>
           <Styled.SettingsPageTitle>Owner</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -200,10 +201,10 @@ export const SettingsPage: React.FC = () => {
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Change presale mint price</Styled.SettinsBlockTitle>
-            <Styled.SettingsInput placeholder="prices (in MATIC): 1.0, 2.2, 3.7..." value={pricesStr['presale']} onChange={(e) => (e.target.value.match(/^[0-9.\b]+$/) || e.target.value === "") && parsePrices(e.target.value, 'presale')}  />
+            <Styled.SettingsInput placeholder="prices (in MATIC): 1.0, 2.2, 3.7..." value={pricesStr['presale']} onChange={(e) => (e.target.value.match(/^[0-9., \b]+$/) || e.target.value === "") && parsePrices(e.target.value, 'presale')}  />
             <Styled.SettingsInput placeholder="ids" value={idsStr['presale']} onChange={(e) => parseIds(e.target.value, 'presale')} />
             <Styled.SettingsButton onClick={() => call('changePresaleMintPrice', [
-              idsStr['presale'], ethers.utils.parseEther(pricesStr['presale'].length > 0 ? pricesStr['presale'] : '0')
+              idsStr['presale'], prices['presale']
             ])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
@@ -211,7 +212,7 @@ export const SettingsPage: React.FC = () => {
             <Styled.SettingsInput placeholder="prices (in MATIC): 1.0, 2.2, 3.7..." value={pricesStr['sale']} onChange={(e) => (e.target.value.match(/^[0-9., \b]+$/) || e.target.value === "") && parsePrices(e.target.value, 'sale')} />
             <Styled.SettingsInput placeholder="ids" value={idsStr['sale']} onChange={(e) => parseIds(e.target.value, 'sale')} />
             <Styled.SettingsButton onClick={() => call('changeMintPrice', [
-              idsStr['sale'], ethers.utils.parseEther(pricesStr['sale'].length > 0 ? pricesStr['sale'] : '0')
+              idsStr['sale'], prices['sale']
             ])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
@@ -260,7 +261,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        isAdmin &&
+        true &&
         <>
           <Styled.SettingsPageTitle>Admin</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -271,7 +272,7 @@ export const SettingsPage: React.FC = () => {
                     setMinterAuthority('')
                   } else if (e.target.value.match(/^[0-9.\b]+$/)) {
                     setMinterAuthority(e.target.value)
-                    setRealMinterAuthority(ethers.utils.parseEther(e.target.value))
+                    setRealMinterAuthority(Number(e.target.value) * 100)
                   }
                 }
               }
@@ -287,7 +288,7 @@ export const SettingsPage: React.FC = () => {
                     setAuthorRoyalty('')
                   } else if (e.target.value.match(/^[0-9.\b]+$/)) {
                     setAuthorRoyalty(e.target.value)
-                    setRealAuthorAuthority(ethers.utils.parseEther(e.target.value))
+                    setRealAuthorAuthority(Number(e.target.value) * 100)
                   }
                 }
               }}
@@ -308,7 +309,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        isValidator && 
+        true && 
         <>
           <Styled.SettingsPageTitle>Validator</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
