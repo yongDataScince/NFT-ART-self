@@ -15,6 +15,7 @@ export const PagesContainer = styled.div`
   width: auto;
   height: 40px;
   display: flex;
+  align-items: center;
   margin: 0 0px;
 `
 
@@ -139,6 +140,9 @@ export const PagButton = styled.button`
   height: auto;
   background: #000;
   border: none;
+  display: flex;
+  align-items: center;
+  padding: 0 1px 0 1px;
   &:disabled {
     svg {
       transition: all 0.2;

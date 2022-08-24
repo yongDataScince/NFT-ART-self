@@ -61,7 +61,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         <Styled.CarouselPagination>
           <Styled.PagButton disabled={window === 3} onClick={() => {
               setWindow(window - 2)
-              setCurrentImage(currentImage - 1)
+              setCurrentImage(currentImage - 2)
             }}>
             <ChevronIcon />
           </Styled.PagButton>
@@ -73,9 +73,9 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
               </Styled.PageItem>
             ))}
           </Styled.PagesContainer>
-          <Styled.PagButton disabled={images.length - window < 1} onClick={() => {
+          <Styled.PagButton disabled={images.length - window < 2} onClick={() => {
             setWindow(window + 2)
-            setCurrentImage(currentImage + 1)
+            setCurrentImage(currentImage + 2)
           }}>
             <ChevronIcon />
           </Styled.PagButton>
