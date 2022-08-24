@@ -356,11 +356,10 @@ export const userTokens = createAsyncThunk(
         }
 
         if (owner === signerAddress) {
-          const info = getPictureById(id)
-          console.log(await tokenById(id, coll));
+          const info = getPictureById(id + 1)
 
           userTokens.push({
-            ...await tokenById(id, coll),
+            ...await tokenById(id + 1, coll),
             ...info
           }) 
         }
