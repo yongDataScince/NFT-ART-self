@@ -26,6 +26,7 @@ export const HeaderButton = styled.button`
   align-items: center;
   justify-content: center;
   background-color: #000000;
+  color: #FFF;
   &:nth-child(2) {
     margin-left: 16px;
     svg {

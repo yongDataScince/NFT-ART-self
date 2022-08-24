@@ -10,7 +10,7 @@ import * as Styled from './styles'
 const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
 
 export const SettingsPage: React.FC = () => {
-  const { collections, signerAddress, signer, userPictures, loading, haveEth } = useAppSelector((state) => state.web3)
+  const { collections, signerAddress, signer, needChain, userPictures, loading, haveEth } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -147,8 +147,8 @@ export const SettingsPage: React.FC = () => {
 
   /// @CHECK: format for persent 1% == 100, 0.01% * 100 == 1; 42.51 === 4251
   useEffect(() => {
-    if(!haveEth) navigate('/')
-  }, [haveEth, navigate])
+    if(!haveEth && needChain) navigate('/')
+  }, [haveEth, navigate, needChain])
 
   return (
     <Styled.SettingsMain>

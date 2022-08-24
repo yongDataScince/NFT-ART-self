@@ -20,25 +20,28 @@ const connectNetwork = async () => {
 
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
-  const { haveEth } = useAppSelector((state) => state.web3)
-
+  const { haveEth, needChain } = useAppSelector((state) => state.web3)
+  console.log(needChain);
   return (
     <Styled.HeaderBar>
       {
-        haveEth && (
+        (haveEth && !needChain) && (
           <Styled.HeaderButton onClick={() => navigate('/settings')}>
             <SettingsIcon color="#FFF" />
           </Styled.HeaderButton>
         )
       }
-      {(os === 'iOS' || os === 'Android') && (
+      
+      {((os === 'iOS' || os === 'Android') && !haveEth && !needChain) && (
         <Styled.HeaderButton onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
       )}
-      <Styled.HeaderButton onClick={() => connectNetwork()}>
-        <CopyIcon color="#FF0000" />
-      </Styled.HeaderButton>
+      {(needChain && haveEth) && 
+        <Styled.HeaderButton onClick={() => connectNetwork()}>
+          <CopyIcon viewBox='0 0 20 20' color="#fcba03" />
+        </Styled.HeaderButton>
+      }
       <Styled.HeaderTitle onClick={() => navigate('/')}>Neuform</Styled.HeaderTitle>
     </Styled.HeaderBar>
   )

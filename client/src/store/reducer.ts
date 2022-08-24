@@ -36,6 +36,7 @@ interface ContractState {
   signerAddress?: string;
   haveEth?: boolean;
   signerBalance?: number;
+  needChain?: boolean;
   userPictures?: any[];
 }
 
@@ -82,6 +83,7 @@ export const initContract = createAsyncThunk(
   'web3/initContract',
   async ({ haveEth }: { haveEth: boolean }) => {  
     if (haveEth) {
+      let provider: ethers.providers.Web3Provider | undefined;
       try {
         await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
@@ -89,55 +91,65 @@ export const initContract = createAsyncThunk(
         });
       } catch (err: any) {
         if (err.code === 4902) {
-          await (window as any).ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainName: 'mumbai test',
-                chainId: `0x${Number(80001).toString(16)}`,
-                nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
-                rpcUrls: ['https://rpc-mumbai.maticvigil.com']
-              }
-            ]
-          });
+          try {
+            await (window as any).ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'mumbai test',
+                  chainId: `0x${Number(80001).toString(16)}`,
+                  nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+                  rpcUrls: ['https://rpc-mumbai.maticvigil.com']
+                }
+              ]
+            });
+            provider = new ethers.providers.Web3Provider((window as any).ethereum);
+          } catch (error) {
+            console.log("cancel");
+          }
         }
       }
+      if (provider) {
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        const signerAddress = await signer?.getAddress()
+        const signerBalance = Number(ethers.utils.formatEther(await provider.getBalance(signerAddress)))
+        const colls: ICollection[] = [];
 
-      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      const signerAddress = await signer?.getAddress()
-      const signerBalance = Number(ethers.utils.formatEther(await provider.getBalance(signerAddress)))
-      const colls: ICollection[] = [];
+        for await (const collection of collections) {
+          const contract = new ethers.Contract(collection.address, ABI, signer)
+          const totalSupply = pictures.length + 1
+          const name = await contract?.name()
+          const symbol = await contract?.symbol()
 
-      for await (const collection of collections) {
-        const contract = new ethers.Contract(collection.address, ABI, signer)
-        const totalSupply = pictures.length + 1
-        const name = await contract?.name()
-        const symbol = await contract?.symbol()
+          const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
+              (await contract?.getAuthors())?.map(getAuthorByAddress)
+                :
+              (collection as any).authors.map(getAuthorByAddress)
+          colls.push({
+            id: collection.id,
+            name,
+            symbol,
+            address: collection.address,
+            contract: contract,
+            totalSupply,
+            authors
+          })
+        }
 
-        const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
-            (await contract?.getAuthors())?.map(getAuthorByAddress)
-              :
-            (collection as any).authors.map(getAuthorByAddress)
-        colls.push({
-          id: collection.id,
-          name,
-          symbol,
-          address: collection.address,
-          contract: contract,
-          totalSupply,
-          authors
-        })
-      }
-
-      return {
-        provider,
-        signerBalance,
-        signer,
-        signerAddress,
-        colls,
-        haveEth
+        return {
+          provider,
+          signerBalance,
+          signer,
+          signerAddress,
+          colls,
+          haveEth
+        }
+      } else {
+        return {
+          haveEth: true,
+          needChain: true
+        }
       }
     } else {
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com')
@@ -358,7 +370,8 @@ export const userTokens = createAsyncThunk(
 
 const initialState: ContractState = {
   loading: false,
-  haveEth: true
+  haveEth: true,
+  needChain: false,
 }
 
 export const contractSlice = createSlice({
@@ -402,6 +415,8 @@ export const contractSlice = createSlice({
       state.loading = true
     });
     builder.addCase(initContract.fulfilled, (state, { payload }) => {
+      console.log('payload: ', payload);
+      state.needChain = !!payload.needChain
       state.provider = payload.provider
       state.signer = payload.signer
       state.userPictures = []
