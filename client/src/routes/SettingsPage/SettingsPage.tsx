@@ -179,7 +179,7 @@ export const SettingsPage: React.FC = () => {
                   </Styled.PictureFooter>
                 </Styled.Picture>
               ))
-            ) : <Styled.SettingsPageInfo>You're not have any tokens</Styled.SettingsPageInfo>
+            ) : <Styled.SettingsPageInfo>You don't have any tokens yet</Styled.SettingsPageInfo>
           ) : <Styled.SettingsPageInfo>Wait Please...</Styled.SettingsPageInfo>
         }
 
