@@ -437,9 +437,7 @@ export const contractSlice = createSlice({
       state.loading = false
       console.log('buyToken', error.message);
     })
-    builder.addCase(buyToken.fulfilled, (state) => {
-      state.loading = false
-    })
+    builder.addCase(buyToken.fulfilled, (state) => {})
     builder.addCase(listToken.pending, (state) => {
       state.loading = true
     })

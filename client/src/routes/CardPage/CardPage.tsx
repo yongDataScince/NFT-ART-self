@@ -184,7 +184,7 @@ export const CardPage: React.FC = () => {
         </Styled.Price>
       }
       {
-        currToken?.status !== 'not minted' && ((currToken?.tokenPrevOwner !== '0x0000000000000000000000000000000000000000') ? (
+        currToken?.status !== 'not minted' && ((currToken?.tokenOwner === currCollection?.address) ? (
           <Styled.Price>
             <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenPrevOwner?.slice(0, 5)}...${currToken?.tokenPrevOwner?.slice(37, 43)}` }
           </Styled.Price>
