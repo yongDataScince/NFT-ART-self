@@ -409,7 +409,7 @@ export const contractSlice = createSlice({
     builder.addCase(initContract.fulfilled, (state, { payload }) => {
       state.provider = payload.provider
       state.signer = payload.signer
-
+      state.userPictures = []
       state.collections = payload.colls as any
       state.loading = false
       state.signerBalance = payload.signerBalance

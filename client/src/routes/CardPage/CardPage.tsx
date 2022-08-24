@@ -217,10 +217,10 @@ export const CardPage: React.FC = () => {
                 disabled={
                   !haveEth                              ||
                   currToken?.status === 'not available' ||
-                  (signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))
+                  ((signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0")) && currToken?.tokenPrevOwner !== signerAddress)
                 }>
                 {
-                  currToken?.tokenPrevOwner !== signerAddress ? 'Buy Token' : 'Revoke Token'
+                  (currToken?.tokenPrevOwner !== signerAddress || currToken?.status !== 'available') ? 'Buy Token' : 'Revoke Token'
                 }
               </Styled.CardButton>
             )}
