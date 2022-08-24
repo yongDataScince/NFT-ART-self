@@ -81,7 +81,7 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
 
 export const initContract = createAsyncThunk(
   'web3/initContract',
-  async ({ haveEth, netConnected = false }: { haveEth: boolean, netConnected?: boolean }) => {  
+  async ({ haveEth, netConnected = false }: { haveEth: boolean, netConnected?: boolean }) => {
     if (haveEth) {
       let provider: ethers.providers.Web3Provider | undefined;
       try {
@@ -139,7 +139,7 @@ export const initContract = createAsyncThunk(
             authors
           })
         }
-
+        
         return {
           provider,
           signerBalance,
@@ -154,7 +154,7 @@ export const initContract = createAsyncThunk(
           needChain: true
         }
       }
-    } else {
+    } else {      
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com')
       const colls: ICollection[] = [];
 
@@ -341,7 +341,7 @@ export const userTokens = createAsyncThunk(
       const coll = await Collection.attach(address)
       const maxSupply = (await coll.maxSupply()).toNumber()
 
-      for (let id = 1; id < maxSupply + 1; id++) {
+      for (let id = 0; id < maxSupply; id++) {
         let owner: string = '';
         const statusNum = (await coll.getLotState(id)).toNumber();
         try {
