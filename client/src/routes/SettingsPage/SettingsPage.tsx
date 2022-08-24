@@ -17,13 +17,19 @@ export const SettingsPage: React.FC = () => {
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [isValidator, setIsValidator] = useState<boolean>(false)
+  const [isPlatform, setIsPlatform] = useState<boolean>(false)
+  
+  const [feeAddress, setFeeAddress] = useState<string>('')
+  const [platformAddress, setPlatformAddress] = useState<string>('')
   const [startSale, setStartSale] = useState<boolean>(false)
   const [startPresale, setStartPresale] = useState<boolean>(false)
   const [royaltyDistribution, setRoyaltyDistribution] = useState<string>('')
   const [fiatRate, setFiatRate] = useState<string>('')
   const [verifyToken, setVerifyToken] = useState<string>('')
   const [transactionNumber, setTransactionNumber] = useState<string>('')
-  
+
+  const [sellFeePercentage, setSellFeePercentage] = useState<string>('')
+  const [mintFeePercentage, setMintFeePercentage] = useState<string>('')
   const [newAdmin, setNewAdmin] = useState<string>('')
   const [oldAdmin, setOldAdmin] = useState<string>('')
   const [newValidator, setNewValidator] = useState<string>('')
@@ -129,11 +135,14 @@ export const SettingsPage: React.FC = () => {
     collections?.[0].contract.owner().then((data: string) => {
       setIsOwner(signerAddress === data)
     })
+    collections?.[0].contract.platformAddress().then((addr: string) => setIsPlatform(addr === signerAddress))
+  
     collections?.[0].contract.isAdmin(signerAddress).then(setIsAdmin)
     collections?.[0].contract.isValidator(signerAddress).then(setIsValidator)
     
     collections?.[0].contract.startSale().then(setStartSale)
     collections?.[0].contract.startPresale().then(setStartPresale)
+    
   }, [collections, dispatch, signer, signerAddress])
 
   /// @CHECK: format for persent 1% == 100, 0.01% * 100 == 1; 42.51 === 4251
@@ -171,7 +180,7 @@ export const SettingsPage: React.FC = () => {
         }
       </Styled.SettingsPictures>
       {
-        true && 
+        isOwner && 
         <>
           <Styled.SettingsPageTitle>Owner</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -261,7 +270,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        true &&
+        isAdmin &&
         <>
           <Styled.SettingsPageTitle>Admin</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -309,13 +318,51 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        true && 
+        isValidator && 
         <>
           <Styled.SettingsPageTitle>Validator</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Verify</Styled.SettinsBlockTitle>
             <Styled.SettingsInput placeholder="token id" value={verifyToken} onChange={(e) => setVerifyToken(e.target.value)} />
             <Styled.SettingsButton onClick={() => call('verify', [verifyToken])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+        </>
+      }
+      {
+        isPlatform && 
+        <>
+          <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change fee address</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="address" value={feeAddress} onChange={(e) => setFeeAddress(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('changeFeeAddress', [feeAddress])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Change platform address</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="address" value={platformAddress} onChange={(e) => setPlatformAddress(e.target.value)} />
+            <Styled.SettingsButton onClick={() => call('changePlatformAddress', [platformAddress])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Mint fee</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="fee" value={mintFeePercentage} onChange={(e) => {
+              if (e.target.value === '') {
+                setMintFeePercentage('')
+              } else if (e.target.value.match(/^[0-9.\b]+$/)) {
+                setMintFeePercentage(e.target.value)
+              }
+            }} />
+            <Styled.SettingsButton onClick={() => call('setMintFeePercentage', [Number(mintFeePercentage) * 100])}>Set</Styled.SettingsButton>
+          </Styled.SettinsBlock>
+          <Styled.SettinsBlock>
+            <Styled.SettinsBlockTitle>Sell fee</Styled.SettinsBlockTitle>
+            <Styled.SettingsInput placeholder="fee" value={sellFeePercentage} onChange={(e) => {
+              if (e.target.value === '') {
+                setSellFeePercentage('')
+              } else if (e.target.value.match(/^[0-9.\b]+$/)) {
+                setSellFeePercentage(e.target.value)
+              }
+            }} />
+            <Styled.SettingsButton onClick={() => call('setSellFeePercentage', [Number(sellFeePercentage) * 100])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
         </>
       }
