@@ -89,6 +89,7 @@ export const initContract = createAsyncThunk(
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: `0x${Number(80001).toString(16)}` }]
         });
+        netConnected = true
       } catch (err: any) {
         if (err.code === 4902) {
           try {
@@ -104,6 +105,7 @@ export const initContract = createAsyncThunk(
               ]
             });
             provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            netConnected = true
           } catch (error) {
             console.log("cancel");
           }
