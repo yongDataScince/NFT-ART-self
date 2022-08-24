@@ -159,7 +159,7 @@ export const SettingsPage: React.FC = () => {
       </Styled.Address>
 
       <Styled.SettingsPh>
-        My purchased art [{userPictures?.length}]
+        My purchased art [{!userPictures?.[0]?.info ? userPictures?.length : "0"}]
       </Styled.SettingsPh>
 
       <Styled.SettingsPictures>

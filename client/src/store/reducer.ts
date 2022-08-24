@@ -375,25 +375,20 @@ export const contractSlice = createSlice({
     builder.addCase(revokeToken.pending, (state) => {
       state.loading = true
     })
-
     builder.addCase(revokeToken.rejected, (state, { error }) => {
       state.loading = false
       console.log(error);
     })
-
     builder.addCase(revokeToken.fulfilled, (state) => {
       state.loading = false
     })
-
     builder.addCase(userTokens.pending, (state) => {
       state.loading = true
     })
-
     builder.addCase(userTokens.rejected, (state, { error }) => {
       state.loading = false
       console.log(error);
     })
-
     builder.addCase(userTokens.fulfilled, (state, { payload }) => {      
       state.userPictures = payload;
       state.loading = false
@@ -401,7 +396,6 @@ export const contractSlice = createSlice({
         state.userPictures = [{ info: "no" }]
       }
     })
-
     builder.addCase(initContract.rejected, (state, { error }) => {
       console.error('`initContract` error:', error);
       state.loading = false
