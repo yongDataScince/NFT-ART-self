@@ -397,6 +397,9 @@ export const contractSlice = createSlice({
     builder.addCase(userTokens.fulfilled, (state, { payload }) => {      
       state.userPictures = payload;
       state.loading = false
+      if (payload.length === 0) {
+        state.userPictures = [{ info: "no" }]
+      }
     })
 
     builder.addCase(initContract.rejected, (state, { error }) => {

@@ -164,20 +164,25 @@ export const SettingsPage: React.FC = () => {
 
       <Styled.SettingsPictures>
         {
-          userPictures?.map((pic) => (
-            <Styled.Picture key={pic.tokenId} onClick={() => navigate(`/collection/${pic.collectionId}/picture/${pic.tokenId}`)}>
-              <Styled.PictureImage src={pic.path} />
-              <Styled.PictureFooter>
-                <Styled.PictureTitle>
-                 <span>#{zeroPad(pic.tokenId)}</span> {pic?.name}
-                </Styled.PictureTitle>
-                <Styled.PictureStatus status={pic.status}>
-                  {pic.status}
-                </Styled.PictureStatus>
-              </Styled.PictureFooter>
-            </Styled.Picture>
-          ))
+          (userPictures?.length || 0) > 0 ? (
+            !userPictures?.[0]?.info ? (
+              userPictures?.map((pic) => (
+                <Styled.Picture key={pic.tokenId} onClick={() => navigate(`/collection/${pic.collectionId}/picture/${pic.tokenId}`)}>
+                  <Styled.PictureImage src={pic.path} />
+                  <Styled.PictureFooter>
+                    <Styled.PictureTitle>
+                     <span>#{zeroPad(pic.tokenId)}</span> {pic?.name}
+                    </Styled.PictureTitle>
+                    <Styled.PictureStatus status={pic.status}>
+                      {pic.status}
+                    </Styled.PictureStatus>
+                  </Styled.PictureFooter>
+                </Styled.Picture>
+              ))
+            ) : <Styled.SettingsPageInfo>You're not have any tokens</Styled.SettingsPageInfo>
+          ) : <Styled.SettingsPageInfo>Wait Please...</Styled.SettingsPageInfo>
         }
+
       </Styled.SettingsPictures>
       {
         isOwner && 

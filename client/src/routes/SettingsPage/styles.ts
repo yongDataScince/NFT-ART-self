@@ -137,6 +137,21 @@ export const SettingsPageTitle = styled.p`
   margin-bottom: 50px;
 `
 
+export const SettingsPageInfo = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue';
+  font-size: 22px;
+  line-height: 100%;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  width: auto;
+  padding-bottom: 4px;
+
+  font-weight: 200;
+  margin-bottom: 50px;
+`
+
 export const SettinsBlock = styled.div`
   width: 100%;
   border-top: 1px solid #555;
