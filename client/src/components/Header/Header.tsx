@@ -4,6 +4,20 @@ import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
 import { useAppSelector } from '../../store';
 
+const connectNetwork = async () => {
+  await (window as any).ethereum.request({
+    method: 'wallet_addEthereumChain',
+    params: [
+      {
+        chainName: 'mumbai test',
+        chainId: `0x${Number(80001).toString(16)}`,
+        nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+        rpcUrls: ['https://rpc-mumbai.maticvigil.com']
+      }
+    ]
+  });
+}
+
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
   const { haveEth } = useAppSelector((state) => state.web3)
@@ -22,6 +36,9 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
       )}
+      <Styled.HeaderButton onClick={() => connectNetwork()}>
+        <CopyIcon color="#FF0000" />
+      </Styled.HeaderButton>
       <Styled.HeaderTitle onClick={() => navigate('/')}>Neuform</Styled.HeaderTitle>
     </Styled.HeaderBar>
   )

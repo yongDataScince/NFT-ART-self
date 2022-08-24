@@ -88,14 +88,12 @@ export const initContract = createAsyncThunk(
           params: [{ chainId: `0x${Number(80001).toString(16)}` }]
         });
       } catch (err: any) {
-        console.log(err);
         if (err.code === 4902) {
-          console.log('init');
           await (window as any).ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainName: 'binance test',
+                chainName: 'mumbai test',
                 chainId: `0x${Number(80001).toString(16)}`,
                 nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
                 rpcUrls: ['https://rpc-mumbai.maticvigil.com']
