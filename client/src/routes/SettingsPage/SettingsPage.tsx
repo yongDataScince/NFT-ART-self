@@ -333,7 +333,7 @@ export const SettingsPage: React.FC = () => {
                     setRoyaltyDistribution(e.target.value.replace(/\s/g, '').split(',').filter((val) => val.length > 0).map(Number))
                   }}}
             />
-            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [distributionAuthors, royaltyDistribution])}>Set</Styled.SettingsButton>
+            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [distributionAuthors, royaltyDistribution.map((d) => d * 100)])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Set fiat rate</Styled.SettinsBlockTitle>

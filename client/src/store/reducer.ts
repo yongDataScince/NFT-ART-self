@@ -330,6 +330,8 @@ export const settingsCall = createAsyncThunk(
   'web3/settingsCall',
   async ({ method, contract, args }:{ method: string, contract: ethers.Contract, args: any[] }) => {
     if (contract[method]) {
+      console.log(method, args);
+      
       const tx = await contract[method](...args)
       await tx.wait()
     }
