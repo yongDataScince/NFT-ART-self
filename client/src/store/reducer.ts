@@ -250,7 +250,7 @@ export const tokenInfos = createAsyncThunk(
           tokenCurrTokenOwner,
           tokenOwner,
           tokenStatus,
-          status: tokenStatus === 3 ? 'available' : 'not available'
+          status: tokenStatus === 3 ? 'available' : 'sold'
         })
       } catch (e) {
         tokens.push({
