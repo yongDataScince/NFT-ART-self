@@ -204,13 +204,13 @@ export const tokenInfo = createAsyncThunk(
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
-      console.log(tokenStatus === 3 ? 'available' : 'not available');
       
+      const tokenCurrToken = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
+      console.log(tokenCurrToken, tokenStatus);
       return {
         tokenPrice: tokenPrice || "0",
-        tokenOwner,
+        tokenCurrToken,
         tokenStatus,
-        tokenPrevOwner,
         status: tokenStatus === 3 ? 'available' : 'not available'
       }
     } catch (e) {
@@ -239,10 +239,14 @@ export const tokenInfos = createAsyncThunk(
         const tokenPrice = (await collection?.getTokenPrice(pic.tokenId))?.toString()
         const tokenOwner = await collection?.ownerOf(pic.tokenId)
         const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
+        const tokenPrevOwner = (await collection.tokensPreviousOwner(pic.tokenId))
+        const tokenCurrTokenOwner = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
+        console.log(tokenCurrTokenOwner);
         tokens.push({
           name: pic?.name,
           id: pic?.tokenId,
           tokenPrice,
+          tokenCurrTokenOwner,
           tokenOwner,
           tokenStatus,
           status: tokenStatus === 3 ? 'available' : 'not available'
@@ -419,7 +423,6 @@ export const contractSlice = createSlice({
       state.loading = true
     });
     builder.addCase(initContract.fulfilled, (state, { payload }) => {
-      console.log('payload: ', payload);
       state.needChain = !!payload.needChain
       state.provider = payload.provider
       state.signer = payload.signer

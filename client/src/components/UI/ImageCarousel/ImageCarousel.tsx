@@ -17,7 +17,7 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections, tokens } = useAppSelector((s) => s.web3)
+  const { collections, tokens, signerAddress } = useAppSelector((s) => s.web3)
   const [currCollection, setCurrCollection] = useState<ICollection>()
 
   const dispatch = useAppDispatch()
@@ -53,7 +53,9 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
             <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }
           </Styled.CarouselFooterTitle>
           <Styled.CarouselFooterInfo status={tokens?.[currentImage - 1]?.status}>
-            <Styled.GraySpan>{tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status === 'available' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}
+            <Styled.GraySpan>{
+            tokens?.[currentImage - 1]?.tokenCurrToken === signerAddress ? 
+           (tokens?.[currentImage - 1]?.status === 'available' ? 'listed' : 'not listed') : tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status === 'available' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>

@@ -191,7 +191,7 @@ export const SettingsPage: React.FC = () => {
 
       </Styled.SettingsPictures>
       {
-        true && 
+        isOwner && 
         <>
           <Styled.SettingsPageTitle>Owner</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -281,7 +281,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        true &&
+        isAdmin &&
         <>
           <Styled.SettingsPageTitle>Admin</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -343,7 +343,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        true && 
+        isValidator && 
         <>
           <Styled.SettingsPageTitle>Validator</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -354,7 +354,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        true && 
+        isPlatform && 
         <>
           <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>

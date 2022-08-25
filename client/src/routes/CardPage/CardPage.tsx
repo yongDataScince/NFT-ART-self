@@ -119,7 +119,6 @@ export const CardPage: React.FC = () => {
 
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
       const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
-      console.log(picData);
       if (!pic) {
         // navigate('/')
       } else {
@@ -184,22 +183,14 @@ export const CardPage: React.FC = () => {
         </Styled.Price>
       }
       {
-        currToken?.status !== 'not minted' && ((currToken?.tokenOwner === currCollection?.address) ? (
-          <Styled.Price>
-            <span>Owned by: </span> { currToken?.tokenPrevOwner === signerAddress ? 'You' : `${currToken?.tokenPrevOwner?.slice(0, 5)}...${currToken?.tokenPrevOwner?.slice(37, 43)}` }
-          </Styled.Price>
-        ) : (
-          <Styled.Price>
-            <span>Owned by: </span> { currToken?.tokenOwner === signerAddress ? 'You' : `${currToken?.tokenOwner?.slice(0, 5)}...${currToken?.tokenOwner?.slice(37, 43)}` }
-          </Styled.Price>
-        ))
+        currToken?.status !== 'not minted' && 
+        <Styled.Price>
+          <span>Owned by: </span> { currToken?.tokenCurrToken === signerAddress ? 'You' : `${currToken?.tokenCurrToken?.slice(0, 5)}...${currToken?.tokenCurrToken?.slice(37, 43)}` }
+        </Styled.Price>
       }
-      <Styled.Price>
-
-      </Styled.Price>
       <Styled.CardButtonGroup>
         {
-          currToken?.tokenOwner === signerAddress && haveEth ? (
+          currToken?.tokenCurrTokenOwner === signerAddress && haveEth ? (
             <Styled.InputsGroup>
               <Styled.Input placeholder="token price" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
               <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
@@ -212,15 +203,16 @@ export const CardPage: React.FC = () => {
               <Styled.CardButton disabled={!haveEth} onClick={() => mint()}>Mint Token</Styled.CardButton>
             ) : (
               <Styled.CardButton onClick={() => {
-                currToken?.tokenPrevOwner !== signerAddress ? buy() : revoke()
+                currToken?.tokenCurrToken !== signerAddress ? buy() : revoke()
               }}
                 disabled={
-                  !haveEth                              ||
+                  currToken?.tokenCurrToken !== signerAddress &&
+                  (!haveEth                             ||
                   currToken?.status === 'not available' ||
-                  ((signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0")) && currToken?.tokenPrevOwner !== signerAddress)
+                  ((signerBalance || 0) <= Number(ethers.utils.formatEther(currToken?.tokenPrice || "0"))))
                 }>
                 {
-                  (currToken?.tokenPrevOwner !== signerAddress || currToken?.status !== 'available') ? 'Buy Token' : 'Revoke Token'
+                  currToken?.tokenCurrToken !== signerAddress ? 'Buy Token' : 'Revoke Token'
                 }
               </Styled.CardButton>
             )}
