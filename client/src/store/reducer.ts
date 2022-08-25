@@ -241,7 +241,8 @@ export const tokenInfos = createAsyncThunk(
         const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
         const tokenPrevOwner = (await collection.tokensPreviousOwner(pic.tokenId))
         const tokenCurrTokenOwner = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
-        console.log(tokenCurrTokenOwner);
+        console.log(pic.tokenId, tokenCurrTokenOwner);
+        
         tokens.push({
           name: pic?.name,
           id: pic?.tokenId,

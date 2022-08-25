@@ -39,7 +39,6 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
     dispatch(tokenInfos({ collectionId }))
   }, [collectionId, collections, dispatch])
 
-
   return (
     <Styled.CarouselMain>
       <Styled.CarouselTitleWrapper>
@@ -54,7 +53,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           </Styled.CarouselFooterTitle>
           <Styled.CarouselFooterInfo status={tokens?.[currentImage - 1]?.status}>
             <Styled.GraySpan>{
-            tokens?.[currentImage - 1]?.tokenCurrToken === signerAddress ? 
+            tokens?.[currentImage - 1]?.tokenCurrTokenOwner === signerAddress ? 
            (tokens?.[currentImage - 1]?.status === 'available' ? 'listed' : 'not listed') : tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status === 'available' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
@@ -69,7 +68,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           </Styled.PagButton>
 
           <Styled.PagesContainer>
-            {_.times(images.length).slice(window - 3, window).map((id) => (
+            {_.times((tokens?.length || 0)).slice(window - 3, window).map((id) => (
               <Styled.PageItem key={id} onClick={() => choiseImage(id + 1)} choised={currentImage === id + 1}>
                 {id + 1}
               </Styled.PageItem>
