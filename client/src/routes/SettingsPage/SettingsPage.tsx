@@ -23,7 +23,10 @@ export const SettingsPage: React.FC = () => {
   const [platformAddress, setPlatformAddress] = useState<string>('')
   const [startSale, setStartSale] = useState<boolean>(false)
   const [startPresale, setStartPresale] = useState<boolean>(false)
-  const [royaltyDistribution, setRoyaltyDistribution] = useState<string>('')
+
+  const [royaltyDistributionStr, setRoyaltyDistributionStr] = useState<string>('')
+  const [royaltyDistribution, setRoyaltyDistribution] = useState<number[]>([])
+
   const [fiatRate, setFiatRate] = useState<string>('')
   const [verifyToken, setVerifyToken] = useState<string>('')
   const [transactionNumber, setTransactionNumber] = useState<string>('')
@@ -35,7 +38,9 @@ export const SettingsPage: React.FC = () => {
   const [newValidator, setNewValidator] = useState<string>('')
   const [oldValidator, setOldValidator] = useState<string>('')
   const [addressesStr, setAddressesStr] = useState<string>('')
-  const [distributionAuthors, setDistributionAuthors] = useState<string>('')
+  const [distributionAuthors, setDistributionAuthors] = useState<string[]>([])
+  const [distributionAuthorsStr, setDistributionAuthorsStr] = useState<string>('')
+
   const [addresses, setAddresses] = useState<string[]>([])
   const [baseUri, setBaseUri] = useState<string>('')
   const [maxSupply, setMaxSupply] = useState<string>('')
@@ -88,9 +93,10 @@ export const SettingsPage: React.FC = () => {
         ...idsStr,
         [name]: value
       })
+      console.log(value.replace(/\s/g, '').split(',').filter((val) => val.length > 0));
       setIds({
         ...ids,
-        [name]: value.replace(' ', '').split(',').map((id) => Number(id))
+        [name]: value.replace(/\s/g, '').split(',').filter((val) => val.length > 0)
       })
     }
   }
@@ -111,7 +117,7 @@ export const SettingsPage: React.FC = () => {
         ...idsStr,
         [name]: value
       })
-
+    
       setPrices({
         ...prices,
         [name]: value.replace(/\s/g, '').split(',').filter((val) => val.length > 0).map((id) => ethers.utils.parseEther(String(id).replace(" ", '')))
@@ -185,7 +191,7 @@ export const SettingsPage: React.FC = () => {
 
       </Styled.SettingsPictures>
       {
-        isOwner && 
+        true && 
         <>
           <Styled.SettingsPageTitle>Owner</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -218,7 +224,7 @@ export const SettingsPage: React.FC = () => {
             <Styled.SettingsInput placeholder="prices (in MATIC): 1.0, 2.2, 3.7..." value={pricesStr['presale']} onChange={(e) => (e.target.value.match(/^[0-9., \b]+$/) || e.target.value === "") && parsePrices(e.target.value, 'presale')}  />
             <Styled.SettingsInput placeholder="ids" value={idsStr['presale']} onChange={(e) => parseIds(e.target.value, 'presale')} />
             <Styled.SettingsButton onClick={() => call('changePresaleMintPrice', [
-              idsStr['presale'], prices['presale']
+              ids['presale'], prices['presale']
             ])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
@@ -226,7 +232,7 @@ export const SettingsPage: React.FC = () => {
             <Styled.SettingsInput placeholder="prices (in MATIC): 1.0, 2.2, 3.7..." value={pricesStr['sale']} onChange={(e) => (e.target.value.match(/^[0-9., \b]+$/) || e.target.value === "") && parsePrices(e.target.value, 'sale')} />
             <Styled.SettingsInput placeholder="ids" value={idsStr['sale']} onChange={(e) => parseIds(e.target.value, 'sale')} />
             <Styled.SettingsButton onClick={() => call('changeMintPrice', [
-              idsStr['sale'], prices['sale']
+              ids['sale'], prices['sale']
             ])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
@@ -275,7 +281,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        isAdmin &&
+        true &&
         <>
           <Styled.SettingsPageTitle>Admin</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -307,23 +313,37 @@ export const SettingsPage: React.FC = () => {
                 }
               }}
               />
-            <Styled.SettingsButton onClick={() => call('changeAuthorRoyalty', [realAuthorAuthority])}>Change</Styled.SettingsButton>
+
+            <Styled.SettingsButton onClick={() => call('changeAuthorRoyalty', [realAuthorAuthority, true])}>Change</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Set author royalty distribution</Styled.SettinsBlockTitle>
-            <Styled.SettingsInput placeholder="authors" value={distributionAuthors} onChange={(e) => setDistributionAuthors(e.target.value)} />
-            <Styled.SettingsInput placeholder="for ex.: 1 ... 99" value={royaltyDistribution} onChange={(e) => (e.target.value.match(/^[0-9\b]+$/) || e.target.value === "") && setRoyaltyDistribution(e.target.value)} />
-            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [royaltyDistribution])}>Set</Styled.SettingsButton>
+            <Styled.SettingsInput placeholder="authors" value={distributionAuthorsStr} onChange={(e) => {
+              setDistributionAuthorsStr(e.target.value)
+              setDistributionAuthors(e.target.value.replace(/\s/g, '').split(',').filter((val) => val.length > 0))
+            }} />
+            <Styled.SettingsInput
+              placeholder="for ex.: 1 ... 99"
+              value={royaltyDistributionStr}
+              onChange={
+                (e) => {
+                  if (e.target.value.match(/^[0-9, \b]+$/) ||
+                  e.target.value === "") {
+                    setRoyaltyDistributionStr(e.target.value)
+                    setRoyaltyDistribution(e.target.value.replace(/\s/g, '').split(',').filter((val) => val.length > 0).map(Number))
+                  }}}
+            />
+            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [distributionAuthors, royaltyDistribution])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
           <Styled.SettinsBlock>
             <Styled.SettinsBlockTitle>Set fiat rate</Styled.SettinsBlockTitle>
             <Styled.SettingsInput placeholder="fiat rate (in WEI)" value={fiatRate} onChange={(e) => (e.target.value.match(/^[0-9\b]+$/) || e.target.value === "") && setFiatRate(e.target.value)} />
-            <Styled.SettingsButton onClick={() => call('setAuthorsRoyaltyDistribution', [fiatRate])}>Set</Styled.SettingsButton>
+            <Styled.SettingsButton onClick={() => call('setFiatRate', [fiatRate])}>Set</Styled.SettingsButton>
           </Styled.SettinsBlock>
         </>
       }
       {
-        isValidator && 
+        true && 
         <>
           <Styled.SettingsPageTitle>Validator</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
@@ -334,7 +354,7 @@ export const SettingsPage: React.FC = () => {
         </>
       }
       {
-        isPlatform && 
+        true && 
         <>
           <Styled.SettingsPageTitle>Platform</Styled.SettingsPageTitle>
           <Styled.SettinsBlock>
