@@ -1,5 +1,5 @@
-import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
+import CloseIcon from '../icons/CloseIcon';
 import * as Styled from './styles'
 
 type LinkProps = 

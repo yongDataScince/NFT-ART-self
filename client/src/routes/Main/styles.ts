@@ -10,19 +10,7 @@ export const MainHeader = styled.div`
 export const MainHeaderWrapper = styled.div`
   width: 100%;
   height: 100%;
-  position: relative;
-  padding-left: 12px;
 
-  &::before {
-    position: absolute;
-    content: "";
-    height: 95%;
-    width: 1px;
-    background: #CCC;
-    top: 50%;
-    left: -8px;
-    transform: translateY(-50%);
-  }
 `
 
 export const MainHeaderTitle = styled.p`
@@ -37,6 +25,19 @@ export const MainHeaderTitle = styled.p`
   color: #FFFFFF;
   white-space: wrap;
   margin-bottom: 6px;
+  position: relative;
+  margin-left: 10px;
+
+  &::before {
+    position: absolute;
+    content: "";
+    height: 95%;
+    width: 1px;
+    background: #CCC;
+    top: 50%;
+    left: -8px;
+    transform: translateY(-50%);
+  }
 `
 
 export const MainHeaderSubTitile = styled.p`
@@ -47,6 +48,7 @@ export const MainHeaderSubTitile = styled.p`
   font-weight: 300;
   font-size: 40px;
   line-height: 40px;
+  margin-top: 32px;
   color: #FFFFFF;
 `
 

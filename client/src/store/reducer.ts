@@ -22,7 +22,7 @@ export interface ICollection {
   name: string,
   totalSupply: number,
   symbol: string,
-  authors: Author[]
+  authors: Author[],
 }
 
 interface ContractState {
@@ -52,31 +52,59 @@ export const getPictureById = (tokenId: number) => {
     return {
       ...tokenInfo,
       collectionId: tokenCollectionId,
-      path: require(`../assets/images/${tokenInfo.tokenId}.png`)
+      path: require(`../assets/images/${tokenInfo.tokenId}.jpg`)
     }
   }
 }
 
 export const tokenById = async ( tokenId: number, contract: ethers.Contract ) => {
   try {
+    let data: any = {};
     const tokenPrice = (await contract.getTokenPrice(tokenId))?.toString()
     const tokenOwner = await contract.ownerOf(tokenId)
     const tokenStatus = (await contract.getLotState(tokenId)).toNumber()
+    try {
+      data = require(`../assets/jsons_test/${tokenId}.json`)
+      console.log(data.attributes);
+      data = {
+        ...data,
+        attributes: data.attributes.map((val: any) => ({
+          [val.trait_type.toLocaleLowerCase()]:  val.value
+        })).reduce((prev: any, curr: any) => ({ ...prev, ...curr }), {})
+      }
+    } catch (error) {
+      console.log("Not found");
+    }
 
     return {
+      tokenData: data,
       tokenPrice: tokenPrice || "0",
       tokenOwner,
       tokenStatus,
       status: tokenStatus === 3 ? 'listed' : 'not listed'
     }
   } catch (e) {
+    let data: any = {};
+    try {
+      data = require(`../assets/jsons_test/${tokenId}.json`)
+      console.log(data.attributes);
+      data = {
+        ...data,
+        attributes: data.attributes.map((val: any) => ({
+          [val.trait_type.toLocaleLowerCase()]:  val.value
+        })).reduce((prev: any, curr: any) => ({ ...prev, ...curr }), {})
+      }
+    } catch (error) {
+      console.log("Not found");
+    }
     const tokenPrice = await contract.mintPrices(tokenId)
+
     return {
+      tokenData: data,
       status: 'not minted',
       tokenPrice: tokenPrice || "0"
     }
   }
-
 }
 
 export const initContract = createAsyncThunk(
@@ -127,10 +155,11 @@ export const initContract = createAsyncThunk(
           const name = await contract?.name()
           const symbol = await contract?.symbol()
 
-          const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
+          const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
               (await contract?.getAuthors())?.map(getAuthorByAddress)
                 :
               (collection as any).authors.map(getAuthorByAddress)
+          console.log(collection);
           colls.push({
             id: collection.id,
             name,
@@ -198,7 +227,7 @@ export const tokenInfo = createAsyncThunk(
   ) => {
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
-
+    const { tokenData } = await tokenById(tokenId, collection)
     try {
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
@@ -206,8 +235,10 @@ export const tokenInfo = createAsyncThunk(
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
       
       const tokenCurrToken = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
-      console.log(tokenCurrToken, tokenStatus);
+      console.log("tokenData: ", tokenData);
+
       return {
+        tokenData,
         tokenPrice: tokenPrice || "0",
         tokenCurrToken,
         tokenStatus,
@@ -216,6 +247,7 @@ export const tokenInfo = createAsyncThunk(
     } catch (e) {
       const tokenPrice = await collection.mintPrices(tokenId)
       return {
+        tokenData,
         status: 'not minted',
         tokenPrice: tokenPrice || "0"
       }
@@ -458,6 +490,7 @@ export const contractSlice = createSlice({
       console.log('buyToken', error.message);
     })
     builder.addCase(buyToken.fulfilled, (state) => {})
+    
     builder.addCase(listToken.pending, (state) => {
       state.loading = true
     })

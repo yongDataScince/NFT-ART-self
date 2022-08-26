@@ -4,6 +4,7 @@ import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { initContract } from '../../store/reducer';
+import BackIcon from '../UI/icons/BackIcon';
 
 const connectNetwork = async () => {
   await (window as any).ethereum.request({
@@ -26,6 +27,9 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
 
   return (
     <Styled.HeaderBar>
+      <Styled.HeaderButton onClick={() => navigate(-1)} style={{ marginRight: 16 }}>
+        <BackIcon viewBox='0 0 24 24' color="#FFF" />
+      </Styled.HeaderButton>
       {
         (haveEth && !needChain) && (
           <Styled.HeaderButton onClick={() => navigate('/settings')}>
@@ -35,12 +39,12 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
       }
       
       {((os === 'iOS' || os === 'Android') && !haveEth && !needChain) && (
-        <Styled.HeaderButton onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
+        <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
       )}
       {(needChain && haveEth) && 
-        <Styled.HeaderButton onClick={() => connectNetwork().then(() => dispatch(initContract({ haveEth: true, netConnected: true })))}>
+        <Styled.HeaderButton style={{ paddingBottom: 4 }} onClick={() => connectNetwork().then(() => dispatch(initContract({ haveEth: true, netConnected: true })))}>
           <CopyIcon viewBox='0 0 20 20' color="#fcba03" />
         </Styled.HeaderButton>
       }

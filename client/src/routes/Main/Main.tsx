@@ -15,10 +15,10 @@ export const Main: React.FC = () => {
       <Styled.MainHeader>
         <Styled.MainHeaderWrapper>
           <Styled.MainHeaderTitle>
-            On the blockchain, art can take on any form. Neuform - where digital meets physical
+            On the blockchain, art can take on any form. Neuform <br /> –– where digital meets physical
           </Styled.MainHeaderTitle>
           <Styled.MainHeaderSubTitile>
-            neuform.art 
+            Neuform.art 
           </Styled.MainHeaderSubTitile>
         </Styled.MainHeaderWrapper>
       </Styled.MainHeader>

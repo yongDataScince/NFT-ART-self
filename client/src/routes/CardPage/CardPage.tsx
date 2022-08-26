@@ -94,7 +94,7 @@ export const CardPage: React.FC = () => {
     const maxHeight = (ref.current?.clientHeight || 0)
 
     let image = new Image()
-    image.src = require(`../../assets/images/${pictureid}.png`);
+    image.src = require(`../../assets/images/${pictureid}.jpg`);
 
     const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
     setNheight(image.naturalHeight * ratio)
@@ -173,9 +173,9 @@ export const CardPage: React.FC = () => {
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
       <Styled.CardTitle>
-        <span>#{zeroPad(Number(pictureid) - 1, 4)} </span>‘{picture?.name}’
+        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{currToken?.tokenData?.attributes?.meaning}’
       </Styled.CardTitle>
-      <Styled.CardImage src={require(`../../assets/images/${pictureid}.png`)} width={nwidth} height={nheight} />
+      <Styled.CardImage src={require(`../../assets/images/${pictureid}.jpg`)} width={nwidth} height={nheight} />
       <Styled.Line />
       {currToken?.status === 'available' && 
         <Styled.Price>

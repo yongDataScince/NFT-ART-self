@@ -49,42 +49,40 @@ export const ModalWrapper = styled.div`
 export const ModalClose = styled.button<Props>`
   width: 28px;
   height: 28px;
+  border: none;
   background: #000;
-  border: 1px solid ${({ variant }) => colors[variant || 'default']};
   position: absolute;
   right: 0px;
   margin: 0;
   padding: 0;
   top: 0px;
-
-  svg {
-    color: ${({ variant }) => colors[variant || 'default']};
-  }
 `
 
 export const ModalTitle = styled.p<Props>`
+  margin: 0;
+  margin-top: 70px;
   font-family: 'Helvetica';
   font-style: normal;
-  font-weight: 300;
+  width: 100%;
+  text-align: left;
+  font-weight: 100;
   font-size: 31.25px;
   line-height: 100%;
   letter-spacing: -0.05em;
+  text-transform: uppercase;
   color: ${({ variant }) => colors[variant || 'default']};
   padding: 0;
-  margin: 0;
-  margin-bottom: 20px;
 `
 
 export const ModalMessage = styled.div<Props>`
-  border: 1px solid ${({ variant }) => colors[variant || 'default']};
   width: 100%;
-  height: 80%;
-  padding: 15px;
-  text-align: center;
+  margin-top: 10px;
+  text-align: left;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
-  font-size: 15px;
+  font-size: 22px;
+  font-weight: 100;
   line-height: 100%;
   letter-spacing: -0.05em;
   overflow-y: auto;
@@ -100,7 +98,9 @@ export const ModalLink = styled.a<Props>`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
-  font-size: 15px;
+  width: 100%;
+  text-align: left;
+  font-size: 18px;
   line-height: 100%;
   letter-spacing: -0.05em;
   margin-top: 10px;

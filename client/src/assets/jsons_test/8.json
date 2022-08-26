@@ -1,0 +1,20 @@
+{
+  "name":"Dusk",
+  "description":"Nightfall absorbs the sun.\n\nOwner link access: https://app.submarine.me/hfnaCBWSMzanE5X2zB2Utr ",
+  "external_url":"https://neuform.art/collection/1/picture/8",
+  "original":"https://app.submarine.me/hfnaCBWSMzanE5X2zB2Utr",
+  "image": "https://neuform-art.mypinata.cloud/ipfs/QmXfvbFpFtx5V5h387WPuqWr6YkFexUgV3ePLyf1tRkwYg/8.mp4",
+  "collection_address": "0x836F9ff1a2be3Bd50FA4f4DbC57309bDb6B540C0",
+  "attributes": [
+    {
+      "trait_type":"Meaning",
+      "value":"Elation"
+    },{
+      "trait_type":"Format",
+      "value":"4K UHD"
+    },{
+      "trait_type":"Duration",
+      "value":"40 sec"
+    }
+  ]
+}

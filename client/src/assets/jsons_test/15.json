@@ -1,0 +1,19 @@
+{
+  "name":"Mystery",
+  "description":"Owner link access: https://app.submarine.me/bpEkVpWnfs4Tv3mRbZ8cQx",
+  "external_url":"https://neuform.art/collection/1/picture/15",
+  "original":"https://app.submarine.me/bpEkVpWnfs4Tv3mRbZ8cQx",
+  "image": "https://neuform-art.mypinata.cloud/ipfs/QmXfvbFpFtx5V5h387WPuqWr6YkFexUgV3ePLyf1tRkwYg/15.mp4",
+  "attributes": [
+    {
+      "trait_type":"Meaning",
+      "value":"A fairytale"
+    },{
+      "trait_type":"Format",
+      "value":"4K UHD"
+    },{
+      "trait_type":"Duration",
+      "value":"59 sec"
+    }
+  ]
+}

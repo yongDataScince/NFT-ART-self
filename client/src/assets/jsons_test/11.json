@@ -1,0 +1,20 @@
+{
+  "name":"Waterfall",
+  "description":"Owner link access: https://app.submarine.me/sruHY1qWfW6MxCwS7EUiHp",
+  "external_url":"https://neuform.art/collection/1/picture/11",
+  "original":"https://app.submarine.me/sruHY1qWfW6MxCwS7EUiHp",
+  "image": "https://neuform-art.mypinata.cloud/ipfs/QmXfvbFpFtx5V5h387WPuqWr6YkFexUgV3ePLyf1tRkwYg/11.mp4",
+  "collection_address": "0x836F9ff1a2be3Bd50FA4f4DbC57309bDb6B540C0",
+  "attributes": [
+    {
+      "trait_type":"Meaning",
+      "value":"A liquid sunset"
+    },{
+      "trait_type":"Format",
+      "value":"4K UHD"
+    },{
+      "trait_type":"Duration",
+      "value":"35 sec"
+    }
+  ]
+}

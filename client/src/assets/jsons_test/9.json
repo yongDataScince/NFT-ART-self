@@ -1,0 +1,20 @@
+{
+  "name":"6 Am",
+  "description":"A sunny morning with a hint of horror creeping in.\n\nOwner link access: https://app.submarine.me/pccuJVs5xGsLJrbcKFa8Rz",
+  "external_url":"https://neuform.art/collection/1/picture/9",
+  "original":"https://app.submarine.me/pccuJVs5xGsLJrbcKFa8Rz",
+  "image": "https://neuform-art.mypinata.cloud/ipfs/QmXfvbFpFtx5V5h387WPuqWr6YkFexUgV3ePLyf1tRkwYg/9.mp4",
+  "collection_address": "0x836F9ff1a2be3Bd50FA4f4DbC57309bDb6B540C0",
+  "attributes": [
+    {
+      "trait_type":"Meaning",
+      "value":"Morning mood"
+    },{
+      "trait_type":"Format",
+      "value":"4K UHD"
+    },{
+      "trait_type":"Duration",
+      "value":"36 sec"
+    }
+  ]
+}

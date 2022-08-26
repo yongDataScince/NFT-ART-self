@@ -9,6 +9,7 @@ export const FooterMain = styled.footer`
   display: flex;
   flex-direction: column;
   margin-top: 200px;
+  border-top: 1px solid #FFFFFF;
   margin-bottom: -140px;
 `
 

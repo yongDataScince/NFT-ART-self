@@ -27,12 +27,6 @@ export const HeaderButton = styled.button`
   justify-content: center;
   background-color: #000000;
   color: #FFF;
-  &:nth-child(2) {
-    margin-left: 16px;
-    svg {
-      margin-bottom: 5px;
-    }
-  }
 `
 
 export const MenuSwiper = styled.div<Props>`

@@ -44,10 +44,10 @@ function App() {
           setLinkSrc('https://play.google.com/store/apps/details?id=io.metamask&hl=ru&gl=US')
         }
         setVariant('warning')
-        setErrorMessage("please install Metamask on your device: " + getMobileOS())
+        setErrorMessage("Please install Metamask on your device: " + getMobileOS())
       } else {
         setVariant('error')
-        setErrorMessage("please install Metamask on your device")
+        setErrorMessage("Please install Metamask on your device")
       }
     }
     (window as any).ethereum?.on("accountsChanged", () => {
@@ -59,7 +59,7 @@ function App() {
   return (
     <div className="app">
       <Header os={getMobileOS()} />
-      <Modal title='Alert!' variant={variant} message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
+      <Modal title='Alert!' variant="default" message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
       <Routes>
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />
