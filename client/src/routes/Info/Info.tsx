@@ -92,10 +92,10 @@ export const Info: React.FC = () => {
             `Minter benefits. Artists have the option to reward their very first collector for any given artwork, by giving them a small royalty on all of their secondary sales. This reward is completely optional and it decreases proportionally with each consecutive transaction. The number of transactions, as well as the percentage given to the minter is defined by each artist individually, is capped at 5%, and is announced separately for every new collection.`,
             `
             <span style="text-decoration: underline;">For example the artist will receive</span><br>
-            <span style="color: #FFF;">10%</span> when an artwork is resold at <span style="color: #FFF;">500 € or less</span>,<br>
-            <span style="color: #FFF;">4%</span> from a resale of <span style="color: #FFF;">501 - 50 000 €</span>,<br>
-            <span style="color: #FFF";">2%</span> from a resale of  <span style="color: #FFF;">50 001 - 500 000 €</span> <br>
-            <span style="color: #FFF;">0,2%</span> from a resale of anything above <span style="color: #FFF;">500 000 €</span>
+            <span style="color: #FFF;">10%</span> when an artwork is resold at <span style="color: #FFF; font-size: 13px;">500 € or less</span>,<br>
+            <span style="color: #FFF;">4%</span> from a resale of <span style="color: #FFF; font-size: 13px;">501 - 50 000 €</span>,<br>
+            <span style="color: #FFF";">2%</span> from a resale of  <span style="color: #FFF; font-size: 13px;">50 001 - 500 000 €</span> <br>
+            <span style="color: #FFF;">0,2%</span> from a resale of anything above <span style="color: #FFF; font-size: 13px;">500 000 €</span>
             
             `
           ]
