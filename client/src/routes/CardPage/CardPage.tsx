@@ -169,13 +169,32 @@ export const CardPage: React.FC = () => {
     };
   }, [collection, currCollection, currToken?.status, dispatch, navigate, pictureid, signerAddress])
 
+  const vidRef = useRef<HTMLVideoElement | null>(null)
+  
+  const [play, setPlay] = useState<boolean>(false);
+
+  const playVideo = () => {
+    setPlay(true)
+    vidRef.current?.play()
+  }
+
+  const pauseVideo = () => {
+    setPlay(false)
+    vidRef.current?.pause()
+  }
+
   return (
     <Styled.CardPage ref={ref}>
       <Loader show={loading} />
       <Styled.CardTitle>
-        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{currToken?.tokenData?.attributes?.meaning}’
+        <span>#{zeroPad(Number(pictureid), 4)} </span>‘{currToken?.tokenData?.name}’
       </Styled.CardTitle>
-      <Styled.CardImage src={require(`../../assets/images/${pictureid}.jpg`)} width={nwidth} height={nheight} />
+      <Styled.VidGroup>
+        {!play && <Styled.PlayButton onClick={() => playVideo()}><div /></Styled.PlayButton>}
+        <Styled.CardVideo widthCalc={nwidth} height={nheight+12} loop ref={vidRef} onClick={() => pauseVideo()}>
+          <source src={require(`../../assets/videos/${pictureid}.mp4`)} type="video/mp4" />
+        </Styled.CardVideo>
+      </Styled.VidGroup>
       <Styled.Line />
       {currToken?.status === 'available' && 
         <Styled.Price>

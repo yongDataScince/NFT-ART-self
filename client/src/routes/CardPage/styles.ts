@@ -1,13 +1,42 @@
 import styled, { css } from "styled-components";
 
 interface Props {
-  width: number,
+  widthCalc: number,
   height: number
 }
 
 interface PropBtn {
   choised?: boolean
 }
+
+export const PlayButton = styled.button`
+  width: 50px;
+  height: 50px;
+  background: #FFF;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  div {
+    transform: rotate(180deg);
+    border-style: solid;
+    border-width: 14px 22px 14px 0;
+    margin-left: 4px;
+    border-color: transparent #000000 transparent transparent;
+  }
+`
+
+export const VidGroup = styled.div`
+  width: auto;
+  height: auto;
+  position: relative;
+`
 
 export const CardPage = styled.div`
   width: 100%;
@@ -96,6 +125,22 @@ export const CardImage = styled.img<Props>`
   ${({ width, height }) => css`
     max-width: ${width}px;
     min-width: ${width}px;
+
+    max-height: ${height}px;
+    min-height: ${height}px;
+  `}
+`
+
+export const CardVideo = styled.video<Props>`
+  width: 100%;
+  height: 100%;
+  border: 1px solid #FFFFFF;
+  position: relative;
+  margin-bottom: 8px;
+
+  ${({ widthCalc, height }) => css`
+    max-width: ${widthCalc}px;
+    min-width: ${widthCalc}px;
 
     max-height: ${height}px;
     min-height: ${height}px;

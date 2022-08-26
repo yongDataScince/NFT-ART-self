@@ -46,7 +46,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         <Styled.CarouselTitle>Collection: {title}</Styled.CarouselTitle>
       </Styled.CarouselTitleWrapper>
       <Styled.CarouselCard onClick={() => navigate(`collection/${collectionId}/picture/${images[currentImage - 1]}`)}>
-        <Styled.CardImage src={require(`../../../assets/images/${currentImage}.jpg`)} />
+        <Styled.CardImage src={require(`../../../assets/images/${currentImage - 1}.jpg`)} />
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
             <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }

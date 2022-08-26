@@ -123,7 +123,7 @@ export const CarouselFooterTitle = styled.p`
   
   font-weight: 300;
   font-size: 25px;
-  line-height: 70%;
+  line-height: 110%;
   color: #FFFFFF;
   margin: 0;
   padding: 0;

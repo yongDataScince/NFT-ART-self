@@ -267,16 +267,16 @@ export const tokenInfos = createAsyncThunk(
     const tokens = []
 
     for await (const pic of pictures) {
+      const data = await tokenById(pic.tokenId, collection);
       try {
         const tokenPrice = (await collection?.getTokenPrice(pic.tokenId))?.toString()
         const tokenOwner = await collection?.ownerOf(pic.tokenId)
         const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
         const tokenPrevOwner = (await collection.tokensPreviousOwner(pic.tokenId))
         const tokenCurrTokenOwner = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
-        console.log(pic.tokenId, tokenCurrTokenOwner);
         
         tokens.push({
-          name: pic?.name,
+          name: data.tokenData?.name,
           id: pic?.tokenId,
           tokenPrice,
           tokenCurrTokenOwner,
@@ -286,7 +286,7 @@ export const tokenInfos = createAsyncThunk(
         })
       } catch (e) {
         tokens.push({
-          name: pic?.name,
+          name: data.tokenData?.name,
           id: pic?.tokenId,
           status: 'not minted'
         })

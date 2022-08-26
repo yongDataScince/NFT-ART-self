@@ -1,5 +1,5 @@
 import * as Styled from './styles';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CopyIcon from '../UI/icons/CopyIcon';
 import SettingsIcon from '../UI/icons/SettingsIcon';
 import { useAppDispatch, useAppSelector } from '../../store';
@@ -22,14 +22,17 @@ const connectNetwork = async () => {
 
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { haveEth, needChain } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
 
   return (
     <Styled.HeaderBar>
-      <Styled.HeaderButton onClick={() => navigate(-1)} style={{ marginRight: 16 }}>
+      {
+        location.pathname !== '/' && <Styled.HeaderButton onClick={() => navigate(-1)} style={{ marginRight: 16 }}>
         <BackIcon viewBox='0 0 24 24' color="#FFF" />
       </Styled.HeaderButton>
+      }
       {
         (haveEth && !needChain) && (
           <Styled.HeaderButton onClick={() => navigate('/settings')}>
