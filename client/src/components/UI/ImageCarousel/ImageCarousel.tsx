@@ -34,7 +34,6 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
 
   useEffect(() => {
     const c = collections?.find((c) => c.id === collectionId)
-    console.log(collections);
     setCurrCollection(c)
     dispatch(tokenInfos({ collectionId }))
   }, [collectionId, collections, dispatch])

@@ -41,7 +41,9 @@ interface ContractState {
 }
 
 export const getAuthorByAddress = (address: string): Author | undefined => {
-  return authors?.find((a) => a.address === address)
+  return authors?.find((a) => {
+    return a.address === address
+  })
 }
 
 export const getPictureById = (tokenId: number) => {
@@ -65,7 +67,6 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
     const tokenStatus = (await contract.getLotState(tokenId)).toNumber()
     try {
       data = require(`../assets/jsons_test/${tokenId}.json`)
-      console.log(data.attributes);
       data = {
         ...data,
         attributes: data.attributes.map((val: any) => ({
@@ -87,7 +88,6 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
     let data: any = {};
     try {
       data = require(`../assets/jsons_test/${tokenId}.json`)
-      console.log(data.attributes);
       data = {
         ...data,
         attributes: data.attributes.map((val: any) => ({
@@ -194,11 +194,16 @@ export const initContract = createAsyncThunk(
         const totalSupply = pictures.length
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        console.log("getAuthors: ", await contract?.getAuthors());
-        const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).length ?
+        console.log(collection.address);
+        console.log("No Eth aths: ", (await contract?.getAuthors()));
+        console.log(authors.map((a) => a.address));
+
+        const authorsArr = (await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
                 (await contract?.getAuthors())?.map(getAuthorByAddress)
                   :
                 (collection as any).authors.map(getAuthorByAddress)
+
+        console.log("getAuthors: ", collection.authors);
         colls.push({
           id: collection.id,
           name,
@@ -206,7 +211,7 @@ export const initContract = createAsyncThunk(
           address: collection.address,
           contract: contract,
           totalSupply,
-          authors
+          authors: authorsArr
         })
       }
 

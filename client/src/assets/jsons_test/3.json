@@ -5,6 +5,7 @@
   "original":"https://app.submarine.me/1mgUbHJpNju9BRJLks3rFJ",
   "image": "https://neuform-art.mypinata.cloud/ipfs/QmXfvbFpFtx5V5h387WPuqWr6YkFexUgV3ePLyf1tRkwYg/3.mp4",
   "collection_address": "0x836F9ff1a2be3Bd50FA4f4DbC57309bDb6B540C0",
+  "authors": [1, 2],
   "attributes": [
     {
       "trait_type":"Meaning",
