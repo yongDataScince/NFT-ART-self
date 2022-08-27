@@ -1,12 +1,14 @@
 import styled, { css } from 'styled-components';
-import { AppBar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 interface Props {
   open?: boolean
 }
 
-export const HeaderBar = styled(AppBar)`
+export const HeaderBar = styled.header`
+  position: fixed;
+  top: 0;
+  left: 0;
   background-color: #000000 !important;
   padding: 20px 32px;
   position: relative !important;

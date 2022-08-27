@@ -5,6 +5,7 @@ import * as Styled from './styles'
 interface Block {
   id: number,
   opened?: boolean,
+  htmlId: string,
   title: string,
   description: string,
   subBlocks: {
@@ -18,6 +19,7 @@ export const Info: React.FC = () => {
   const [blocks, setBlock] = useState<Block[]>([
     {
       id: 1,
+      htmlId: 'about',
       opened: true,
       title: 'About Artform',
       description: 'We are an exclusive online art gallery. Curating, exhibiting and selling both digital and physical works, all verified on the blockchain.',
@@ -62,7 +64,8 @@ export const Info: React.FC = () => {
     },
     {
       id: 2,
-      opened: false,
+      opened: true,
+      htmlId: 'how-it-works',
       title: 'How it works',
       description: '',
       subBlocks: [
@@ -125,7 +128,8 @@ export const Info: React.FC = () => {
     },
     {
       id: 3,
-      opened: false,
+      opened: true,
+      htmlId: 'privacy',
       title: 'Privacy Policy',
       description: '',
       subBlocks: [
@@ -268,13 +272,6 @@ export const Info: React.FC = () => {
           ]
         }
       ]
-    },
-    {
-      id: 4,
-      opened: false,
-      title: 'Contact',
-      description: '',
-      subBlocks: []
     }
   ])
   
@@ -289,7 +286,7 @@ export const Info: React.FC = () => {
     <Styled.MainInfo>
       {
         blocks.map((block) => (
-          <Styled.InfoBlock key={block.id} delay={!block.opened ? (( block.subBlocks.length * 0.2 ) / 1.007) : 0} opened={block.opened}>
+          <Styled.InfoBlock key={block.id} id={block.htmlId} delay={!block.opened ? (( block.subBlocks.length * 0.2 ) / 1.007) : 0} opened={block.opened}>
             <Styled.InfoTitle onClick={() => openBlock(block.id)} opened={block.opened}>
               <ChevronIcon />
               {block.title}

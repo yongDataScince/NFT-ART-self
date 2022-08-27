@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { HashLink } from 'react-router-hash-link';
 
 export const FooterMain = styled.footer`
   width: 120%;
@@ -52,7 +52,7 @@ export const FooterNav = styled.ul`
   height: auto;
 `
 
-export const InternalLink = styled(Link)`
+export const InternalLink = styled(HashLink)`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;

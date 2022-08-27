@@ -44,7 +44,7 @@ function App() {
           setLinkSrc('https://play.google.com/store/apps/details?id=io.metamask&hl=ru&gl=US')
         }
         setVariant('warning')
-        setErrorMessage("Please install Metamask on your device: " + getMobileOS())
+        setErrorMessage("Please install Metamask on your device")
       } else {
         setVariant('error')
         setErrorMessage("Please install Metamask on your device")
