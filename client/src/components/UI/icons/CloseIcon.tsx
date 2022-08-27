@@ -2,7 +2,7 @@ import { SvgIcon } from "@mui/material"
 
 const CloseIcon = (props: any) => {
   return (
-    <SvgIcon {...props}>
+    <SvgIcon {...props} fill="none">
       <style type="text/css">
         {
           `
