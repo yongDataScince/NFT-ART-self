@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const FooterMain = styled.footer`
   width: 120%;
   height: 500px;
-  padding: 24px 12px 55px 40px;
+  padding: 24px 12px 30px 40px;
   background: linear-gradient(180deg, #000000 4.65%, rgba(110, 110, 110, 0.2)  78.84%);
   display: flex;
   flex-direction: column;
@@ -30,6 +30,20 @@ export const FooterTitle = styled.p`
   margin-bottom: 30px;
 `
 
+export const CopyRight = styled.p`
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: -0.05em;
+  color: #B0AFB1;
+  text-decoration: none;
+  margin-top: 20px;
+`
+
 export const FooterNav = styled.ul`
   display: flex;
   padding: 0; 
@@ -48,6 +62,16 @@ export const InternalLink = styled(Link)`
   color: #B0AFB1;
   text-decoration: none;
   margin-bottom: 10px;
+`
+
+export const Icons = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  svg {
+    transform: scale(0.75);
+    margin-right: 10px;
+  }
 `
 
 export const ExternalLink = styled.a`

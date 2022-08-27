@@ -15,7 +15,7 @@ export const Main: React.FC = () => {
       <Styled.MainHeader>
         <Styled.MainHeaderWrapper>
           <Styled.MainHeaderTitle>
-            On the blockchain, art can take on any form. Neuform <br /> –– where digital meets physical
+            On the blockchain, art can take on any form. Neuform <br /> &mdash; where digital meets physical
           </Styled.MainHeaderTitle>
           <Styled.MainHeaderSubTitile>
             Neuform.art 
