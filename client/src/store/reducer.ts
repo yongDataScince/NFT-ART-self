@@ -38,6 +38,7 @@ interface ContractState {
   signerBalance?: number;
   needChain?: boolean;
   userPictures?: any[];
+  lastCheck?: number,
 }
 
 export const getAuthorByAddress = (address: string): Author | undefined => {
@@ -522,6 +523,7 @@ export const contractSlice = createSlice({
       state.loading = true
     })
     builder.addCase(tokenInfos.fulfilled, (state, { payload }) => {
+      state.lastCheck = Date.now()
       state.loading = false
       state.tokens = payload
     })

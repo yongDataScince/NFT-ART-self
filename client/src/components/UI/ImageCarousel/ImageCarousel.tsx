@@ -17,7 +17,7 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections, tokens, signerAddress } = useAppSelector((s) => s.web3)
+  const { collections, tokens, signerAddress, lastCheck } = useAppSelector((s) => s.web3)
   const [currCollection, setCurrCollection] = useState<ICollection>()
 
   const dispatch = useAppDispatch()
@@ -35,8 +35,11 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
   useEffect(() => {
     const c = collections?.find((c) => c.id === collectionId)
     setCurrCollection(c)
-    dispatch(tokenInfos({ collectionId }))
-  }, [collectionId, collections, dispatch])
+    console.log(Date.now(), lastCheck);
+    if (Date.now() - (lastCheck || 0) > 90000) {
+      dispatch(tokenInfos({ collectionId }))
+    }
+  }, [collectionId, collections, dispatch, lastCheck])
 
   return (
     <Styled.CarouselMain>

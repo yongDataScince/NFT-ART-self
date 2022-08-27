@@ -24,7 +24,6 @@ export const InfoBlock = styled.div<Props>`
     transition-delay: ${delay}s;
     max-height: ${opened ? 'auto' : '60px'};
     border-color: ${opened ? '#000' : '#FFF'};
-    border-bottom: ${opened ? '1px solid #CCCCCC' : 'none' };
   `}
 `
 
