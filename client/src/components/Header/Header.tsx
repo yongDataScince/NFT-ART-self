@@ -52,8 +52,8 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
         </Styled.HeaderButton>
        ) : (
         <>
-          <Styled.HeaderButton onClick={() => openMetaMaskUrl()}>
-            <CopyIcon  viewBox='0 0 20 20' color="#FFF" />
+           <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('dapp://nft-art-preview.pages.dev')}>
+            <CopyIcon viewBox='0 0 20 20' color="#FFF" />
           </Styled.HeaderButton>
         </>
        )
