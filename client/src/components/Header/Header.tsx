@@ -42,9 +42,15 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
       }
       
       {((os === 'iOS' || os === 'Android') && !haveEth && !needChain) && (
+       os !== 'iOS' ? (
         <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
+       ) : (
+        <Styled.HeaderButtonLink href="https://metamask.app.link/dapp/nft-art-preview.pages.dev/">
+          <CopyIcon viewBox='0 0 20 20' color="#FFF" />
+        </Styled.HeaderButtonLink>
+       )
       )}
       {(needChain && haveEth) && 
         <Styled.HeaderButton style={{ paddingBottom: 4 }} onClick={() => connectNetwork().then(() => dispatch(initContract({ haveEth: true, netConnected: true })))}>

@@ -32,6 +32,20 @@ export const HeaderButton = styled.button`
   color: #FFF;
 `
 
+export const HeaderButtonLink = styled.a`
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  color: #FFF;
+`
+
 export const MenuSwiper = styled.div<Props>`
   width: 50vw;
   height: 100vh;
