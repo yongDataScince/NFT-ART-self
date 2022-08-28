@@ -20,6 +20,10 @@ const connectNetwork = async () => {
   });
 }
 
+function openMetaMaskUrl() {
+  window.open("dapp://nft-art-preview.pages.dev")
+}
+
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -30,8 +34,8 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
     <Styled.HeaderBar>
       {
         location.pathname !== '/' && <Styled.HeaderButton onClick={() => navigate(-1)} style={{ marginRight: 16 }}>
-        <BackIcon viewBox='0 0 24 24' color="#FFF" />
-      </Styled.HeaderButton>
+          <BackIcon viewBox='0 0 24 24' color="#FFF" />
+        </Styled.HeaderButton>
       }
       {
         (haveEth && !needChain) && (
@@ -47,9 +51,11 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
        ) : (
-        <Styled.HeaderButtonLink href="https://metamask.app.link/dapp/nft-art-preview.pages.dev/">
-          <CopyIcon viewBox='0 0 20 20' color="#FFF" />
-        </Styled.HeaderButtonLink>
+        <>
+          <Styled.HeaderButton onClick={() => openMetaMaskUrl()}>
+            <CopyIcon  viewBox='0 0 20 20' color="#FFF" />
+          </Styled.HeaderButton>
+        </>
        )
       )}
       {(needChain && haveEth) && 

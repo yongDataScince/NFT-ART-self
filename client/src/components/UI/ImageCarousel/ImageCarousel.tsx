@@ -1,10 +1,10 @@
 import _ from "lodash"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import ChevronIcon from "../icons/ChevronIcon"
 import * as Styled from './styles'
 import { useNavigate } from "react-router-dom";
-import { ICollection, tokenInfos } from "../../../store/reducer";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { ICollection } from "../../../store/reducer";
+import { useAppSelector } from "../../../store";
 import { BigNumber, ethers } from "ethers";
 
 interface Props {
@@ -14,13 +14,14 @@ interface Props {
   title: string
 }
 const zeroPad = (num: number, places: number = 4) => String(num).padStart(places, '0')
+
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections, tokens, signerAddress, lastCheck } = useAppSelector((s) => s.web3)
-  const [currCollection, setCurrCollection] = useState<ICollection>()
+  const { tokens, signerAddress } = useAppSelector((s) => s.web3)
+  const [currCollection] = useState<ICollection>()
 
-  const dispatch = useAppDispatch()
+  // const _dispatch = useAppDispatch()
   const navigate = useNavigate();
 
   const choiseImage = (id: number) => {
@@ -32,14 +33,14 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
     return strPrice.length > 10 ? Number(strPrice).toExponential() : strPrice
   }
 
-  useEffect(() => {
-    const c = collections?.find((c) => c.id === collectionId)
-    setCurrCollection(c)
-    console.log(Date.now(), lastCheck);
-    if (Date.now() - (lastCheck || 0) > 90000) {
-      dispatch(tokenInfos({ collectionId }))
-    }
-  }, [collectionId, collections, dispatch, lastCheck])
+  // useEffect(() => {
+  //   const c = collections?.find((c) => c.id === collectionId)
+  //   setCurrCollection(c)
+  //   console.log(Date.now(), lastCheck);
+  //   if (Date.now() - (lastCheck || 0) > 90000) {
+  //     dispatch(tokenInfos({ collectionId }))
+  //   }
+  // }, [collectionId, collections, dispatch, lastCheck])
 
   return (
     <Styled.CarouselMain>
