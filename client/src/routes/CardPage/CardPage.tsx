@@ -12,15 +12,6 @@ import WebIcon from "../../components/UI/icons/WebIcon";
 import { ethers } from "ethers";
 import Footer from "../../components/Footer";
 
-interface Picture {
-  tokenId?: number,
-  authors?: any[],
-  name?: string,
-  status?: string,
-  collectionAddress?: string,
-  description?: any,
-}
-
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
 export const CardPage: React.FC = () => {
