@@ -49,6 +49,9 @@ export const CardPage = styled.div`
   overflow-y: auto;
   padding: 120px 16px;
   scroll-behavior: smooth;
+  footer {
+    margin-top: 50px;
+  }
 `
 
 export const TagsContainer = styled.div`
