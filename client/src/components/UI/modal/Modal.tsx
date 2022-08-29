@@ -37,7 +37,7 @@ export const Modal: React.FC<Props> = ({ title, variant, message, haveLink, src,
         </Styled.ModalClose>
         <Styled.ModalTitle variant={variant}>{title}</Styled.ModalTitle>
         <Styled.ModalMessage variant={variant}>
-          {message}
+          Please install Metamask on your device
           {haveLink && <Styled.ModalLink href={src}>{text}</Styled.ModalLink>}
         </Styled.ModalMessage>
       </Styled.ModalWrapper>

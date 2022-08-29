@@ -247,6 +247,22 @@ export const CardInfoText = styled.p`
   margin-top: 6px;
 `
 
+export const CardLink = styled.a`
+  color: #A3A0A0;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 100;
+  font-size: inherit;
+  line-height: 100%;
+  letter-spacing: -0.05em;
+  width: 50%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 6px;
+`
+
 export const CardButton = styled.button`
   padding: 16px 12px;
   border: 1px solid #fff;

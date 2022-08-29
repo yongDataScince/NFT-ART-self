@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { tokenInfo, buyToken, listToken, ICollection, mintToken, revokeToken } from "../../store/reducer";
 import Loader from '../../components/UI/loader'
 import * as Styled from './styles'
-import picData from '../../assets/data/pictures.json'
 import CopyIcon from "../../components/UI/icons/CopyIcon";
 import InstagramIcon from "../../components/UI/icons/InstagramIcon";
 import Facebook from "../../components/UI/icons/Facebook";
@@ -38,7 +37,8 @@ export const CardPage: React.FC = () => {
   const [nheight, setNheight] = useState<number>(0);
   const [newPrice, setNewPrice] = useState<string>('')
   const [validate, setValidate] = useState<boolean>(true)
-  const [picture, setPicture] = useState<Picture | undefined>()
+  const [pictureMean, setPictureMean] = useState('')
+  const [picture, setPicture] = useState<any | undefined>()
   const [tags] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
   const [currCollection, setCurrCollection] = useState<ICollection>()
   const navigate = useNavigate()
@@ -116,14 +116,16 @@ export const CardPage: React.FC = () => {
 
   useEffect(() => {
     if (pictureid && collection) {
+      try {
+        const data = require(`../../assets/jsons_test/${pictureid}.json`);
+      } catch (error) {
+        navigate('/')
+      }
 
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
-      const pic = picData.find((pic) => pic.tokenId === Number(pictureid))
-      if (!pic) {
-        // navigate('/')
-      } else {
-        setPicture(pic)
-      }
+      const pic = require(`../../assets/jsons_test/${pictureid}.json`)
+      setPicture(pic)
+      setPictureMean(pic.attributes[0].value)
     }
   }, [pictureid, navigate, collection, collections])
 
@@ -244,16 +246,19 @@ export const CardPage: React.FC = () => {
           Description:
         </Styled.CardInfoTitle>
         <Styled.CardInfoText>
+        {pictureMean}<br/>
         {
-            Object.keys(picture?.description || {}).map((key) => {
-              if (key === 'text') {
-                return <>{picture?.description[key]}<br /></>
-              } else {
-                return <>{key}: {picture?.description[key]}<br /></>
-              }
+            Object.keys(currToken?.tokenData?.attributes || {}).filter((key) => key !== 'meaning').map((key) => {
+              return <><span style={{ textTransform: 'capitalize' }}>{key}</span>: {currToken?.tokenData?.attributes[key]}<br /></>
             })
           }
-          <span style={{ fontSize: 20 }}>This is a 5 sec sample, full art will be available to owned</span>
+          <span style={{ fontSize: 20 }}>This is a 5 sec sample, full art will be available to owned</span><br />
+          <div style={{ display: 'flex' }}>
+            <span style={{ whiteSpace: 'nowrap' }}>Owner link access:</span>
+            <Styled.CardLink href={currToken?.tokenData?.original}>
+              {currToken?.tokenData?.original}
+            </Styled.CardLink>
+          </div>
         </Styled.CardInfoText>
 
         <Styled.CardInfoTitle>

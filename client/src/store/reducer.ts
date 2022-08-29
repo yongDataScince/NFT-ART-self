@@ -3,7 +3,6 @@ import * as ethers from 'ethers'
 import ABI from './abi.json'
 import collections from '../assets/data/collections.json'
 import authors from '../assets/data/authors.json'
-import pictures from '../assets/data/pictures.json'
 
 export interface Author {
   id?: number,
@@ -41,6 +40,24 @@ interface ContractState {
   lastCheck?: number,
 }
 
+export const getPicturesByCollection = (collectionAddress: string) => {
+  let i = 0;
+  let totalSupply = 0;
+  while (true) {
+    try {
+      const data = require(`../assets/jsons_test/${i}.json`)
+      if (data.collection_address === collectionAddress) {
+        totalSupply += 1;
+      }
+    } catch (error) {
+      break;
+    }
+
+    i++;
+  }
+  return [totalSupply]
+}
+
 export const getAuthorByAddress = (address: string): Author | undefined => {
   return authors?.find((a) => {
     return a.address === address
@@ -48,8 +65,13 @@ export const getAuthorByAddress = (address: string): Author | undefined => {
 }
 
 export const getPictureById = (tokenId: number) => {
-  const tokenInfo = pictures?.find((pic) => pic.tokenId === tokenId)
-  const tokenCollectionId = collections.find((coll) => coll.address === tokenInfo?.collectionAddress)?.id
+  let tokenInfo: any;
+
+  try {
+    tokenInfo = require(`../assets/jsons_test/${tokenId}.json`);
+  } catch (error) {}
+
+  const tokenCollectionId = tokenInfo.collection_address
 
   if (tokenInfo) {
     return {
@@ -96,7 +118,7 @@ export const tokenById = async ( tokenId: number, contract: ethers.Contract ) =>
         })).reduce((prev: any, curr: any) => ({ ...prev, ...curr }), {})
       }
     } catch (error) {
-      console.log("Not found");
+      throw new Error("not found");
     }
     const tokenPrice = await contract.mintPrices(tokenId)
 
@@ -152,23 +174,21 @@ export const initContract = createAsyncThunk(
 
         for await (const collection of collections) {
           const contract = new ethers.Contract(collection.address, ABI, signer)
-          const totalSupply = pictures.length + 1
           const name = await contract?.name()
           const symbol = await contract?.symbol()
-
           const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
               (await contract?.getAuthors())?.map(getAuthorByAddress)
                 :
               (collection as any).authors.map(getAuthorByAddress)
-          console.log(collection);
+          const [totalSupply] = getPicturesByCollection(collection.address)
           colls.push({
             id: collection.id,
             name,
             symbol,
             address: collection.address,
             contract: contract,
-            totalSupply,
-            authors
+            authors,
+            totalSupply
           })
         }
         
@@ -192,19 +212,14 @@ export const initContract = createAsyncThunk(
 
       for await (const collection of collections) {
         const contract = new ethers.Contract(collection.address, ABI, provider)
-        const totalSupply = pictures.length
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        console.log(collection.address);
-        console.log("No Eth aths: ", (await contract?.getAuthors()));
-        console.log(authors.map((a) => a.address));
-
         const authorsArr = (await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
                 (await contract?.getAuthors())?.map(getAuthorByAddress)
                   :
                 (collection as any).authors.map(getAuthorByAddress)
 
-        console.log("getAuthors: ", collection.authors);
+        const [totalSupply] = getPicturesByCollection(collection.address)
         colls.push({
           id: collection.id,
           name,
@@ -233,15 +248,15 @@ export const tokenInfo = createAsyncThunk(
   ) => {
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
-    const { tokenData } = await tokenById(tokenId, collection)
+
     try {
+      const { tokenData } = await tokenById(tokenId, collection)
       const tokenPrice = (await collection?.getTokenPrice(tokenId))?.toString()
       const tokenOwner = await collection?.ownerOf(tokenId)
       const tokenStatus = (await collection?.getLotState(tokenId)).toNumber()
       const tokenPrevOwner = (await collection.tokensPreviousOwner(tokenId))
       
       const tokenCurrToken = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
-      console.log("tokenData: ", tokenData);
 
       return {
         tokenData,
@@ -251,6 +266,7 @@ export const tokenInfo = createAsyncThunk(
         status: tokenStatus === 3 ? 'available' : 'not available'
       }
     } catch (e) {
+      const { tokenData } = await tokenById(tokenId, collection)
       const tokenPrice = await collection.mintPrices(tokenId)
       return {
         tokenData,
@@ -272,30 +288,38 @@ export const tokenInfos = createAsyncThunk(
 
     const tokens = []
 
-    for await (const pic of pictures) {
-      const data = await tokenById(pic.tokenId, collection);
+    let id = 0;
+    while(true) {
       try {
-        const tokenPrice = (await collection?.getTokenPrice(pic.tokenId))?.toString()
-        const tokenOwner = await collection?.ownerOf(pic.tokenId)
-        const tokenStatus = (await collection?.getLotState(pic.tokenId)).toNumber()
-        const tokenPrevOwner = (await collection.tokensPreviousOwner(pic.tokenId))
-        const tokenCurrTokenOwner = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
-        
-        tokens.push({
-          name: data.tokenData?.name,
-          id: pic?.tokenId,
-          tokenPrice,
-          tokenCurrTokenOwner,
-          tokenOwner,
-          tokenStatus,
-          status: tokenStatus === 3 ? 'available' : 'sold'
-        })
-      } catch (e) {
-        tokens.push({
-          name: data.tokenData?.name,
-          id: pic?.tokenId,
-          status: 'not minted'
-        })
+        console.log(id);
+        const data = await tokenById(id, collection);
+        try {
+          const tokenPrice = (await collection?.getTokenPrice(id))?.toString()
+          const tokenOwner = await collection?.ownerOf(id)
+          const tokenStatus = (await collection?.getLotState(id)).toNumber()
+          const tokenPrevOwner = (await collection.tokensPreviousOwner(id))
+          const tokenCurrTokenOwner = tokenStatus === 3 ? tokenPrevOwner : tokenOwner
+          
+          tokens.push({
+            name: data.tokenData?.name,
+            id,
+            tokenPrice,
+            tokenCurrTokenOwner,
+            tokenOwner,
+            tokenStatus,
+            status: tokenStatus === 3 ? 'available' : 'sold'
+          })
+        } catch (e) {
+          tokens.push({
+            name: data.tokenData?.name,
+            id,
+            status: 'not minted'
+          })
+        }
+
+        id += 1;
+      } catch (error) {
+        break;
       }
     }
     return tokens
@@ -476,6 +500,7 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.rejected, (state, { error }) => {
       state.loading = false;
+
       state.currToken = {
         status: 'not minted',
         image: 'placeholder'
@@ -486,6 +511,7 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.fulfilled, (state, { payload }) => {
       state.loading = false;
+      console.log(payload);
       state.currToken = payload
     });
     builder.addCase(buyToken.pending, (state) => {

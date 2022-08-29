@@ -14,7 +14,7 @@ interface Props {
 export const ModalBox = styled.div<Props>`
   position: fixed;
   width: 90%;
-  height: 30%;
+  height: 39%;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -43,7 +43,7 @@ export const ModalWrapper = styled.div`
   flex-direction: column;
   position: relative;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 `
 
 export const ModalClose = styled.button<Props>`
@@ -56,6 +56,9 @@ export const ModalClose = styled.button<Props>`
   margin: 0;
   padding: 0;
   top: 0px;
+  svg {
+    fill: none;
+  }
 `
 
 export const ModalTitle = styled.p<Props>`
