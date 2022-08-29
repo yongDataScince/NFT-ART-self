@@ -35,7 +35,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
   useEffect(() => {
     const c = collections?.find((c) => c.id === collectionId)
     setCurrCollection(c)
-    console.log(Date.now(), lastCheck);
+
     if (Date.now() - (lastCheck || 0) > 90000) {
       dispatch(tokenInfos({ collectionId }))
     }
@@ -75,13 +75,14 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           </Styled.PagButton>
 
           <Styled.PagesContainer>
-            {_.times((tokens?.length || 0)).slice(window - 3, window).map((id) => (
+            {_.times((images?.length || 0)).slice(window - 3, window).map((id) => (
               <Styled.PageItem key={id} onClick={() => choiseImage(id + 1)} choised={currentImage === id + 1}>
                 {id + 1}
               </Styled.PageItem>
             ))}
           </Styled.PagesContainer>
-          <Styled.PagButton disabled={images.length - window < 2} onClick={() => {
+          
+          <Styled.PagButton disabled={(images.length + 1) - window < 2} onClick={() => {
             setWindow(window + 2)
             setCurrentImage(currentImage + 2)
           }}>

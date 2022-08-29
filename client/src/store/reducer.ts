@@ -316,11 +316,11 @@ export const tokenInfos = createAsyncThunk(
             status: 'not minted'
           })
         }
-
-        id += 1;
       } catch (error) {
         break;
       }
+
+      id += 1;
     }
     return tokens
   }

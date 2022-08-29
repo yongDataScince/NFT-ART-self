@@ -28,7 +28,7 @@ export const Main: React.FC = () => {
             collectionId={collection.id}
             collectionName={`${collection?.name}`}
             title={`${collection?.name} [${collection?.totalSupply}]`}
-            images={times(15)}
+            images={times(collection?.totalSupply)}
           />
         ))
       }
