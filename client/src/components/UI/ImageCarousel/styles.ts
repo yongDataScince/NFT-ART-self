@@ -97,6 +97,35 @@ export const CarouselCard = styled.div`
   border: 1px solid #FFF;
 `
 
+export const ImgGroup = styled.div`
+  width: 100%;
+  height: auto;
+  position: relative;
+`
+
+export const PlayButton = styled.button`
+  width: 50px;
+  height: 50px;
+  background: #FFF;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  div {
+    transform: rotate(180deg);
+    border-style: solid;
+    border-width: 14px 22px 14px 0;
+    margin-left: 4px;
+    border-color: transparent #000000 transparent transparent;
+  }
+`
+
 export const CardImage = styled.div<{ src: string }>`
   width: 100%;
   height: calc(100% - 110px);

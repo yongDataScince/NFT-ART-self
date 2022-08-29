@@ -29,7 +29,7 @@ export const CardPage: React.FC = () => {
   const [newPrice, setNewPrice] = useState<string>('')
   const [validate, setValidate] = useState<boolean>(true)
   const [pictureMean, setPictureMean] = useState('')
-  const [picture, setPicture] = useState<any | undefined>()
+
   const [tags] = useState<string[]>(['abstract', 'digital', 'expressionist', 'psychedelic'])
   const [currCollection, setCurrCollection] = useState<ICollection>()
   const navigate = useNavigate()
@@ -107,15 +107,8 @@ export const CardPage: React.FC = () => {
 
   useEffect(() => {
     if (pictureid && collection) {
-      try {
-        const data = require(`../../assets/jsons_test/${pictureid}.json`);
-      } catch (error) {
-        navigate('/')
-      }
-
       setCurrCollection(collections?.find((c) => c.id === Number(collection)))
       const pic = require(`../../assets/jsons_test/${pictureid}.json`)
-      setPicture(pic)
       setPictureMean(pic.attributes[0].value)
     }
   }, [pictureid, navigate, collection, collections])

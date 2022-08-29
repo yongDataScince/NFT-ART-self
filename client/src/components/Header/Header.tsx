@@ -20,10 +20,6 @@ const connectNetwork = async () => {
   });
 }
 
-function openMetaMaskUrl() {
-  window.open("dapp://nft-art-preview.pages.dev")
-}
-
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
   const location = useLocation()
