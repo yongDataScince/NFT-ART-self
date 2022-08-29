@@ -155,6 +155,10 @@ export const CardPage: React.FC = () => {
     };
   }, [collection, currCollection, currToken?.status, dispatch, navigate, pictureid, signerAddress])
 
+  useEffect(() => {
+    console.log('currToken: ', currToken?.tokenCurrTokenOwner);
+  }, [currToken])
+
   const vidRef = useRef<HTMLVideoElement | null>(null)
   
   const [play, setPlay] = useState<boolean>(false);
@@ -187,6 +191,7 @@ export const CardPage: React.FC = () => {
           <span>Price: </span> { ethers.utils.formatEther(currToken?.tokenPrice || "0") } MATIC
         </Styled.Price>
       }
+
       {
         currToken?.status !== 'not minted' && 
         <Styled.Price>
@@ -195,7 +200,7 @@ export const CardPage: React.FC = () => {
       }
       <Styled.CardButtonGroup>
         {
-          currToken?.tokenCurrTokenOwner === signerAddress && haveEth ? (
+          currToken?.tokenCurrToken === signerAddress && haveEth && currToken?.status !== 'available' ? (
             <Styled.InputsGroup>
               <Styled.Input placeholder="token price" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
               <Styled.CardButton onClick={() => list()} disabled={currToken?.status === 'listed'}>
@@ -236,7 +241,7 @@ export const CardPage: React.FC = () => {
               return <><span style={{ textTransform: 'capitalize' }}>{key}</span>: {currToken?.tokenData?.attributes[key]}<br /></>
             })
           }
-          <span style={{ fontSize: 20 }}>This is a 5 sec sample, full art will be available to owned</span><br />
+          <span style={{ fontSize: 20 }}>This is a 5 sec sample, full art will be available to the owner</span><br />
           <div style={{ display: 'flex' }}>
             <span style={{ whiteSpace: 'nowrap' }}>Owner link access:</span>
             <Styled.CardLink href={currToken?.tokenData?.original}>

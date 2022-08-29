@@ -22,7 +22,6 @@ export const MainInfo = styled.div<Props>`
   `}
 
   footer {
-
     width: 100vw;
     margin-left: -10px;
     margin-top: 120px;
@@ -92,6 +91,9 @@ export const InfoDescriptionBlock = styled.div<Props>`
     opacity: ${Number(opened)};
     visibility: ${opened ? 'visible' : 'hidden'};
     .info-desc {
+      height: ${opened ? 'auto' : '0'};
+    }
+    .text-div {
       height: ${opened ? 'auto' : '0'};
     }
   `}

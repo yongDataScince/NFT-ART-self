@@ -71,13 +71,14 @@ export const getPictureById = (tokenId: number) => {
     tokenInfo = require(`../assets/jsons_test/${tokenId}.json`);
   } catch (error) {}
 
-  const tokenCollectionId = tokenInfo.collection_address
-
+  const tokenCollectionAddress = tokenInfo.collection_address
+  const collectionId =  collections.findIndex(({ address }) =>  tokenCollectionAddress) + 1;
   if (tokenInfo) {
     return {
       ...tokenInfo,
-      collectionId: tokenCollectionId,
-      path: require(`../assets/images/${tokenInfo.tokenId}.jpg`)
+      tokenId,
+      collectionId,
+      path: require(`../assets/images/${tokenId}.jpg`)
     }
   }
 }
@@ -283,6 +284,7 @@ export const tokenInfos = createAsyncThunk(
     { collectionId }: { collectionId: number },
     { getState }: any
   ) => {
+    console.log('token infos');
     const { web3 }: any = getState()
     const { contract: collection } = await web3?.collections?.find((collection: any) => collection.id === collectionId); 
 
@@ -291,7 +293,6 @@ export const tokenInfos = createAsyncThunk(
     let id = 0;
     while(true) {
       try {
-        console.log(id);
         const data = await tokenById(id, collection);
         try {
           const tokenPrice = (await collection?.getTokenPrice(id))?.toString()
@@ -418,7 +419,6 @@ export const userTokens = createAsyncThunk(
         try {
           if (await coll.tokensPreviousOwner(id) !== '0x0000000000000000000000000000000000000000') {
             owner = statusNum === 0 ? await coll.ownerOf(id) : await coll.tokensPreviousOwner(id)
-            console.log(statusNum, owner, getPictureById(id));
           } else {
             owner = await coll.ownerOf(id)
           }
@@ -475,6 +475,7 @@ export const contractSlice = createSlice({
     })
     builder.addCase(userTokens.fulfilled, (state, { payload }) => {      
       state.userPictures = payload;
+      console.log(payload);
       state.loading = false
       if (payload.length === 0) {
         state.userPictures = [{ info: "no" }]
@@ -511,7 +512,7 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.fulfilled, (state, { payload }) => {
       state.loading = false;
-      console.log(payload);
+      console.log('payload for currToken: ', payload);
       state.currToken = payload
     });
     builder.addCase(buyToken.pending, (state) => {

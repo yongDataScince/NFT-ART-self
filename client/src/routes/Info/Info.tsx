@@ -313,7 +313,13 @@ export const Info: React.FC = () => {
                   <Styled.InfoDescriptionBlockTitle>{sub.title}</Styled.InfoDescriptionBlockTitle>
                   {
                     sub.text.length > 0 && <Styled.InfoDescriptionBlockText>{sub.text.reduce((accu: any, elem: any) => {
-                      return accu === null ? [<div dangerouslySetInnerHTML={{ __html: elem }} /> ] : [...accu, <><br/></> , <div dangerouslySetInnerHTML={{ __html: elem }} />]
+                      return accu === null ? [
+                        <div dangerouslySetInnerHTML={{ __html: elem }} className="text-div" />
+                      ] : [
+                        ...accu,
+                        <><br/></>,
+                        <div dangerouslySetInnerHTML={{ __html: elem }} className="text-div" />
+                      ]
                     }, null)}</Styled.InfoDescriptionBlockText>
                   }
                 </Styled.InfoDescriptionBlock>
