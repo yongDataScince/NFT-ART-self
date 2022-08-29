@@ -10,6 +10,7 @@ import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
 import { SettingsPage } from './routes/SettingsPage';
 import { Author } from './routes/Author';
+import Footer from './components/Footer';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');

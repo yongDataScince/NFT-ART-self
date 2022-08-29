@@ -44,7 +44,6 @@ export const CardPage = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   overflow-y: auto;
@@ -61,6 +60,7 @@ export const TagsContainer = styled.div`
   align-items: flex-start;
   margin-top: 12px;
   border-top: 2px solid #CCC;
+  margin-bottom: 150px;
 `
 
 export const TagsList = styled.div`
@@ -78,7 +78,7 @@ export const Tag = styled.p`
   font-style: normal;
   font-size: 25px;
   font-weight: 200;
-  line-height: 21px;
+  line-height: 24px;
   position: relative;
   letter-spacing: -0.02em;
   color: #FFF; //#58575B
@@ -237,7 +237,7 @@ export const CardInfoText = styled.p`
   width: 90%;
   font-family: 'Helvetica';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 100;
   font-size: 20px;
   line-height: 120%;
   letter-spacing: -0.03em;

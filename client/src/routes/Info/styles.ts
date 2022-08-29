@@ -2,26 +2,40 @@ import styled, { css } from "styled-components";
 
 interface Props {
   opened?: boolean;
-  delay?: number
+  delay?: number;
+  anyOpen?: boolean
 }
 
-export const MainInfo = styled.div`
+export const MainInfo = styled.div<Props>`
   width: 100%;
-  min-height: 100vh;
-  height: auto;
+  height: 100%;
+  max-height: 100vh;
   padding: 112px 40px 120px 50px;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-x: hidden;
+  align-items: center;
+  justify-content: flex-start;
+
+  ${({ anyOpen }) => css`
+    overflow-y: ${anyOpen ? 'auto' : 'hidden' };
+  `}
+
+  footer {
+
+    width: 100vw;
+    margin-left: -10px;
+    margin-top: 120px;
+  }
 `
 
 export const InfoBlock = styled.div<Props>`
   width: 100%;
   transition: all 0.5s;
-  height: auto;
   margin-bottom: 40px;
   ${({ delay, opened }) => css`
     transition-delay: ${delay}s;
+    height: ${opened ? 'auto' : '60px'};
     max-height: ${opened ? 'auto' : '60px'};
     border-color: ${opened ? '#000' : '#FFF'};
   `}
@@ -73,12 +87,13 @@ export const InfoDescriptionBlock = styled.div<Props>`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: auto;
-  transition: all 0.2s;
-  ${({ opened, delay }) => css`
-    transition-delay: ${delay}s;
+  ${({ opened }) => css`
+    height: ${opened ? 'auto' : '0'};
     opacity: ${Number(opened)};
     visibility: ${opened ? 'visible' : 'hidden'};
+    .info-desc {
+      height: ${opened ? 'auto' : '0'};
+    }
   `}
 `
 
@@ -91,7 +106,7 @@ export const InfoDescriptionBlockTitle = styled.p`
   margin-bottom: 16px;
 `
 
-export const InfoDescriptionBlockText = styled.p`
+export const InfoDescriptionBlockText = styled.p.attrs({ className: 'info-desc' })`
   margin: 0;
   padding: 0;
   font-family: 'Helvetica';

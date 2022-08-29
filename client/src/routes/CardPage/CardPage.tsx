@@ -244,7 +244,7 @@ export const CardPage: React.FC = () => {
           Description:
         </Styled.CardInfoTitle>
         <Styled.CardInfoText>
-          {
+        {
             Object.keys(picture?.description || {}).map((key) => {
               if (key === 'text') {
                 return <>{picture?.description[key]}<br /></>
@@ -253,6 +253,7 @@ export const CardPage: React.FC = () => {
               }
             })
           }
+          <span style={{ fontSize: 20 }}>This is a 5 sec sample, full art will be available to owned</span>
         </Styled.CardInfoText>
 
         <Styled.CardInfoTitle>
@@ -282,7 +283,7 @@ export const CardPage: React.FC = () => {
           <Styled.AuthorBlock key={author.id}>
             <Styled.AuthorAnchor id={author?.address} />
             <Styled.AuthorImage src={require(`../../assets/images/${author?.avatar}`)} />
-            <Styled.AuthorName onClick={() => navigate(`/author/${author?.address}`)}>{author?.name}</Styled.AuthorName>
+            <Styled.AuthorName>{author?.name}</Styled.AuthorName>
             <Styled.AuthorAddress onClick={() =>  navigator.clipboard.writeText(author?.address || '')}>
               <CopyIcon viewBox='0 0 20 20' color="#999999" /> {author?.address?.slice(0, 6)}...{author?.address?.slice(37, 42)}
             </Styled.AuthorAddress>

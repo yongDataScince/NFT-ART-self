@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import Footer from "../../components/Footer";
 import ChevronIcon from "../../components/UI/icons/ChevronIcon";
 import * as Styled from './styles'
 
@@ -16,11 +19,12 @@ interface Block {
 }
 
 export const Info: React.FC = () => {
+  const { hash } = useLocation()
   const [blocks, setBlock] = useState<Block[]>([
     {
       id: 1,
       htmlId: 'about',
-      opened: true,
+      opened: false,
       title: 'About Artform',
       description: 'We are an exclusive online art gallery. Curating, exhibiting and selling both digital and physical works, all verified on the blockchain.',
       subBlocks: [
@@ -54,7 +58,7 @@ export const Info: React.FC = () => {
           text: [
             `
             <span style="color: #FFF">August:</span><br/>Our first digital collection byIvan Shalmin & Sasha Shalmina - ‘Raw’<br/><br/>
-            <span style="color: #FFF"> September:</span>Platform soft launch with our first digitalcollection<br/><br/>
+            <span style="color: #FFF"> September:</span><br/>Platform soft launch with our first digitalcollection<br/><br/>
             <span style="color: #FFF">October:</span><br/> First physical collection by Ivan Shalmin<br/><br/>
             <span style="color: #FFF">December:</span><br/> Platform ready to expand and exhibit more artists
             `
@@ -64,7 +68,7 @@ export const Info: React.FC = () => {
     },
     {
       id: 2,
-      opened: true,
+      opened: false,
       htmlId: 'how-it-works',
       title: 'How it works',
       description: '',
@@ -73,9 +77,9 @@ export const Info: React.FC = () => {
           id: 1,
           title: 'Purchasing of artworks',
           text: [
-            `Minting. In order to purchase a new artwork press the “mint” button. This way, the NFT token for your chosen artwork will be officially created on the blockchain and the first-time buyer will acquire the status of a minter. This is important because the minter is sometimes entitled to a first collector royalty fee (see the royalty section for details).`,
-            `Presale. Occasionally, Neuform will announce exclusive presale events, which will be limited to a specific number of authorized, participating collectors. They will be admitted to an exclusive preview of the new collection and will also be able to make a purchase earlier than everyone else. In order to become a presale participant, the collector would have to become authorized by the platform. This can be done in your personal user area, once you connect your wallet.`,
-            `Public sale. Typically, Neuform will be holding public sale events, that’s where a new collection becomes available for purchase for the very first time. Unlike the exclusive presale, these are open to everyone and are not limited to a certain number of participants.`
+            `<span style="color: #FFF">Minting.</span> In order to purchase a new artwork press the “mint” button. This way, the NFT token for your chosen artwork will be officially created on the blockchain and the first-time buyer will acquire the status of a minter. This is important because the minter is sometimes entitled to a first collector royalty fee (see the royalty section for details).`,
+            `<span style="color: #FFF">Presale.</span> Occasionally, Neuform will announce exclusive presale events, which will be limited to a specific number of authorized, participating collectors. They will be admitted to an exclusive preview of the new collection and will also be able to make a purchase earlier than everyone else. In order to become a presale participant, the collector would have to become authorized by the platform. This can be done in your personal user area, once you connect your wallet.`,
+            `<span style="color: #FFF">Public sale.</span> Typically, Neuform will be holding public sale events, that’s where a new collection becomes available for purchase for the very first time. Unlike the exclusive presale, these are open to everyone and are not limited to a certain number of participants.`
           ]
         },
         {
@@ -102,10 +106,6 @@ export const Info: React.FC = () => {
             <span style="color: #FFF;">0,2%</span> from a resale of anything above <span style="color: #FFF; font-size: 13px;">500 000 €</span>
             <br>
             <br>
-            <span style="color: #FFF;">Minter benefits. Artists have the option to reward their very first collector for any given artwork, by giving them a small royalty on all of their secondary sales.</span>
-            This reward is completely optional and it decreases proportionally with each consecutive transaction.
-            <br>
-            <br>
             <span style="color: #FFF;">The number of transactions, as well as the percentage given to the minter is defined by each artist individually, is capped at 5%, and is announced separately for every new collection.</span>
             `,
           ]
@@ -128,8 +128,8 @@ export const Info: React.FC = () => {
     },
     {
       id: 3,
-      opened: true,
-      htmlId: 'privacy',
+      opened: false,
+      htmlId: 'privacy-policy',
       title: 'Privacy Policy',
       description: '',
       subBlocks: [
@@ -181,10 +181,10 @@ export const Info: React.FC = () => {
               <span style="text-decoration: underline;">We use the information we collect in various ways, including to</span><br><br>
               Provide, operate, and maintain our website<br>
               Improve, personalize, and expand our website<br>
-              Understand and analyze how you use our website<br>
-              Develop new products, services, features, and functionality<br>
-              Communicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the website, and for marketing and promotional purposes<br>
-              Send you emails<br>
+              Understand and analyze how you use our website,<br>
+              develop new products, services, features, and functionality,<br>
+              communicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the website, and for marketing and promotional purposes<br>
+              send you emails<br>
               Find and prevent fraud
             `
           ]
@@ -242,9 +242,9 @@ export const Info: React.FC = () => {
           text: [
             `
               Under the CCPA, among other rights, California consumers have the right to:
-              Request that a business that collects a consumer's personal data disclose the categories and specific pieces of personal data that a business has collected about consumers.<br>
-              Request that a business delete any personal data about the consumer that a business has collected.<br>,
-              Request that a business that sells a consumer's personal data, not sell the consumer's personal data.<br>,
+              request that a business that collects a consumer's personal data disclose the categories and specific pieces of personal data that a business has collected about consumers,<br>
+              request that a business delete any personal data about the consumer that a business has collected,<br>
+              request that a business that sells a consumer's personal data, not sell the consumer's personal data,<br>
               If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us.            
             `
           ]
@@ -275,6 +275,19 @@ export const Info: React.FC = () => {
     }
   ])
   
+  useEffect(() => {
+    setBlock(blocks.map((b) => {
+      if (`#${b.htmlId}` === hash) {
+        return {
+          ...b,
+          opened: true
+        }
+      } else {
+        return b
+      }
+    }))
+  }, [hash])
+
   const openBlock = (id: number) => {
     setBlock(blocks.map((block) => ({
       ...block,
@@ -283,7 +296,7 @@ export const Info: React.FC = () => {
   }
 
   return (
-    <Styled.MainInfo>
+    <Styled.MainInfo anyOpen={ blocks.some((b) => b.opened) }>
       {
         blocks.map((block) => (
           <Styled.InfoBlock key={block.id} id={block.htmlId} delay={!block.opened ? (( block.subBlocks.length * 0.2 ) / 1.007) : 0} opened={block.opened}>
@@ -310,6 +323,7 @@ export const Info: React.FC = () => {
         ))
       }
 
+      <Footer />
     </Styled.MainInfo>
   )
 }

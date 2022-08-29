@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { HashLink } from 'react-router-hash-link';
+import { Link } from "react-router-dom";
 
 export const FooterMain = styled.footer`
   width: 120%;
@@ -8,7 +8,6 @@ export const FooterMain = styled.footer`
   background: linear-gradient(180deg, #000000 4.65%, rgba(110, 110, 110, 0.2)  78.84%);
   display: flex;
   flex-direction: column;
-  margin-top: 200px;
   border-top: 1px solid #FFFFFF;
   margin-bottom: -140px;
 `
@@ -52,7 +51,7 @@ export const FooterNav = styled.ul`
   height: auto;
 `
 
-export const InternalLink = styled(HashLink)`
+export const InternalLink = styled(Link)`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 300;
