@@ -512,7 +512,6 @@ export const contractSlice = createSlice({
     });
     builder.addCase(tokenInfo.fulfilled, (state, { payload }) => {
       state.loading = false;
-      console.log('payload for currToken: ', payload);
       state.currToken = payload
     });
     builder.addCase(buyToken.pending, (state) => {

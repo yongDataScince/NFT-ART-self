@@ -17,13 +17,13 @@ const hideShow = keyframes`
 export const LoaderWrapper = styled.div<Props>`
   width: 100%;
   height: 100%;
-  background: #00000080;
+  background: #000000a0;
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
   transition: all 0.3s;
-  z-index: 1000;
+  z-index: 1000000;
   top: 0;
   left: 0;
   ${({ show }) => css`

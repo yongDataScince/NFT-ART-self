@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import ChevronIcon from "../icons/ChevronIcon"
 import * as Styled from './styles'
 import { useNavigate } from "react-router-dom";
-import { ICollection, tokenInfos } from "../../../store/reducer";
+import { ICollection, tokenInfo, tokenInfos } from "../../../store/reducer";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { BigNumber, ethers } from "ethers";
 
@@ -17,7 +17,7 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections, tokens, signerAddress, lastCheck, needChain } = useAppSelector((s) => s.web3)
+  const { collections, tokens, signerAddress, lastCheck, needChain, currToken } = useAppSelector((s) => s.web3)
   const [currCollection, setCurrCollection] = useState<ICollection>()
 
   const dispatch = useAppDispatch()
@@ -36,10 +36,9 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
     const c = collections?.find((c) => c.id === collectionId)
     setCurrCollection(c)
 
-    if (Date.now() - (lastCheck || 0) > 90000) {
-      dispatch(tokenInfos({ collectionId }))
-    }
-  }, [collectionId, collections, dispatch, lastCheck, needChain])
+    dispatch(tokenInfo({ collectionId, tokenId: currentImage - 1 }))
+    console.log(currToken);
+  }, [collectionId, collections, currentImage, dispatch, lastCheck, needChain])
 
   return (
     <Styled.CarouselMain>
@@ -56,12 +55,12 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
         </Styled.ImgGroup>
         <Styled.CarouselFooter>
           <Styled.CarouselFooterTitle>
-            <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { tokens?.[currentImage - 1]?.name }
+            <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { currToken?.tokenData?.name }
           </Styled.CarouselFooterTitle>
-          <Styled.CarouselFooterInfo status={tokens?.[currentImage - 1]?.status}>
+          <Styled.CarouselFooterInfo status={currToken?.status}>
             <Styled.GraySpan>{
-            tokens?.[currentImage - 1]?.tokenCurrTokenOwner === signerAddress ? 
-           (tokens?.[currentImage - 1]?.status === 'available' ? 'listed' : 'not listed') : tokens?.[currentImage - 1]?.status}</Styled.GraySpan> {tokens?.[currentImage - 1]?.status === 'available' && `${formatPrice(tokens?.[currentImage - 1]?.tokenPrice)} MATIC`}
+            currToken?.tokenCurrToken === signerAddress ? 
+           (currToken?.status === 'available' ? 'listed' : 'not listed') : currToken?.status}</Styled.GraySpan> {currToken?.status === 'available' && `${formatPrice(currToken?.tokenPrice)} MATIC`}
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>
