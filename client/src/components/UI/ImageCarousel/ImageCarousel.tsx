@@ -37,7 +37,6 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
     setCurrCollection(c)
 
     dispatch(tokenInfo({ collectionId, tokenId: currentImage - 1 }))
-    console.log(currToken);
   }, [collectionId, collections, currentImage, dispatch, lastCheck, needChain])
 
   return (
@@ -57,10 +56,17 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           <Styled.CarouselFooterTitle>
             <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { currToken?.tokenData?.name }
           </Styled.CarouselFooterTitle>
+
           <Styled.CarouselFooterInfo status={currToken?.status}>
-            <Styled.GraySpan>{
-            currToken?.tokenCurrToken === signerAddress ? 
-           (currToken?.status === 'available' ? 'listed' : 'not listed') : currToken?.status}</Styled.GraySpan> {currToken?.status === 'available' && `${formatPrice(currToken?.tokenPrice)} MATIC`}
+            <Styled.GraySpan>
+              {
+                currToken?.tokenCurrToken === signerAddress ? (
+                  currToken?.status === 'not available' ? 'Not Listed' : 'Listed'
+                ) : (
+                  currToken?.status === 'not available' ? currToken?.status : currToken?.status === 'not minted' ? 'not minted' : 'available'
+                )
+              }
+            </Styled.GraySpan> {currToken?.status === 'available' && `${formatPrice(currToken?.tokenPrice)} MATIC`}
           </Styled.CarouselFooterInfo>
         </Styled.CarouselFooter>
       </Styled.CarouselCard>
