@@ -17,7 +17,7 @@ const zeroPad = (num: number, places: number = 4) => String(num).padStart(places
 export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, collectionName }) => {
   const [currentImage, setCurrentImage] = useState<number>(1)
   const [window, setWindow] = useState<number>(3);
-  const { collections, tokens, signerAddress, lastCheck, needChain, currToken } = useAppSelector((s) => s.web3)
+  const { collections, signerAddress, lastCheck, needChain, currToken } = useAppSelector((s) => s.web3)
   const [currCollection, setCurrCollection] = useState<ICollection>()
 
   const dispatch = useAppDispatch()
@@ -60,7 +60,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           <Styled.CarouselFooterInfo status={currToken?.status}>
             <Styled.GraySpan>
               {
-                currToken?.tokenCurrToken && currToken?.tokenCurrToken === signerAddress ? (
+                signerAddress && currToken?.tokenCurrToken === signerAddress ? (
                   currToken?.status === 'not available' ? 'Not Listed' : 'Listed'
                 ) : (
                   currToken?.status === 'not available' ? 'sold' : currToken?.status === 'not minted' ? 'not minted' : 'available'
