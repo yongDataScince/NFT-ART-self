@@ -84,13 +84,13 @@ export const ModalMessage = styled.div<Props>`
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 100;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 100;
   line-height: 110%;
   margin-bottom: 20px;
   letter-spacing: -0.05em;
-  overflow-y: auto;
   display: flex;
+  height: 50%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -104,7 +104,7 @@ export const ModalLink = styled.a<Props>`
   font-weight: 300;
   width: 100%;
   text-align: left;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 100%;
   letter-spacing: -0.05em;
   margin-top: 25px;
