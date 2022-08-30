@@ -5,6 +5,15 @@ import SettingsIcon from '../UI/icons/SettingsIcon';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { initContract } from '../../store/reducer';
 import BackIcon from '../UI/icons/BackIcon';
+import { WalletLinkConnector } from "@web3-react/walletlink-connector";
+import { useWeb3React } from '@web3-react/core'
+import { useEffect } from 'react';
+
+const CoinbaseWallet = new WalletLinkConnector({
+ url: `https://rpc-mumbai.maticvigil.com`,
+ appName: "Web3-react Demo",
+ supportedChainIds: [1, 3, 4, 5, 42, 80001],
+});
 
 const connectNetwork = async () => {
   await (window as any).ethereum.request({
@@ -23,8 +32,13 @@ const connectNetwork = async () => {
 export const Header: React.FC<{ os: string }> = ({ os }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { haveEth, needChain } = useAppSelector((state) => state.web3)
+  const { needChain } = useAppSelector((state) => state.web3)
   const dispatch = useAppDispatch()
+  const { activate, active, chainId } = useWeb3React();
+
+  useEffect(() => {
+    dispatch(initContract({ haveEth: active }))
+  }, [active, chainId, dispatch])
 
   return (
     <Styled.HeaderBar>
@@ -34,27 +48,27 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
         </Styled.HeaderButton>
       }
       {
-        (haveEth && !needChain) && (
+        (active && !needChain) && (
           <Styled.HeaderButton onClick={() => navigate('/settings')}>
             <SettingsIcon color="#FFF" />
           </Styled.HeaderButton>
         )
       }
       
-      {((os === 'iOS' || os === 'Android') && !haveEth && !needChain) && (
+      {((os === 'iOS' || os === 'Android') && !active) && (
        os !== 'iOS' ? (
-        <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('https://metamask.app.link/dapp/nft-art-preview.pages.dev/')}>
+        <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => activate(CoinbaseWallet)}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
        ) : (
         <>
-           <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('dapp://nft-art-preview.pages.dev')}>
+           <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => activate(CoinbaseWallet)}>
             <CopyIcon viewBox='0 0 20 20' color="#FFF" />
           </Styled.HeaderButton>
         </>
        )
       )}
-      {(needChain && haveEth) && 
+      {( active && chainId === 80001 ) && 
         <Styled.HeaderButton style={{ paddingBottom: 4 }} onClick={() => connectNetwork().then(() => dispatch(initContract({ haveEth: true, netConnected: true })))}>
           <CopyIcon viewBox='0 0 20 20' color="#fcba03" />
         </Styled.HeaderButton>
