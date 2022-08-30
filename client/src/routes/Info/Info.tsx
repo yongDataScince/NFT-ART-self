@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
 import ChevronIcon from "../../components/UI/icons/ChevronIcon";
 import * as Styled from './styles'

@@ -24,7 +24,7 @@ export const MainInfo = styled.div<Props>`
   footer {
     width: 100vw;
     margin-left: -10px;
-    margin-top: 120px;
+    margin-top: 140px;
   }
 `
 
