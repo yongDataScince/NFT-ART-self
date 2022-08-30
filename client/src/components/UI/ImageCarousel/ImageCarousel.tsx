@@ -63,7 +63,7 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
                 currToken?.tokenCurrToken === signerAddress ? (
                   currToken?.status === 'not available' ? 'Not Listed' : 'Listed'
                 ) : (
-                  currToken?.status === 'not available' ? currToken?.status : currToken?.status === 'not minted' ? 'not minted' : 'available'
+                  currToken?.status === 'not available' ? 'sold' : currToken?.status === 'not minted' ? 'not minted' : 'available'
                 )
               }
             </Styled.GraySpan> {currToken?.status === 'available' && `${formatPrice(currToken?.tokenPrice)} MATIC`}
