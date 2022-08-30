@@ -71,6 +71,9 @@ export const MainBody = styled.div`
   justify-content: flex-start;
   overflow-y: auto;
   padding: 16px 16px 140px 16px;
+  footer {
+    margin-top: 50px;
+  }
 `
 
 export const MainWrapper = styled.div`

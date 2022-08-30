@@ -56,11 +56,11 @@ export const ImageCarousel: React.FC<Props> = ({ images, collectionId, title, co
           <Styled.CarouselFooterTitle>
             <Styled.NumberSpan>#{zeroPad(currentImage - 1)}</Styled.NumberSpan> { currToken?.tokenData?.name }
           </Styled.CarouselFooterTitle>
-
+        
           <Styled.CarouselFooterInfo status={currToken?.status}>
             <Styled.GraySpan>
               {
-                currToken?.tokenCurrToken === signerAddress ? (
+                currToken?.tokenCurrToken && currToken?.tokenCurrToken === signerAddress ? (
                   currToken?.status === 'not available' ? 'Not Listed' : 'Listed'
                 ) : (
                   currToken?.status === 'not available' ? 'sold' : currToken?.status === 'not minted' ? 'not minted' : 'available'
