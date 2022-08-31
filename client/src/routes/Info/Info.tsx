@@ -332,6 +332,7 @@ export const Info: React.FC = () => {
               Switch the network if the MetaMask app recommends it
               <img src=${require('./screens/6.png')} />
             `,
+            `If you are still experiencing troubles with MetaMask or anything else, please let us know via this email: <a style="color: #FFF" href="mailto:info@neuform.art">info@neuform.art</a>`
           ]
         }
       ]
