@@ -5,12 +5,11 @@ import { Route, Routes,  } from 'react-router-dom'
 import Main from './routes/Main'
 import CardPage from './routes/CardPage'
 import { initContract, setLoader } from './store/reducer';
-import { useAppDispatch } from './store';
+import { useAppDispatch, useAppSelector } from './store';
 import Cabinet from './routes/Cabinet';
 import Info from './routes/Info';
 import { SettingsPage } from './routes/SettingsPage';
 import { Author } from './routes/Author';
-import Footer from './components/Footer';
 import { useWeb3React } from '@web3-react/core';
 import { Troubleshooting } from './routes/Troubleshooting/Troubleshooting';
 
@@ -18,6 +17,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [linkSrc, setLinkSrc] = useState<string>('');
   const dispatch = useAppDispatch()
+  const { haveEth } = useAppSelector((state) => state.web3)
   const { active } = useWeb3React();
 
   function isMobileDevice() {
@@ -50,7 +50,7 @@ function App() {
   return (
     <div className="app">
       <Header os={getMobileOS()} />
-      <Modal title='Alert!' variant="default" message={errorMessage} haveLink src={linkSrc} text='Download here' os={getMobileOS()} show={!active} />
+      <Modal title='Alert!' variant="default" message={errorMessage} haveLink src={linkSrc} text='Download here' os={getMobileOS()} show={!haveEth} />
       <Routes>
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />
