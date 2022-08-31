@@ -49,7 +49,7 @@ export const Header: React.FC<{ os: string }> = ({ os }) => {
       }
       
       {((os === 'iOS' || os === 'Android') && !needChain && !haveEth) && (
-       <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('dapp://nft-art-preview.pages.dev')}>
+       <Styled.HeaderButton style={{ paddingBottom: 4 }}  onClick={() => window.open('dapp://neuform.art')}>
           <CopyIcon viewBox='0 0 20 20' color="#FFF" />
         </Styled.HeaderButton>
       )}

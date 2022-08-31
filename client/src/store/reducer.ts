@@ -225,6 +225,8 @@ export const initContract = createAsyncThunk(
         const contract = new ethers.Contract(collection.address, ABI, provider)
         const name = await contract?.name()
         const symbol = await contract?.symbol()
+        console.log(await contract?.getAuthors());
+        
         const authorsArr = (await contract?.getAuthors()).length > 0 ?
           (await contract?.getAuthors())?.map(getAuthorByAddress)
             :
