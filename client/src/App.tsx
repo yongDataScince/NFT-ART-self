@@ -35,27 +35,17 @@ function App() {
     return "Other"
   }
 
-  // useEffect(() => {
-  //   if ((window as any).ethereum) {
-  //     dispatch(initContract({ haveEth: true })) 
-  //   } else {
-  //     dispatch(initContract({ haveEth: false })) 
-  //     if (isMobileDevice()) {
-  //       if (getMobileOS() === 'iOS') {
-  //         setLinkSrc('https://apps.apple.com/ru/app/metamask-blockchain-wallet/id1438144202')
-  //       } else {
-  //         setLinkSrc('https://play.google.com/store/apps/details?id=io.metamask&hl=ru&gl=US')
-  //       }
-  //       setErrorMessage("Please install Metamask on your device")
-  //     } else {
-  //       setErrorMessage("Please install Metamask on your device")
-  //     }
-  //   }
-  //   (window as any).ethereum?.on("accountsChanged", () => {
-  //     dispatch(setLoader(true))
-  //     dispatch(initContract({ haveEth: true }))
-  //   });
-  // }, [dispatch])
+  useEffect(() => {
+    if ((window as any).ethereum) {
+      dispatch(initContract({ haveEth: true, netConnected: true })) 
+    } else {
+      dispatch(initContract({ haveEth: false, netConnected: false })) 
+    }
+    (window as any).ethereum?.on("accountsChanged", () => {
+      dispatch(setLoader(true))
+      dispatch(initContract({ haveEth: true, netConnected: true }))
+    });
+  }, [dispatch])
 
   return (
     <div className="app">

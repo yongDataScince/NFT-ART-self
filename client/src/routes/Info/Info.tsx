@@ -272,6 +272,69 @@ export const Info: React.FC = () => {
           ]
         }
       ]
+    },
+    {
+      id: 4,
+      opened: false,
+      title: 'Troubleshooting',
+      htmlId: 'troubleshooting',
+      description: ' How to connect MetaMask',
+      subBlocks: [
+        {
+          id: 1,
+          title: 'Step 1.',
+          text: [
+            `
+              Make sure you have MetaMask app installed
+            `,
+            `
+              When you open the MetaMask app, please open the menu button in the upper left corner<br>
+              <img src=${require('./screens/1.png')} />
+            `
+          ]
+        },
+        {
+          id: 2,
+          title: 'Step 2.',
+          text: [
+            `
+              Select “Browser” in the left slide bar menu
+              <img src=${require('./screens/2.png')} />
+            `
+          ]
+        },
+        {
+          id: 3,
+          title: 'Step 3.',
+          text: [
+            `
+              Depending on the version of your MetaMask app, either open a new tab, or just start typing the url in the search line
+              <img src=${require('./screens/3.png')} />
+            `
+          ]
+        },
+        {
+          id: 4,
+          title: 'Step 4.',
+          text: [
+            `
+              Please make sure to type www.neuform.art in the search line. Please do not omit the “www” symbols, this is important!
+              <img src=${require('./screens/4.png')} />
+              <img src=${require('./screens/5.png')} />
+            `,
+          ]
+        },
+        {
+          id: 4,
+          title: 'Step 5.',
+          text: [
+            `
+              Switch the network if the MetaMask app recommends it
+              <img src=${require('./screens/6.png')} />
+            `,
+          ]
+        }
+      ]
     }
   ])
   

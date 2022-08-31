@@ -39,17 +39,16 @@ export const Modal: React.FC<Props> = ({ title, os, variant, message, haveLink, 
         <Styled.ModalClose variant={variant} onClick={() => setActive(false)}>
           <CloseIcon />
         </Styled.ModalClose>
-        <Styled.ModalTitle variant={variant}>{title}</Styled.ModalTitle>
         <Styled.ModalMessage variant={variant}>
           {
             os === 'iOS' ? (
               <>
-              Please, make sure you have metamask installed
+              Please, make sure you have metamask installed<br />
               {haveLink && <Styled.ModalLink href={src}>{text}</Styled.ModalLink>}
               </>
             ) : (
               <>
-                Please refer to our <span style={{ textDecoration: 'underline' }} onClick={() => navigate('/troubleshooting')}>troubleshooting</span> page in the footer menu, if Metamask doesn’t connect immediately 
+                Please refer to our <span style={{ textDecoration: 'underline' }} onClick={() => navigate('/info#troubleshooting')}>troubleshooting</span> page in the footer menu, if Metamask doesn’t connect immediately 
               </>
             )
           }

@@ -64,6 +64,13 @@ export const getAuthorByAddress = (address: string): Author | undefined => {
   })
 }
 
+export const getAuthorById = (id: number): Author | undefined => {
+  return authors?.find((a) => {
+    return a.id === id
+  })
+}
+
+
 export const getPictureById = (tokenId: number) => {
   let tokenInfo: any;
 
@@ -139,7 +146,7 @@ export const initContract = createAsyncThunk(
       try {
         await (window as any).ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${Number(80001).toString(16)}` }]
+          params: [{ chainId: `0x${Number(137).toString(16)}` }]
         });
         netConnected = true
       } catch (err: any) {
@@ -150,9 +157,9 @@ export const initContract = createAsyncThunk(
               params: [
                 {
                   chainName: 'mumbai test',
-                  chainId: `0x${Number(80001).toString(16)}`,
+                  chainId: `0x${Number(137).toString(16)}`,
                   nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
-                  rpcUrls: ['https://rpc-mumbai.maticvigil.com']
+                  rpcUrls: ['https://polygon-rpc.com']
                 }
               ]
             });
@@ -175,12 +182,15 @@ export const initContract = createAsyncThunk(
 
         for await (const collection of collections) {
           const contract = new ethers.Contract(collection.address, ABI, signer)
+
           const name = await contract?.name()
           const symbol = await contract?.symbol()
-          const authors = !!(await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
+
+          const authors = (await contract?.getAuthors()).length > 0 ?
               (await contract?.getAuthors())?.map(getAuthorByAddress)
                 :
-              (collection as any).authors.map(getAuthorByAddress)
+              (collection as any).authors.map(getAuthorById)
+
           const [totalSupply] = getPicturesByCollection(collection.address)
           colls.push({
             id: collection.id,
@@ -208,17 +218,17 @@ export const initContract = createAsyncThunk(
         }
       }
     } else {      
-      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com')
+      const provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com')
       const colls: ICollection[] = [];
 
       for await (const collection of collections) {
         const contract = new ethers.Contract(collection.address, ABI, provider)
         const name = await contract?.name()
         const symbol = await contract?.symbol()
-        const authorsArr = (await contract?.getAuthors())?.map(getAuthorByAddress).filter((a: any) => !!a).length ?
-                (await contract?.getAuthors())?.map(getAuthorByAddress)
-                  :
-                (collection as any).authors.map(getAuthorByAddress)
+        const authorsArr = (await contract?.getAuthors()).length > 0 ?
+          (await contract?.getAuthors())?.map(getAuthorByAddress)
+            :
+          (collection as any).authors.map(getAuthorById)
 
         const [totalSupply] = getPicturesByCollection(collection.address)
         colls.push({

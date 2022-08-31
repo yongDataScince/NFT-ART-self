@@ -97,6 +97,10 @@ export const InfoDescriptionBlock = styled.div<Props>`
       height: ${opened ? 'auto' : '0'};
     }
   `}
+  img {
+    margin-top: 20px;
+    width: 100%;
+  }
 `
 
 export const InfoDescriptionBlockTitle = styled.p`
