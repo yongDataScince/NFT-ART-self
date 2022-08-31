@@ -89,7 +89,6 @@ export const ModalMessage = styled.div<Props>`
   line-height: 110%;
   margin-bottom: 20px;
   letter-spacing: -0.05em;
-  display: flex;
   height: 50%;
   align-items: center;
   justify-content: center;
