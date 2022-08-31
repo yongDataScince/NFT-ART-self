@@ -11,11 +11,14 @@ import Info from './routes/Info';
 import { SettingsPage } from './routes/SettingsPage';
 import { Author } from './routes/Author';
 import Footer from './components/Footer';
+import { useWeb3React } from '@web3-react/core';
+import { Troubleshooting } from './routes/Troubleshooting/Troubleshooting';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [linkSrc, setLinkSrc] = useState<string>('');
   const dispatch = useAppDispatch()
+  const { active } = useWeb3React();
 
   function isMobileDevice() {
     return 'ontouchstart' in window || 'onmsgesturechange' in window;
@@ -57,13 +60,14 @@ function App() {
   return (
     <div className="app">
       <Header os={getMobileOS()} />
-      <Modal title='Alert!' variant="default" message={errorMessage} haveLink src={linkSrc} text='Download here' show={errorMessage.length > 0} />
+      <Modal title='Alert!' variant="default" message={errorMessage} haveLink src={linkSrc} text='Download here' os={getMobileOS()} show={!active} />
       <Routes>
         <Route element={<Main />} path='/' />
         <Route element={<Cabinet />} path='/cabinet' />
         <Route element={<Info />} path='/info' />
         <Route path='/collection/:collection/picture/:pictureid' element={<CardPage />} />
         <Route path='/settings' element={<SettingsPage />} />
+        <Route path='/troubleshooting' element={<Troubleshooting />} />
         <Route path='/author/:authorAddress' element={<Author />} />
       </Routes>
     </div>

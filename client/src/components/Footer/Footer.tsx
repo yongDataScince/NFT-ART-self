@@ -10,6 +10,7 @@ export const Footer: React.FC = () => {
     {id: 1, title: "About", url: "/info", param: "about", external: false},
     {id: 2, title: "How it works", url:"/info", param: "how-it-works", external: false},
     {id: 3, title: "Privacy Policy", url:"/info", param: "privacy-policy", external: false},
+    {id: 3, title: "Troubleshooting", url:"/troubleshooting", param: "", external: false},
     {id: 4, title: "info@neuform.art", url:"mailto:info@neuform.art", external: true},
   ])
 
