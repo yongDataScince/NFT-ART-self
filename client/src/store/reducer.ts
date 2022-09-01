@@ -156,7 +156,7 @@ export const initContract = createAsyncThunk(
               method: 'wallet_addEthereumChain',
               params: [
                 {
-                  chainName: 'mumbai test',
+                  chainName: 'Poligon',
                   chainId: `0x${Number(137).toString(16)}`,
                   nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
                   rpcUrls: ['https://polygon-rpc.com']
